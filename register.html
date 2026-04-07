@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여름성경학교 참가 신청</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0F0F1A;--surface:#1A1A2E;--card:#222244;
+  --border:#2A2A4A;--text:#E8E8F0;--sub:#8888AA;
+  --accent1:#6C5CE7;--accent2:#00CEC9;--accent3:#FD79A8;--accent4:#FDCB6E;
+}
+body{
+  font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(253,121,168,.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(108,92,231,.08) 0%, transparent 50%);
+}
+
+/* ── Header ── */
+header{text-align:center;padding:60px 20px 10px}
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--sub);font-size:.85rem;text-decoration:none;
+  padding:8px 16px;border-radius:50px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  transition:.2s;margin-bottom:32px;
+}
+.back-btn:hover{color:var(--text);background:rgba(255,255,255,.08)}
+.logo{
+  font-size:2rem;font-weight:900;
+  background:linear-gradient(135deg,#FD79A8,#FDCB6E,#6C5CE7);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+header p{color:var(--sub);font-size:.95rem}
+
+/* ── Form Container ── */
+.container{max-width:520px;margin:0 auto;padding:40px 20px 80px}
+
+.form-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:36px 32px;
+  animation:fadeUp .5s ease forwards;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Fields ── */
+.field{margin-bottom:24px}
+label{
+  display:block;font-size:.82rem;font-weight:600;
+  color:var(--sub);margin-bottom:8px;letter-spacing:.02em;
+}
+input,select{
+  width:100%;padding:14px 18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);border-radius:12px;
+  color:var(--text);font-size:.95rem;
+  font-family:inherit;transition:.2s;outline:none;
+}
+input:focus,select:focus{
+  border-color:var(--accent3);
+  box-shadow:0 0 0 3px rgba(253,121,168,.12);
+}
+input::placeholder{color:var(--sub)}
+select option{background:var(--card)}
+
+/* ── Radio Group ── */
+.radio-group{display:flex;gap:10px;flex-wrap:wrap}
+.radio-label{
+  flex:1;min-width:90px;cursor:pointer;
+}
+.radio-label input{display:none}
+.radio-btn{
+  display:flex;align-items:center;justify-content:center;
+  padding:12px;border-radius:12px;font-size:.88rem;font-weight:600;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  transition:.2s;text-align:center;
+}
+.radio-label input:checked + .radio-btn{
+  background:rgba(253,121,168,.15);
+  border-color:var(--accent3);color:var(--accent3);
+}
+
+/* ── Submit ── */
+.submit-btn{
+  width:100%;padding:16px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#FD79A8,#FDCB6E);
+  color:#1A1A2E;font-size:1rem;font-weight:800;
+  cursor:pointer;transition:.25s;margin-top:8px;
+  font-family:inherit;letter-spacing:.02em;
+}
+.submit-btn:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 10px 24px rgba(253,121,168,.3)}
+.submit-btn:active{transform:translateY(0)}
+
+/* ── Success ── */
+.success{
+  display:none;text-align:center;padding:40px 20px;
+  animation:fadeUp .4s ease forwards;
+}
+.success-icon{font-size:4rem;margin-bottom:16px}
+.success h2{font-size:1.4rem;font-weight:800;margin-bottom:10px;
+  background:linear-gradient(135deg,#00CEC9,#55EFC4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.success p{color:var(--sub);font-size:.9rem;line-height:1.7;margin-bottom:24px}
+.reset-btn{
+  display:inline-block;padding:12px 28px;border-radius:50px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  color:var(--text);font-size:.88rem;cursor:pointer;
+  font-family:inherit;transition:.2s;
+}
+.reset-btn:hover{background:rgba(255,255,255,.1)}
+
+footer{text-align:center;padding:20px;color:var(--sub);font-size:.78rem}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-btn" href="index.html">← 홈으로</a>
+  <div class="logo">🏕️ 여름성경학교</div>
+  <p>참가 신청서를 작성해 주세요</p>
+</header>
+
+<div class="container">
+  <div class="form-card">
+
+    <form id="registerForm">
+
+      <!-- 이름 -->
+      <div class="field">
+        <label for="name">이름 *</label>
+        <input type="text" id="name" placeholder="홍길동" required>
+      </div>
+
+      <!-- 학년 -->
+      <div class="field">
+        <label for="grade">학년 *</label>
+        <select id="grade" required>
+          <option value="" disabled selected>학년을 선택하세요</option>
+          <option value="중1">중학교 1학년</option>
+          <option value="중2">중학교 2학년</option>
+          <option value="중3">중학교 3학년</option>
+        </select>
+      </div>
+
+      <!-- 연락처 -->
+      <div class="field">
+        <label for="phone">학부모 연락처 *</label>
+        <input type="tel" id="phone" placeholder="010-0000-0000" required>
+      </div>
+
+      <!-- 팀 희망 여부 -->
+      <div class="field">
+        <label>팀 배정 희망 여부 *</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="team" value="예" required>
+            <span class="radio-btn">✅ 희망함</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="team" value="아니오">
+            <span class="radio-btn">❌ 희망 안 함</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="team" value="상관없음">
+            <span class="radio-btn">🤷 상관없음</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">신청 완료하기 →</button>
+    </form>
+
+    <!-- 완료 메시지 -->
+    <div class="success" id="successMsg">
+      <div class="success-icon">🎉</div>
+      <h2>신청이 완료됐습니다!</h2>
+      <p>여름성경학교 참가 신청을 받았습니다.<br>담당 선생님이 확인 후 연락드릴게요.</p>
+      <button class="reset-btn" onclick="resetForm()">다시 신청하기</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>Made with ❤️ for 중등부 여름수련회</footer>
+
+<script>
+// ── 전화번호 자동 하이픈 ──
+document.getElementById('phone').addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v.length <= 3) e.target.value = v;
+  else if (v.length <= 7) e.target.value = v.slice(0,3) + '-' + v.slice(3);
+  else e.target.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+});
+
+// ── 폼 제출 ──
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const entry = {
+    이름: document.getElementById('name').value.trim(),
+    학년: document.getElementById('grade').value,
+    연락처: document.getElementById('phone').value.trim(),
+    팀희망: document.querySelector('input[name="team"]:checked').value,
+    신청일시: new Date().toLocaleString('ko-KR')
+  };
+
+  // localStorage에 저장
+  const list = JSON.parse(localStorage.getItem('vbs_registrations') || '[]');
+  list.push(entry);
+  localStorage.setItem('vbs_registrations', JSON.stringify(list));
+
+  // (선택) Google Sheets 연동: Apps Script 웹앱 URL을 아래에 입력하세요
+  const GOOGLE_SHEET_URL = ''; // 예: 'https://script.google.com/macros/s/XXXXX/exec'
+  if (GOOGLE_SHEET_URL) {
+    fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(entry)
+    });
+  }
+
+  // 완료 화면 표시
+  document.getElementById('registerForm').style.display = 'none';
+  const success = document.getElementById('successMsg');
+  success.style.display = 'block';
+});
+
+function resetForm() {
+  document.getElementById('registerForm').reset();
+  document.getElementById('registerForm').style.display = 'block';
+  document.getElementById('successMsg').style.display = 'none';
+}
+</script>
+</body>
+</html>
