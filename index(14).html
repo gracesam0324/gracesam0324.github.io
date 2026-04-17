@@ -783,7 +783,7 @@ function ssCopyAll(){
 function ssOpenPresent(){
   for(var i=0;i<3;i++){var el=document.getElementById('ssLine'+i);if(el)ssLines[i]=el.value;}
   document.getElementById('ssPtTeam').textContent=ssTeamName;
-  document.getElementById('ssPtTitle').textContent=(ssInfo.preacher?ssInfo.preacher+' · ':')+(ssInfo.title?'"'+ssInfo.title+'"':'오늘 설교');
+  document.getElementById('ssPtTitle').textContent=(ssInfo.preacher?ssInfo.preacher+' · ':'')+(ssInfo.title?'"'+ssInfo.title+'"':'오늘 설교');
   var vt=document.getElementById('ssVerseDisplay');document.getElementById('ssPtVerse').textContent=vt?vt.textContent:'';
   var pl=document.getElementById('ssPtLines');pl.innerHTML='';
   ssLines.forEach(function(line,i){var div=document.createElement('div');div.className='ss-pt-line';div.innerHTML='<div class="ss-pt-num">'+(i+1)+'</div><div class="ss-pt-txt">'+ssEscHtml(line)+'</div>';pl.appendChild(div);});
