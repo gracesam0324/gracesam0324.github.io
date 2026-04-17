@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>설교 3줄 요약 챌린지</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F5F0E8;--bg2:#EDE6D9;--bg3:#E4DBCA;
+  --paper:#FDFAF5;--ink:#1C1409;--ink2:#3D2E18;
+  --sub:#7A6A52;--light:#B0A08A;--border:#D4C8B4;
+  --amber:#B8760A;--amber-l:#FDF3DC;--amber-m:#E8950C;
+  --red:#C0392B;--green:#1A7A4A;--blue:#1A4A8C;
+  --white:#FDFAF5;
+  --d1:#2563EB;--d1-l:#EFF6FF;
+  --d2:#7C3AED;--d2-l:#F5F3FF;
+  --d3:#B8760A;--d3-l:#FDF3DC;
+  --shadow:0 2px 14px rgba(60,40,10,.09);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.13) 28px);pointer-events:none;z-index:0}
+
+/* ── 탑바 ── */
+.topbar{background:var(--paper);border-bottom:1.5px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;height:52px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 8px rgba(60,40,10,.06)}
+.back-btn{width:34px;height:34px;border-radius:9px;background:var(--bg2);border:1px solid var(--border);color:var(--sub);font-size:1rem;display:flex;align-items:center;justify-content:center;text-decoration:none;flex-shrink:0}
+.topbar-tag{font-size:.68rem;font-weight:700;background:var(--amber);color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.topbar-title{font-size:.9rem;font-weight:700;color:var(--ink);flex:1}
+
+/* ── 히어로 ── */
+.hero{position:relative;padding:28px 24px 20px;text-align:center;z-index:1}
+.hero-tag{display:inline-block;background:var(--amber-l);border:1.5px solid rgba(184,118,10,.3);color:var(--amber);font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
+.hero h1{font-family:'Nanum Myeongjo',serif;font-size:clamp(1.6rem,5vw,2.4rem);font-weight:800;color:var(--ink);line-height:1.2;margin-bottom:6px}
+.hero h1 em{color:var(--amber);font-style:normal;border-bottom:3px solid var(--amber)}
+.hero p{font-size:.82rem;color:var(--sub);line-height:1.7;max-width:380px;margin:0 auto}
+
+/* ── DAY 탭 ── */
+.day-tabs{display:flex;gap:0;margin:0 16px 20px;background:var(--bg3);border-radius:14px;padding:4px;position:relative;z-index:1}
+.day-tab{flex:1;padding:10px 4px;border-radius:10px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;color:var(--sub);transition:.2s;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.day-tab .dt-label{font-size:.68rem;letter-spacing:.04em}
+.day-tab .dt-day{font-size:.92rem;font-weight:900}
+.day-tab .dt-badge{width:8px;height:8px;border-radius:50%;background:var(--border);margin-top:1px;transition:.3s}
+.day-tab.done .dt-badge{background:var(--green)}
+.day-tab.active{background:var(--paper);box-shadow:var(--shadow)}
+.day-tab.active.d1{color:var(--d1)}
+.day-tab.active.d2{color:var(--d2)}
+.day-tab.active.d3{color:var(--amber)}
+.day-tab.active .dt-badge{background:currentColor}
+
+/* ── 래퍼 ── */
+.wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1}
+
+/* ── 진행 표시 ── */
+.phase-bar{display:flex;gap:6px;margin-bottom:22px}
+.phase-pip{flex:1;height:4px;border-radius:2px;background:var(--border);transition:.3s}
+.phase-pip.on{background:var(--day-color,var(--amber))}
+.phase-pip.done{background:var(--amber-m)}
+
+/* ── 카드 ── */
+.card{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── 팀 선택 ── */
+.team-chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.team-chip{padding:11px;border:2px solid var(--border);border-radius:11px;background:var(--bg);cursor:pointer;font-size:.84rem;font-weight:700;font-family:inherit;text-align:center;transition:.2s;color:var(--sub)}
+.team-chip:hover{border-color:var(--amber);color:var(--amber)}
+.team-chip.on{border-color:var(--amber);background:var(--amber-l);color:var(--amber)}
+.team-other{display:none;margin-top:8px}
+.team-other.show{display:block}
+
+/* ── 인풋 ── */
+.field-label{font-size:.79rem;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.field-sub{font-size:.71rem;color:var(--sub);margin-bottom:8px;line-height:1.5}
+.inp{width:100%;padding:11px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;color:var(--ink);outline:none;transition:.2s}
+.inp:focus{border-color:var(--amber);background:var(--white)}
+.inp::placeholder{color:var(--light)}
+textarea.inp{resize:vertical;min-height:90px;line-height:1.75}
+.char-count{font-size:.7rem;color:var(--light);text-align:right;margin-top:4px}
+
+/* ── 입력 모드 토글 ── */
+.input-mode-toggle{display:flex;gap:0;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:14px}
+.imt-btn{flex:1;padding:9px 12px;border-radius:8px;border:none;background:transparent;cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--sub);transition:.2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.imt-btn.on{background:var(--paper);color:var(--amber);box-shadow:var(--shadow)}
+.imt-icon{font-size:.9rem}
+
+/* ── 키워드 태그 입력 ── */
+.kw-wrap{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;min-height:80px;transition:.2s;cursor:text}
+.kw-wrap:focus-within{border-color:var(--amber);background:var(--white)}
+.kw-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.kw-tag{display:inline-flex;align-items:center;gap:4px;background:var(--amber-l);border:1px solid rgba(184,118,10,.3);color:var(--amber);padding:4px 10px;border-radius:50px;font-size:.78rem;font-weight:700}
+.kw-tag-del{cursor:pointer;font-size:.75rem;opacity:.6;border:none;background:transparent;color:inherit;padding:0;line-height:1;font-family:inherit}
+.kw-tag-del:hover{opacity:1}
+.kw-input{border:none;outline:none;background:transparent;font-family:inherit;font-size:.86rem;color:var(--ink);width:140px;min-width:80px}
+.kw-input::placeholder{color:var(--light)}
+.kw-hint{font-size:.7rem;color:var(--light);margin-top:4px;line-height:1.5}
+.kw-examples{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.kw-ex{padding:4px 10px;border:1px dashed var(--border);border-radius:50px;font-size:.72rem;color:var(--sub);cursor:pointer;transition:.15s;background:transparent;font-family:inherit}
+.kw-ex:hover{border-color:var(--amber);color:var(--amber)}
+
+/* ── 버튼 ── */
+.btn-primary{width:100%;padding:14px;background:var(--amber);color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:hover:not(:disabled){background:var(--amber-m)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-sec{padding:11px 18px;background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;color:var(--sub);font-size:.85rem;font-family:inherit;cursor:pointer;font-weight:600;transition:.2s}
+.btn-sec:hover{border-color:var(--amber);color:var(--amber)}
+
+/* ── 로딩 ── */
+.loading-wrap{text-align:center;padding:44px 20px;z-index:1;position:relative}
+.quill{font-size:2.8rem;animation:write 1s ease-in-out infinite alternate;display:block}
+@keyframes write{from{transform:rotate(-8deg) translate(-4px,2px)}to{transform:rotate(8deg) translate(4px,-2px)}}
+.loading-txt{font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:var(--amber);margin-top:14px;letter-spacing:.04em}
+.loading-sub{font-size:.78rem;color:var(--sub);margin-top:6px}
+.loading-dots{display:inline-block;animation:dots 1.4s infinite}
+@keyframes dots{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
+
+/* ── 3줄 결과 ── */
+.summary-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.summary-line{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);animation:fadeUp .3s ease both}
+.summary-line:nth-child(2){animation-delay:.08s}
+.summary-line:nth-child(3){animation-delay:.16s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.sl-header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg)}
+.sl-num{font-family:'Nanum Myeongjo',serif;font-size:1.6rem;font-weight:800;color:var(--amber);line-height:1;width:28px;flex-shrink:0}
+.sl-label{font-size:.72rem;font-weight:700;color:var(--sub);flex:1}
+.sl-regen{padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--sub);font-size:.7rem;font-family:inherit;cursor:pointer;transition:.15s;flex-shrink:0}
+.sl-regen:hover{border-color:var(--amber);color:var(--amber)}
+.sl-regen:disabled{opacity:.4;cursor:not-allowed}
+.sl-body{padding:14px 16px}
+.sl-text{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.7;width:100%;background:transparent;border:none;outline:none;resize:none;min-height:54px;cursor:text}
+
+/* ── 핵심 구절 ── */
+.verse-card{background:var(--amber-l);border:1.5px solid rgba(184,118,10,.25);border-radius:12px;padding:14px 16px;margin-bottom:16px;animation:fadeUp .3s ease .24s both}
+.verse-label{font-size:.68rem;font-weight:700;color:var(--amber);letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.verse-text{font-family:'Nanum Myeongjo',serif;font-size:.9rem;color:var(--ink2);line-height:1.7}
+
+/* ── 전체 요약 보기 ── */
+.overview-section{margin-bottom:20px}
+.overview-title{font-size:.78rem;font-weight:700;color:var(--sub);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.overview-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.overview-card{background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+.ov-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ov-day-badge{font-size:.7rem;font-weight:900;padding:4px 10px;border-radius:6px;color:white;flex-shrink:0}
+.ov-day1{background:var(--d1)}.ov-day2{background:var(--d2)}.ov-day3{background:var(--amber)}
+.ov-title{font-size:.88rem;font-weight:700;color:var(--ink);flex:1}
+.ov-empty{font-size:.78rem;color:var(--light);font-style:italic}
+.ov-lines{display:flex;flex-direction:column;gap:5px}
+.ov-line{font-size:.78rem;color:var(--sub);line-height:1.5;display:flex;gap:6px}
+.ov-line-num{color:var(--amber);font-weight:700;flex-shrink:0}
+
+/* ── 액션 ── */
+.action-row{display:flex;gap:10px;margin-top:4px}
+.action-row .btn-primary{flex:1}
+.btn-present{flex:1.4;padding:14px;background:var(--ink);color:var(--amber);border:2px solid var(--amber);border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.btn-present:hover{background:var(--amber);color:var(--ink)}
+
+/* ── 발표 오버레이 ── */
+.present-overlay{position:fixed;inset:0;background:#1C1409;z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:36px 40px;animation:fadeIn .4s ease;overflow-y:auto}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.present-overlay.open{display:flex}
+.present-close{position:fixed;top:20px;right:20px;width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.1);border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:1.1rem}
+.present-day-badge{font-size:.7rem;font-weight:900;padding:4px 12px;border-radius:6px;color:white;margin-bottom:14px}
+.present-team{font-size:.82rem;font-weight:700;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;opacity:.8}
+.present-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(.85rem,3vw,1.1rem);color:rgba(255,255,255,.5);margin-bottom:32px;text-align:center;line-height:1.6}
+.present-lines{display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px}
+.present-line{display:flex;align-items:flex-start;gap:16px}
+.pl-num{font-family:'Nanum Myeongjo',serif;font-size:clamp(2rem,6vw,3rem);font-weight:800;color:var(--amber);line-height:1;flex-shrink:0;width:44px}
+.pl-text{font-family:'Nanum Myeongjo',serif;font-size:clamp(1rem,3.5vw,1.45rem);color:var(--white);line-height:1.65;font-weight:700;flex:1;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:18px}
+.pl-text:last-child{border-bottom:none;padding-bottom:0}
+.present-verse{font-size:clamp(.75rem,2.5vw,.9rem);color:rgba(255,255,255,.45);margin-top:28px;font-family:'Nanum Myeongjo',serif;text-align:center;font-style:italic}
+.present-badge{margin-top:24px;font-size:.7rem;color:rgba(255,255,255,.2);letter-spacing:.08em;text-align:center}
+
+/* ── 전체발표 모드 ── */
+.all-present-nav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:1000}
+.apn-btn{padding:10px 20px;border-radius:50px;border:1.5px solid rgba(255,255,255,.25);background:rgba(0,0,0,.5);color:rgba(255,255,255,.8);font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s}
+.apn-btn:hover{background:rgba(184,118,10,.3);border-color:var(--amber)}
+.apn-btn.active{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+
+@media(max-width:480px){.team-chips{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="schedule.html">←</a>
+  <span class="topbar-tag">중-11</span>
+  <span class="topbar-title">설교 3줄 요약 챌린지</span>
+</div>
+
+<div class="hero">
+  <div class="hero-tag">📋 팀 경쟁 · 수련회 중 활동</div>
+  <h1>설교 3줄 <em>요약 챌린지</em></h1>
+  <p>2박 3일 설교를 AI로 핵심 3줄 요약<br>키워드만 입력해도 AI가 문장으로 완성해줘요</p>
+</div>
+
+<!-- DAY 탭 -->
+<div class="day-tabs" id="dayTabs">
+  <button class="day-tab d1 active" onclick="switchDay(1)">
+    <span class="dt-label">1일차</span>
+    <span class="dt-day">D1</span>
+    <span class="dt-badge" id="badge1"></span>
+  </button>
+  <button class="day-tab d2" onclick="switchDay(2)">
+    <span class="dt-label">2일차</span>
+    <span class="dt-day">D2</span>
+    <span class="dt-badge" id="badge2"></span>
+  </button>
+  <button class="day-tab d3" onclick="switchDay(3)">
+    <span class="dt-label">3일차</span>
+    <span class="dt-day">D3</span>
+    <span class="dt-badge" id="badge3"></span>
+  </button>
+</div>
+
+<div class="wrap">
+  <div class="phase-bar">
+    <div class="phase-pip on" id="pip1"></div>
+    <div class="phase-pip" id="pip2"></div>
+    <div class="phase-pip" id="pip3"></div>
+  </div>
+
+  <!-- STEP 1: 팀 & 설교 정보 -->
+  <div id="step1">
+    <!-- 팀 선택 (1일차만 표시, 이후엔 고정) -->
+    <div class="card" id="teamCard">
+      <div class="card-label">우리 팀</div>
+      <div class="team-chips">
+        <button class="team-chip" onclick="pickTeam(this,'베드로팀 ⚓')">베드로팀 ⚓</button>
+        <button class="team-chip" onclick="pickTeam(this,'바울팀 ✝️')">바울팀 ✝️</button>
+        <button class="team-chip" onclick="pickTeam(this,'에스더팀 👑')">에스더팀 👑</button>
+        <button class="team-chip" onclick="pickTeam(this,'다윗팀 🎵')">다윗팀 🎵</button>
+      </div>
+      <div class="team-other" id="teamOther">
+        <input class="inp" id="teamCustom" placeholder="조/팀 이름을 직접 입력하세요" maxlength="20">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label" id="step1DayLabel">1일차 설교</div>
+      <div style="margin-bottom:14px">
+        <div class="field-label">설교 제목</div>
+        <input class="inp" id="sermonTitle" placeholder="예) 나는 하나님의 자녀입니다" maxlength="60">
+      </div>
+      <div style="margin-bottom:14px">
+        <div class="field-label">설교자</div>
+        <input class="inp" id="preacher" placeholder="예) 김성준 목사님" maxlength="30">
+      </div>
+      <div>
+        <div class="field-label">핵심 성경 구절</div>
+        <input class="inp" id="verse" placeholder="예) 요한1서 3:1 / 로마서 8:16">
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="goStep2()">다음 — 내용 입력하기 →</button>
+  </div>
+
+  <!-- STEP 2: 설교 내용 입력 -->
+  <div id="step2" style="display:none">
+    <div class="card">
+      <div class="card-label" id="step2DayLabel">설교 내용 입력</div>
+
+      <!-- 입력 모드 토글 -->
+      <div class="input-mode-toggle" id="inputModeToggle">
+        <button class="imt-btn on" id="modeBtn-memo" onclick="switchInputMode('memo')">
+          <span class="imt-icon">📝</span> 자유 서술
+        </button>
+        <button class="imt-btn" id="modeBtn-kw" onclick="switchInputMode('kw')">
+          <span class="imt-icon">🏷️</span> 키워드만 입력
+        </button>
+      </div>
+
+      <!-- 자유 서술 모드 -->
+      <div id="memoMode">
+        <div class="field-label">기억나는 내용을 자유롭게 적어주세요</div>
+        <div class="field-sub">핵심 단어, 예화, 감동받은 문장 등 무엇이든 좋아요.</div>
+        <textarea class="inp" id="sermonNotes" placeholder="예) 하나님이 우리를 자녀라고 부르신다고 하셨어요. 탕자 비유도 하셨는데 아버지가 달려오는 장면이 감동이었어요..." oninput="countChars(this,'noteCount')"></textarea>
+        <div class="char-count" id="noteCount">0자</div>
+      </div>
+
+      <!-- 키워드 모드 -->
+      <div id="kwMode" style="display:none">
+        <div class="field-label">핵심 키워드를 입력하세요</div>
+        <div class="field-sub">단어나 짧은 구를 입력하고 <strong>Enter</strong> 또는 <strong>쉼표</strong>를 누르세요.<br>AI가 키워드를 연결해 완성된 3줄 요약을 만들어줘요.</div>
+        <div class="kw-wrap" onclick="document.getElementById('kwInput').focus()">
+          <div class="kw-tags" id="kwTags"></div>
+          <input class="kw-input" id="kwInput" placeholder="키워드 입력 후 Enter..."
+            onkeydown="handleKwKey(event)" oninput="handleKwInput(this)">
+        </div>
+        <div class="kw-hint">예시 키워드를 눌러 추가해보세요 👇</div>
+        <div class="kw-examples" id="kwExamples"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">팀 의견 추가 (선택)</div>
+      <div class="field-sub">특별히 넣고 싶은 포인트나 우리 팀이 나눈 생각을 적어주세요.</div>
+      <textarea class="inp" id="teamOpinion" placeholder="예) 우리 팀은 '아버지가 달려온다'는 장면이 가장 인상 깊었어요." rows="2" oninput="countChars(this,'opCount')"></textarea>
+      <div class="char-count" id="opCount">0자</div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="btn-sec" onclick="goStep1()">← 이전</button>
+      <button class="btn-primary" onclick="generate()" id="genBtn" style="flex:1">✍️ AI 3줄 요약 생성</button>
+    </div>
+  </div>
+
+  <!-- 로딩 -->
+  <div id="loadingView" style="display:none">
+    <div class="loading-wrap">
+      <span class="quill">✍️</span>
+      <div class="loading-txt">요약 작성 중<span class="loading-dots">...</span></div>
+      <div class="loading-sub" id="loadingSub">AI가 핵심 메시지를 정리하고 있어요</div>
+    </div>
+  </div>
+
+  <!-- STEP 3: 결과 -->
+  <div id="step3" style="display:none">
+    <div class="card" style="margin-bottom:8px">
+      <div class="card-label" id="step3DayLabel">AI 초안 — 직접 수정 가능해요</div>
+    </div>
+
+    <div class="summary-wrap" id="summaryWrap"></div>
+
+    <div class="verse-card" id="verseCard" style="display:none">
+      <div class="verse-label">핵심 구절</div>
+      <div class="verse-text" id="verseDisplay"></div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-sec" onclick="goStep2()">← 다시 작성</button>
+      <button class="btn-present" onclick="openPresent(false)">📢 발표 모드</button>
+    </div>
+    <div style="margin-top:10px">
+      <button class="btn-primary" onclick="copyAll()">📋 이 날 요약 복사</button>
+    </div>
+
+    <!-- 다음 날 이동 버튼 -->
+    <div id="nextDayBtn" style="margin-top:10px;display:none">
+      <button class="btn-primary" id="nextDayBtnEl" onclick="goNextDay()" style="background:var(--ink);color:var(--amber);border:2px solid var(--amber)"></button>
+    </div>
+
+    <!-- 전체 요약 -->
+    <div class="overview-section" id="overviewSection" style="margin-top:24px;display:none">
+      <div class="overview-title">전체 3일 요약 보기</div>
+      <div id="overviewCards"></div>
+      <button class="btn-primary" onclick="openPresent(true)" style="margin-top:10px;background:var(--ink2)">📺 3일 전체 발표 모드</button>
+      <div style="margin-top:10px">
+        <button class="btn-primary" onclick="copyAllDays()" style="background:var(--bg3);color:var(--ink);border:1.5px solid var(--border)">📋 3일 전체 복사</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 발표 오버레이 -->
+<div class="present-overlay" id="presentOverlay">
+  <button class="present-close" onclick="closePresent()">✕</button>
+  <div class="present-day-badge" id="presentDayBadge"></div>
+  <div class="present-team" id="presentTeam"></div>
+  <div class="present-title" id="presentTitle"></div>
+  <div class="present-lines" id="presentLines"></div>
+  <div class="present-verse" id="presentVerse"></div>
+  <div class="present-badge">설교 3줄 요약 챌린지 · 2026 중등부 여름수련회</div>
+  <!-- 전체 발표 시 네비게이션 -->
+  <div class="all-present-nav" id="allPresentNav" style="display:none">
+    <button class="apn-btn" id="apnPrev" onclick="presentNavTo(-1)">← 이전 날</button>
+    <button class="apn-btn active" id="apnCurrent">1일차</button>
+    <button class="apn-btn" id="apnNext" onclick="presentNavTo(1)">다음 날 →</button>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════
+   상태
+════════════════════════════════ */
+var teamName = '';
+var currentDay = 1;
+var inputMode = 'memo'; // 'memo' | 'kw'
+var keywords = []; // 현재 키워드 배열
+
+// 날별 데이터 저장
+var dayData = {
+  1: { sermonInfo:{}, lines:['','',''], verse:'', completed:false },
+  2: { sermonInfo:{}, lines:['','',''], verse:'', completed:false },
+  3: { sermonInfo:{}, lines:['','',''], verse:'', completed:false }
+};
+
+var DAY_COLORS = { 1:'#2563EB', 2:'#7C3AED', 3:'#B8760A' };
+var DAY_LABELS = { 1:'1일차 D1', 2:'2일차 D2', 3:'3일차 D3' };
+var DAY_NAMES  = { 1:'1일차', 2:'2일차', 3:'3일차' };
+
+// 예시 키워드 세트 (날별)
+var KW_EXAMPLES = {
+  1: ['하나님의 자녀','정체성','사랑받음','탕자','달려오는','은혜','두려움'],
+  2: ['믿음','성장','시험','인내','광야','약속','신뢰'],
+  3: ['파송','실천','결단','일상','사명','변화','감사']
+};
+
+/* ════════════════════════════════
+   팀 선택
+════════════════════════════════ */
+function pickTeam(btn, name){
+  document.querySelectorAll('.team-chip').forEach(function(c){c.classList.remove('on')});
+  document.getElementById('teamOther').classList.remove('show');
+  btn.classList.add('on');
+  teamName = name;
+}
+
+/* ════════════════════════════════
+   Day 전환
+════════════════════════════════ */
+function switchDay(d){
+  currentDay = d;
+
+  // 탭 UI 업데이트
+  document.querySelectorAll('.day-tab').forEach(function(t,i){
+    t.classList.remove('active');
+    if(i+1===d) t.classList.add('active');
+  });
+
+  // 팀 카드: 1일차만 보이게 (이미 팀 선택했으면 숨김)
+  var tc = document.getElementById('teamCard');
+  tc.style.display = (d===1 || !teamName) ? 'block' : 'none';
+
+  // day 컬러 변수 설정
+  document.documentElement.style.setProperty('--day-color', DAY_COLORS[d]);
+
+  // 라벨 업데이트
+  document.getElementById('step1DayLabel').textContent = DAY_NAMES[d]+' 설교';
+  document.getElementById('step2DayLabel').textContent = DAY_NAMES[d]+' 설교 내용 입력';
+  document.getElementById('step3DayLabel').textContent = 'AI 초안 — '+DAY_NAMES[d]+' · 직접 수정 가능해요';
+
+  // 키워드 예시 업데이트
+  renderKwExamples();
+
+  // 저장된 데이터 복원
+  var data = dayData[d];
+  if(data.completed){
+    // 결과 화면으로
+    restoreStep3(d);
+  } else if(data.sermonInfo && data.sermonInfo.title){
+    // step2 복원
+    restoreStep1Fields(d);
+    showStep(2);
+  } else {
+    // step1 초기화
+    restoreStep1Fields(d);
+    showStep(1);
+  }
+}
+
+function restoreStep1Fields(d){
+  var info = dayData[d].sermonInfo;
+  document.getElementById('sermonTitle').value = info.title||'';
+  document.getElementById('preacher').value   = info.preacher||'';
+  document.getElementById('verse').value      = info.verse||'';
+}
+
+function restoreStep3(d){
+  var data = dayData[d];
+  // 전역 lines 복원
+  lines = data.lines.slice();
+  sermonInfo = data.sermonInfo;
+  renderSummary();
+  var vc = document.getElementById('verseCard');
+  var vt = document.getElementById('verseDisplay');
+  if(data.verse){ vt.textContent=data.verse; vc.style.display='block'; }
+  else vc.style.display='none';
+  showStep(3);
+  updateNextDayBtn();
+  renderOverview();
+}
+
+/* ════════════════════════════════
+   단계 전환
+════════════════════════════════ */
+function show(id){document.getElementById(id).style.display='block';}
+function hide(id){document.getElementById(id).style.display='none';}
+
+function showStep(n){
+  hide('step1');hide('step2');hide('step3');hide('loadingView');
+  show('step'+n);
+  setPips(n);
+  window.scrollTo(0,0);
+}
+
+function setPips(n){
+  for(var i=1;i<=3;i++){
+    var p=document.getElementById('pip'+i);
+    p.classList.remove('on','done');
+    if(i<n) p.classList.add('done');
+    else if(i===n) p.classList.add('on');
+  }
+}
+
+function goStep1(){
+  showStep(1);
+}
+function goStep2(){
+  var t = teamName || document.getElementById('teamCustom').value.trim();
+  if(!t){alert('팀/조를 선택하거나 입력해주세요!');return;}
+  teamName = t;
+  var title = document.getElementById('sermonTitle').value.trim();
+  if(!title){alert('설교 제목을 입력해주세요!');return;}
+  // 설교 정보 임시 저장
+  dayData[currentDay].sermonInfo = {
+    title: title,
+    preacher: document.getElementById('preacher').value.trim(),
+    verse: document.getElementById('verse').value.trim()
+  };
+  showStep(2);
+}
+
+function countChars(el, countId){
+  document.getElementById(countId).textContent = el.value.length + '자';
+}
+
+/* ════════════════════════════════
+   입력 모드 전환
+════════════════════════════════ */
+function switchInputMode(m){
+  inputMode = m;
+  document.getElementById('modeBtn-memo').classList.toggle('on', m==='memo');
+  document.getElementById('modeBtn-kw').classList.toggle('on', m==='kw');
+  document.getElementById('memoMode').style.display = m==='memo'?'block':'none';
+  document.getElementById('kwMode').style.display   = m==='kw'?'block':'none';
+}
+
+/* ════════════════════════════════
+   키워드 태그 입력
+════════════════════════════════ */
+function renderKwExamples(){
+  var ex = document.getElementById('kwExamples');
+  if(!ex)return;
+  ex.innerHTML='';
+  (KW_EXAMPLES[currentDay]||[]).forEach(function(kw){
+    var btn=document.createElement('button');
+    btn.className='kw-ex';btn.textContent=kw;
+    btn.onclick=function(){addKw(kw);};
+    ex.appendChild(btn);
+  });
+}
+
+function renderKwTags(){
+  var wrap=document.getElementById('kwTags');
+  wrap.innerHTML='';
+  keywords.forEach(function(kw,i){
+    var span=document.createElement('span');span.className='kw-tag';
+    span.innerHTML=kw+'<button class="kw-tag-del" onclick="removeKw('+i+')">✕</button>';
+    wrap.appendChild(span);
+  });
+}
+
+function addKw(kw){
+  kw=kw.trim().replace(/,$/,'').trim();
+  if(!kw||keywords.includes(kw))return;
+  keywords.push(kw);
+  renderKwTags();
+  document.getElementById('kwInput').value='';
+  document.getElementById('kwInput').focus();
+}
+
+function removeKw(i){
+  keywords.splice(i,1);
+  renderKwTags();
+}
+
+function handleKwKey(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    var val=document.getElementById('kwInput').value.trim().replace(/,$/,'');
+    if(val)addKw(val);
+  }
+  if(e.key==='Backspace'&&!document.getElementById('kwInput').value&&keywords.length){
+    keywords.pop();renderKwTags();
+  }
+}
+
+function handleKwInput(el){
+  // 쉼표 입력 즉시 태그로 변환
+  if(el.value.includes(',')){
+    var parts=el.value.split(',');
+    parts.forEach(function(p,i){if(i<parts.length-1)addKw(p);});
+    el.value=parts[parts.length-1];
+  }
+}
+
+/* ════════════════════════════════
+   Claude API
+════════════════════════════════ */
+var lines = ['','',''];
+var sermonInfo = {};
+
+async function callClaude(messages, sys){
+  var body={model:'claude-sonnet-4-20250514',max_tokens:900,messages:messages};
+  if(sys)body.system=sys;
+  var res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  var data=await res.json();
+  return (data.content&&data.content[0]&&data.content[0].text)||'';
+}
+
+/* ════════════════════════════════
+   생성
+════════════════════════════════ */
+async function generate(){
+  // 입력 검증
+  var hasContent=false;
+  if(inputMode==='memo'){
+    hasContent=!!document.getElementById('sermonNotes').value.trim();
+    if(!hasContent){alert('설교 내용 메모를 입력해주세요!');return;}
+  } else {
+    hasContent=keywords.length>0;
+    if(!hasContent){alert('키워드를 1개 이상 입력해주세요!');return;}
+  }
+
+  sermonInfo = dayData[currentDay].sermonInfo;
+  sermonInfo.notes   = inputMode==='memo' ? document.getElementById('sermonNotes').value.trim() : '';
+  sermonInfo.opinion = document.getElementById('teamOpinion').value.trim();
+  sermonInfo.keywords= keywords.slice();
+  sermonInfo.mode    = inputMode;
+
+  hide('step2'); show('loadingView');
+  document.getElementById('loadingSub').textContent =
+    inputMode==='kw' ? 'AI가 키워드를 문장으로 확장하고 있어요' : 'AI가 핵심 메시지를 정리하고 있어요';
+  setPips(3);
+
+  var inputSection='';
+  if(inputMode==='kw'){
+    inputSection='입력된 키워드: '+keywords.join(', ')+'\n\n이 키워드들을 바탕으로, 중학생이 설교를 듣고 핵심 내용을 직접 정리한 것처럼 자연스럽게 3줄 요약을 완성해줘. 키워드를 단순 나열하지 말고 하나의 완성된 문장으로 확장해줘.';
+  } else {
+    inputSection='설교 내용 메모:\n'+sermonInfo.notes;
+  }
+
+  var prompt=[
+    '교회 중학생 여름수련회 '+DAY_NAMES[currentDay]+' 설교 3줄 요약 챌린지야.',
+    '',
+    '설교 제목: '+(sermonInfo.title||'(미입력)'),
+    '설교자: '+(sermonInfo.preacher||'(미입력)'),
+    '핵심 구절: '+(sermonInfo.verse||'(미입력)'),
+    inputSection,
+    sermonInfo.opinion?'\n팀 의견: '+sermonInfo.opinion:'',
+    '',
+    '규칙:',
+    '- 3줄 각각 완결된 문장으로 (15~30자)',
+    '- 1줄: 이 날 설교의 핵심 주제/메시지',
+    '- 2줄: 가장 인상 깊은 예화나 장면',
+    '- 3줄: 나의 삶에 적용할 점 / 결단',
+    '- 중학생이 직접 쓴 것처럼 자연스럽게',
+    '',
+    '아래 형식으로만 답해줘 (다른 말 없이):',
+    '[LINE1] 첫 번째 줄',
+    '[LINE2] 두 번째 줄',
+    '[LINE3] 세 번째 줄',
+    '[VERSE] 추천 핵심 구절 (성경책 장절 + 짧은 본문)'
+  ].join('\n');
+
+  try{
+    var text=await callClaude([{role:'user',content:prompt}]);
+    function exLine(tag){var m=text.match(new RegExp('\\['+tag+'\\]\\s*(.+)'));return m?m[1].trim():'';}
+    lines[0]=exLine('LINE1')||'(생성 실패 — 직접 입력해주세요)';
+    lines[1]=exLine('LINE2')||'(생성 실패 — 직접 입력해주세요)';
+    lines[2]=exLine('LINE3')||'(생성 실패 — 직접 입력해주세요)';
+    var v=exLine('VERSE');
+
+    // 저장
+    dayData[currentDay].lines=lines.slice();
+    dayData[currentDay].verse=v||sermonInfo.verse||'';
+    dayData[currentDay].completed=true;
+    updateBadge(currentDay, true);
+
+    renderSummary();
+    var vc=document.getElementById('verseCard');var vt=document.getElementById('verseDisplay');
+    if(v){vt.textContent='"'+v+'"';vc.style.display='block';}
+    else if(sermonInfo.verse){vt.textContent=sermonInfo.verse;vc.style.display='block';}
+    else vc.style.display='none';
+
+    hide('loadingView');show('step3');
+    updateNextDayBtn();
+    renderOverview();
+    keywords=[];renderKwTags();
+    document.getElementById('sermonNotes').value='';
+    document.getElementById('teamOpinion').value='';
+    document.getElementById('noteCount').textContent='0자';
+    document.getElementById('opCount').textContent='0자';
+  }catch(e){
+    hide('loadingView');show('step2');
+    alert('생성 중 오류가 발생했어요. 다시 시도해주세요.');
+  }
+}
+
+/* ════════════════════════════════
+   요약 카드 렌더
+════════════════════════════════ */
+var LABELS=['핵심 메시지','인상 깊은 장면','내 삶의 적용'];
+
+function renderSummary(){
+  var wrap=document.getElementById('summaryWrap');wrap.innerHTML='';
+  lines.forEach(function(line,i){
+    var div=document.createElement('div');div.className='summary-line';
+    div.innerHTML='<div class="sl-header">'+
+      '<span class="sl-num">'+(i+1)+'</span>'+
+      '<span class="sl-label">'+LABELS[i]+'</span>'+
+      '<button class="sl-regen" onclick="regenLine('+i+',this)">↻ 재생성</button>'+
+      '</div>'+
+      '<div class="sl-body">'+
+      '<textarea class="sl-text" id="lineText'+i+'" rows="2" oninput="syncLine('+i+',this)">'+escHtml(line)+'</textarea>'+
+      '</div>';
+    wrap.appendChild(div);
+  });
+}
+
+function syncLine(i,el){
+  lines[i]=el.value;
+  dayData[currentDay].lines[i]=el.value;
+}
+
+async function regenLine(i,btn){
+  btn.disabled=true;btn.textContent='⏳';
+  var prompts=[
+    '아래 설교 내용에서 핵심 메시지 1줄을 다시 써줘. 이전과 다른 표현으로. 문장 하나만.',
+    '아래 설교 내용에서 가장 인상 깊은 장면이나 예화를 1줄로 다시 써줘. 이전과 다른 표현으로. 문장 하나만.',
+    '아래 설교 내용을 듣고 삶에 적용할 결단을 1줄로 다시 써줘. 이전과 다른 표현으로. 문장 하나만.'
+  ];
+  var d=dayData[currentDay];
+  var ctx='설교 제목: '+d.sermonInfo.title+'\n'+(d.sermonInfo.mode==='kw'?'키워드: '+d.sermonInfo.keywords.join(', '):'내용: '+d.sermonInfo.notes);
+  try{
+    var text=await callClaude([{role:'user',content:prompts[i]+'\n\n'+ctx+'\n\n문장 하나만 답해줘.'}]);
+    lines[i]=text.trim().replace(/^["'"'「]|["'"'」]$/g,'');
+    dayData[currentDay].lines[i]=lines[i];
+    document.getElementById('lineText'+i).value=lines[i];
+  }catch(e){alert('재생성 실패. 다시 시도해주세요.');}
+  btn.disabled=false;btn.textContent='↻ 재생성';
+}
+
+/* ════════════════════════════════
+   다음 날 이동
+════════════════════════════════ */
+function updateNextDayBtn(){
+  var nb=document.getElementById('nextDayBtn');
+  var el=document.getElementById('nextDayBtnEl');
+  if(currentDay<3){
+    nb.style.display='block';
+    el.textContent=(currentDay+1)+'일차 설교 입력하기 →';
+  } else {
+    nb.style.display='none';
+  }
+}
+
+function goNextDay(){
+  if(currentDay<3){
+    var next=currentDay+1;
+    switchDay(next);
+  }
+}
+
+/* ════════════════════════════════
+   배지 업데이트
+════════════════════════════════ */
+function updateBadge(d, done){
+  var badge=document.getElementById('badge'+d);
+  if(badge)badge.style.background=done?'var(--green)':'var(--border)';
+  var tab=document.querySelectorAll('.day-tab')[d-1];
+  if(tab)tab.classList.toggle('done',done);
+}
+
+/* ════════════════════════════════
+   전체 요약 보기
+════════════════════════════════ */
+function renderOverview(){
+  var completedCount=0;
+  for(var d=1;d<=3;d++){if(dayData[d].completed)completedCount++;}
+  var os=document.getElementById('overviewSection');
+  os.style.display=completedCount>=1?'block':'none';
+
+  var cards=document.getElementById('overviewCards');cards.innerHTML='';
+  for(var d=1;d<=3;d++){
+    var data=dayData[d];
+    var div=document.createElement('div');div.className='overview-card';
+    if(!data.completed){
+      div.innerHTML='<div class="ov-header"><span class="ov-day-badge ov-day'+d+'">'+DAY_NAMES[d]+'</span><span class="ov-title" style="color:var(--light)">아직 미완성</span></div><div class="ov-empty">이 날 설교를 입력해주세요</div>';
+    } else {
+      var linesHtml=data.lines.map(function(l,i){
+        return '<div class="ov-line"><span class="ov-line-num">'+(i+1)+'.</span><span>'+escHtml(l)+'</span></div>';
+      }).join('');
+      div.innerHTML='<div class="ov-header"><span class="ov-day-badge ov-day'+d+'">'+DAY_NAMES[d]+'</span><span class="ov-title">'+escHtml(data.sermonInfo.title||'')+'</span></div><div class="ov-lines">'+linesHtml+'</div>';
+    }
+    cards.appendChild(div);
+  }
+}
+
+/* ════════════════════════════════
+   복사
+════════════════════════════════ */
+function copyAll(){
+  for(var i=0;i<3;i++){var el=document.getElementById('lineText'+i);if(el)lines[i]=el.value;}
+  var d=dayData[currentDay];
+  var text=['【 '+DAY_NAMES[currentDay]+' 설교 — '+(sermonInfo.title||'')+'】',teamName+' · 핵심 3줄 요약','','① '+lines[0],'② '+lines[1],'③ '+lines[2]].join('\n');
+  navigator.clipboard.writeText(text).then(function(){
+    var btn=event.target.closest('button');var orig=btn.innerHTML;
+    btn.innerHTML='✓ 복사됐습니다!';setTimeout(function(){btn.innerHTML=orig;},2000);
+  });
+}
+
+function copyAllDays(){
+  var parts=[];
+  for(var d=1;d<=3;d++){
+    var data=dayData[d];
+    if(!data.completed){parts.push('【'+DAY_NAMES[d]+'】 (미완성)');continue;}
+    parts.push('【'+DAY_NAMES[d]+' — '+(data.sermonInfo.title||'')+'】');
+    data.lines.forEach(function(l,i){parts.push((i===0?'①':i===1?'②':'③')+' '+l);});
+    parts.push('');
+  }
+  navigator.clipboard.writeText(parts.join('\n')).then(function(){
+    var btn=event.target.closest('button');var orig=btn.innerHTML;
+    btn.innerHTML='✓ 복사됐습니다!';setTimeout(function(){btn.innerHTML=orig;},2000);
+  });
+}
+
+/* ════════════════════════════════
+   발표 모드
+════════════════════════════════ */
+var presentAll=false;var presentDay=1;
+
+function openPresent(all){
+  presentAll=all;
+  presentDay=currentDay;
+  renderPresentDay(presentDay);
+  document.getElementById('allPresentNav').style.display=all?'flex':'none';
+  document.getElementById('presentOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderPresentDay(d){
+  var data=dayData[d];
+  var ls=data.completed?data.lines:lines;
+  var si=data.completed?data.sermonInfo:sermonInfo;
+  var v=data.completed?data.verse:'';
+
+  document.getElementById('presentDayBadge').textContent=DAY_NAMES[d];
+  document.getElementById('presentDayBadge').style.background=DAY_COLORS[d];
+  document.getElementById('presentTeam').textContent=teamName;
+  document.getElementById('presentTitle').textContent=(si.preacher?si.preacher+' · ':'')+(si.title?'"'+si.title+'"':'');
+  document.getElementById('presentVerse').textContent=v||'';
+
+  var pl=document.getElementById('presentLines');pl.innerHTML='';
+  ls.forEach(function(line,i){
+    var div=document.createElement('div');div.className='present-line';
+    div.innerHTML='<div class="pl-num">'+(i+1)+'</div><div class="pl-text">'+escHtml(line)+'</div>';
+    pl.appendChild(div);
+  });
+
+  if(presentAll){
+    document.getElementById('apnCurrent').textContent=DAY_NAMES[d];
+    document.getElementById('apnPrev').style.opacity=d>1?'1':'0.3';
+    document.getElementById('apnNext').style.opacity=d<3?'1':'0.3';
+  }
+}
+
+function presentNavTo(dir){
+  var next=presentDay+dir;
+  if(next<1||next>3)return;
+  presentDay=next;
+  renderPresentDay(presentDay);
+}
+
+function closePresent(){
+  document.getElementById('presentOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ════════════════════════════════
+   유틸
+════════════════════════════════ */
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ════════════════════════════════
+   초기화
+════════════════════════════════ */
+renderKwExamples();
+document.documentElement.style.setProperty('--day-color', DAY_COLORS[1]);
+</script>
+</body>
+</html>
