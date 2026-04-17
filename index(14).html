@@ -224,6 +224,96 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
 .btn-reg-another{width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:13px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;color:var(--sub);transition:.2s}
 .btn-reg-another:hover{border-color:var(--pink);color:var(--pink)}
 </style>
+
+<!-- ══ 설교 3줄 요약 오버레이 ══ -->
+<style>
+.ss-overlay{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#F5F0E8}
+.ss-overlay.open{display:flex}
+.ss-overlay *{box-sizing:border-box}
+.ss-overlay::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.13) 28px);pointer-events:none;z-index:0}
+/* 탑바 */
+.ss-topbar{background:#FDFAF5;border-bottom:1.5px solid #D4C8B4;padding:0 20px;position:sticky;top:0;z-index:100;height:52px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 8px rgba(60,40,10,.06);flex-shrink:0}
+.ss-back{width:34px;height:34px;border-radius:9px;background:#EDE6D9;border:1px solid #D4C8B4;color:#7A6A52;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-family:inherit}
+.ss-topbar-tag{font-size:.68rem;font-weight:700;background:#B8760A;color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.ss-topbar-title{font-size:.9rem;font-weight:700;color:#1C1409;flex:1}
+/* 히어로 */
+.ss-hero{position:relative;padding:28px 24px 20px;text-align:center;z-index:1}
+.ss-hero-tag{display:inline-block;background:#FDF3DC;border:1.5px solid rgba(184,118,10,.3);color:#B8760A;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
+.ss-hero h1{font-family:'Nanum Myeongjo',serif;font-size:clamp(1.7rem,6vw,2.4rem);font-weight:800;color:#1C1409;line-height:1.2;margin-bottom:8px}
+.ss-hero h1 em{color:#B8760A;font-style:normal;border-bottom:3px solid #B8760A}
+.ss-hero p{font-size:.83rem;color:#7A6A52;line-height:1.75;max-width:380px;margin:0 auto}
+/* 래퍼 */
+.ss-wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;width:100%}
+/* 진행바 */
+.ss-phase-bar{display:flex;gap:6px;margin-bottom:24px}
+.ss-pip{flex:1;height:4px;border-radius:2px;background:#D4C8B4;transition:.3s}
+.ss-pip.on{background:#B8760A}.ss-pip.done{background:#E8950C}
+/* 카드 */
+.ss-card{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 14px rgba(60,40,10,.09)}
+.ss-card-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#B0A08A;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ss-card-label::after{content:'';flex:1;height:1px;background:#D4C8B4}
+/* 팀칩 */
+.ss-team-chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.ss-tc{padding:12px;border:2px solid #D4C8B4;border-radius:11px;background:#F5F0E8;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit;text-align:center;transition:.2s;color:#7A6A52}
+.ss-tc:hover{border-color:#B8760A;color:#B8760A}
+.ss-tc.on{border-color:#B8760A;background:#FDF3DC;color:#B8760A}
+/* 인풋 */
+.ss-label{font-size:.79rem;font-weight:700;color:#3D2E18;margin-bottom:6px}
+.ss-sub{font-size:.71rem;color:#7A6A52;margin-bottom:8px;line-height:1.5}
+.ss-inp{width:100%;padding:11px 14px;background:#F5F0E8;border:1.5px solid #D4C8B4;border-radius:10px;font-size:.88rem;font-family:inherit;color:#1C1409;outline:none;transition:.2s}
+.ss-inp:focus{border-color:#B8760A;background:#FDFAF5}
+.ss-inp::placeholder{color:#B0A08A}
+textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
+.ss-char{font-size:.7rem;color:#B0A08A;text-align:right;margin-top:4px}
+/* 버튼 */
+.ss-btn-p{width:100%;padding:14px;background:#B8760A;color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ss-btn-p:hover:not(:disabled){background:#E8950C}
+.ss-btn-p:disabled{opacity:.45;cursor:not-allowed}
+.ss-btn-s{padding:11px 18px;background:#EDE6D9;border:1.5px solid #D4C8B4;border-radius:10px;color:#7A6A52;font-size:.85rem;font-family:inherit;cursor:pointer;font-weight:600;transition:.2s}
+.ss-btn-s:hover{border-color:#B8760A;color:#B8760A}
+/* 로딩 */
+.ss-loading{text-align:center;padding:44px 20px;z-index:1;position:relative;display:none}
+.ss-loading.show{display:block}
+.ss-quill{font-size:2.8rem;animation:sswrite 1s ease-in-out infinite alternate;display:block}
+@keyframes sswrite{from{transform:rotate(-8deg) translate(-4px,2px)}to{transform:rotate(8deg) translate(4px,-2px)}}
+.ss-loading-txt{font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:#B8760A;margin-top:14px;letter-spacing:.04em}
+.ss-loading-dots{display:inline-block;animation:ssdots 1.4s infinite}
+@keyframes ssdots{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
+/* 결과 */
+.ss-summary-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.ss-sl{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;overflow:hidden;box-shadow:0 2px 14px rgba(60,40,10,.09);animation:ssfadeUp .3s ease both}
+.ss-sl:nth-child(2){animation-delay:.08s}.ss-sl:nth-child(3){animation-delay:.16s}
+@keyframes ssfadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ss-sl-hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #D4C8B4;background:#F5F0E8}
+.ss-sl-num{font-family:'Nanum Myeongjo',serif;font-size:1.6rem;font-weight:800;color:#B8760A;line-height:1;width:28px;flex-shrink:0}
+.ss-sl-lbl{font-size:.72rem;font-weight:700;color:#7A6A52;flex:1}
+.ss-regen{padding:5px 11px;border-radius:7px;border:1px solid #D4C8B4;background:transparent;color:#7A6A52;font-size:.7rem;font-family:inherit;cursor:pointer;transition:.15s;flex-shrink:0}
+.ss-regen:hover{border-color:#B8760A;color:#B8760A}
+.ss-regen:disabled{opacity:.4;cursor:not-allowed}
+.ss-sl-body{padding:14px 16px}
+.ss-sl-txt{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:#1C1409;line-height:1.7;width:100%;background:transparent;border:none;outline:none;resize:none;min-height:54px;cursor:text}
+/* 구절 */
+.ss-verse-card{background:#FDF3DC;border:1.5px solid rgba(184,118,10,.25);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.ss-verse-lbl{font-size:.68rem;font-weight:700;color:#B8760A;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.ss-verse-txt{font-family:'Nanum Myeongjo',serif;font-size:.9rem;color:#3D2E18;line-height:1.7}
+/* 발표 */
+.ss-present{position:fixed;inset:0;background:#1C1409;z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+.ss-present.open{display:flex}
+.ss-present-close{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.1);border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:1.1rem}
+.ss-pt-team{font-size:.82rem;font-weight:700;color:#B8760A;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;opacity:.8}
+.ss-pt-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(.85rem,3vw,1.1rem);color:rgba(255,255,255,.5);margin-bottom:32px;text-align:center;line-height:1.6}
+.ss-pt-lines{display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px}
+.ss-pt-line{display:flex;align-items:flex-start;gap:16px}
+.ss-pt-num{font-family:'Nanum Myeongjo',serif;font-size:clamp(2rem,6vw,3rem);font-weight:800;color:#B8760A;line-height:1;flex-shrink:0;width:44px}
+.ss-pt-txt{font-family:'Nanum Myeongjo',serif;font-size:clamp(1rem,3.5vw,1.45rem);color:#FDFAF5;line-height:1.65;font-weight:700;flex:1;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:18px}
+.ss-pt-txt:last-child{border-bottom:none;padding-bottom:0}
+.ss-pt-verse{font-size:clamp(.75rem,2.5vw,.9rem);color:rgba(255,255,255,.45);margin-top:28px;font-family:'Nanum Myeongjo',serif;text-align:center;font-style:italic}
+.ss-pt-badge{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.25);letter-spacing:.08em;white-space:nowrap}
+.ss-action-row{display:flex;gap:10px;margin-top:4px}
+.ss-action-row .ss-btn-p{flex:1}
+.ss-btn-present{flex:1.4;padding:14px;background:#1C1409;color:#B8760A;border:2px solid #B8760A;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.ss-btn-present:hover{background:#B8760A;color:#1C1409}
+</style>
 </head>
 <body>
 
@@ -293,7 +383,7 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
       <div class="s-text"><div class="s-name">인생지도 일기</div><div class="s-desc">감정·신앙 기록 + AI 피드백</div></div>
       <span class="s-badge sb-live">운영중</span>
     </a>
-    <a class="side-item" href="#" onclick="openSermon();closePanel();return false;">
+    <a class="side-item" href="javascript:void(0)" onclick="openSermon();closePanel()">
       <div class="s-icon s-orange">📋</div>
       <div class="s-text"><div class="s-name">설교 3줄 요약</div><div class="s-desc">2박 3일 설교 키워드 → AI 요약</div></div>
       <span class="s-badge sb-live">운영중</span>
@@ -464,95 +554,7 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
   </div>
 </div>
 
-<!-- ══ 설교 3줄 요약 오버레이 ══ -->
-<style>
-.ss-overlay{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#F5F0E8}
-.ss-overlay.open{display:flex}
-.ss-overlay *{box-sizing:border-box}
-.ss-overlay::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.13) 28px);pointer-events:none;z-index:0}
-/* 탑바 */
-.ss-topbar{background:#FDFAF5;border-bottom:1.5px solid #D4C8B4;padding:0 20px;position:sticky;top:0;z-index:100;height:52px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 8px rgba(60,40,10,.06);flex-shrink:0}
-.ss-back{width:34px;height:34px;border-radius:9px;background:#EDE6D9;border:1px solid #D4C8B4;color:#7A6A52;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-family:inherit}
-.ss-topbar-tag{font-size:.68rem;font-weight:700;background:#B8760A;color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
-.ss-topbar-title{font-size:.9rem;font-weight:700;color:#1C1409;flex:1}
-/* 히어로 */
-.ss-hero{position:relative;padding:28px 24px 20px;text-align:center;z-index:1}
-.ss-hero-tag{display:inline-block;background:#FDF3DC;border:1.5px solid rgba(184,118,10,.3);color:#B8760A;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
-.ss-hero h1{font-family:'Nanum Myeongjo',serif;font-size:clamp(1.7rem,6vw,2.4rem);font-weight:800;color:#1C1409;line-height:1.2;margin-bottom:8px}
-.ss-hero h1 em{color:#B8760A;font-style:normal;border-bottom:3px solid #B8760A}
-.ss-hero p{font-size:.83rem;color:#7A6A52;line-height:1.75;max-width:380px;margin:0 auto}
-/* 래퍼 */
-.ss-wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;width:100%}
-/* 진행바 */
-.ss-phase-bar{display:flex;gap:6px;margin-bottom:24px}
-.ss-pip{flex:1;height:4px;border-radius:2px;background:#D4C8B4;transition:.3s}
-.ss-pip.on{background:#B8760A}.ss-pip.done{background:#E8950C}
-/* 카드 */
-.ss-card{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 14px rgba(60,40,10,.09)}
-.ss-card-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#B0A08A;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.ss-card-label::after{content:'';flex:1;height:1px;background:#D4C8B4}
-/* 팀칩 */
-.ss-team-chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
-.ss-tc{padding:12px;border:2px solid #D4C8B4;border-radius:11px;background:#F5F0E8;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit;text-align:center;transition:.2s;color:#7A6A52}
-.ss-tc:hover{border-color:#B8760A;color:#B8760A}
-.ss-tc.on{border-color:#B8760A;background:#FDF3DC;color:#B8760A}
-/* 인풋 */
-.ss-label{font-size:.79rem;font-weight:700;color:#3D2E18;margin-bottom:6px}
-.ss-sub{font-size:.71rem;color:#7A6A52;margin-bottom:8px;line-height:1.5}
-.ss-inp{width:100%;padding:11px 14px;background:#F5F0E8;border:1.5px solid #D4C8B4;border-radius:10px;font-size:.88rem;font-family:inherit;color:#1C1409;outline:none;transition:.2s}
-.ss-inp:focus{border-color:#B8760A;background:#FDFAF5}
-.ss-inp::placeholder{color:#B0A08A}
-textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
-.ss-char{font-size:.7rem;color:#B0A08A;text-align:right;margin-top:4px}
-/* 버튼 */
-.ss-btn-p{width:100%;padding:14px;background:#B8760A;color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
-.ss-btn-p:hover:not(:disabled){background:#E8950C}
-.ss-btn-p:disabled{opacity:.45;cursor:not-allowed}
-.ss-btn-s{padding:11px 18px;background:#EDE6D9;border:1.5px solid #D4C8B4;border-radius:10px;color:#7A6A52;font-size:.85rem;font-family:inherit;cursor:pointer;font-weight:600;transition:.2s}
-.ss-btn-s:hover{border-color:#B8760A;color:#B8760A}
-/* 로딩 */
-.ss-loading{text-align:center;padding:44px 20px;z-index:1;position:relative;display:none}
-.ss-loading.show{display:block}
-.ss-quill{font-size:2.8rem;animation:sswrite 1s ease-in-out infinite alternate;display:block}
-@keyframes sswrite{from{transform:rotate(-8deg) translate(-4px,2px)}to{transform:rotate(8deg) translate(4px,-2px)}}
-.ss-loading-txt{font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:#B8760A;margin-top:14px;letter-spacing:.04em}
-.ss-loading-dots{display:inline-block;animation:ssdots 1.4s infinite}
-@keyframes ssdots{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
-/* 결과 */
-.ss-summary-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
-.ss-sl{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;overflow:hidden;box-shadow:0 2px 14px rgba(60,40,10,.09);animation:ssfadeUp .3s ease both}
-.ss-sl:nth-child(2){animation-delay:.08s}.ss-sl:nth-child(3){animation-delay:.16s}
-@keyframes ssfadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.ss-sl-hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #D4C8B4;background:#F5F0E8}
-.ss-sl-num{font-family:'Nanum Myeongjo',serif;font-size:1.6rem;font-weight:800;color:#B8760A;line-height:1;width:28px;flex-shrink:0}
-.ss-sl-lbl{font-size:.72rem;font-weight:700;color:#7A6A52;flex:1}
-.ss-regen{padding:5px 11px;border-radius:7px;border:1px solid #D4C8B4;background:transparent;color:#7A6A52;font-size:.7rem;font-family:inherit;cursor:pointer;transition:.15s;flex-shrink:0}
-.ss-regen:hover{border-color:#B8760A;color:#B8760A}
-.ss-regen:disabled{opacity:.4;cursor:not-allowed}
-.ss-sl-body{padding:14px 16px}
-.ss-sl-txt{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:#1C1409;line-height:1.7;width:100%;background:transparent;border:none;outline:none;resize:none;min-height:54px;cursor:text}
-/* 구절 */
-.ss-verse-card{background:#FDF3DC;border:1.5px solid rgba(184,118,10,.25);border-radius:12px;padding:14px 16px;margin-bottom:16px}
-.ss-verse-lbl{font-size:.68rem;font-weight:700;color:#B8760A;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
-.ss-verse-txt{font-family:'Nanum Myeongjo',serif;font-size:.9rem;color:#3D2E18;line-height:1.7}
-/* 발표 */
-.ss-present{position:fixed;inset:0;background:#1C1409;z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px}
-.ss-present.open{display:flex}
-.ss-present-close{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.1);border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:1.1rem}
-.ss-pt-team{font-size:.82rem;font-weight:700;color:#B8760A;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;opacity:.8}
-.ss-pt-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(.85rem,3vw,1.1rem);color:rgba(255,255,255,.5);margin-bottom:32px;text-align:center;line-height:1.6}
-.ss-pt-lines{display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px}
-.ss-pt-line{display:flex;align-items:flex-start;gap:16px}
-.ss-pt-num{font-family:'Nanum Myeongjo',serif;font-size:clamp(2rem,6vw,3rem);font-weight:800;color:#B8760A;line-height:1;flex-shrink:0;width:44px}
-.ss-pt-txt{font-family:'Nanum Myeongjo',serif;font-size:clamp(1rem,3.5vw,1.45rem);color:#FDFAF5;line-height:1.65;font-weight:700;flex:1;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:18px}
-.ss-pt-txt:last-child{border-bottom:none;padding-bottom:0}
-.ss-pt-verse{font-size:clamp(.75rem,2.5vw,.9rem);color:rgba(255,255,255,.45);margin-top:28px;font-family:'Nanum Myeongjo',serif;text-align:center;font-style:italic}
-.ss-pt-badge{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.25);letter-spacing:.08em;white-space:nowrap}
-.ss-action-row{display:flex;gap:10px;margin-top:4px}
-.ss-action-row .ss-btn-p{flex:1}
-.ss-btn-present{flex:1.4;padding:14px;background:#1C1409;color:#B8760A;border:2px solid #B8760A;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
-.ss-btn-present:hover{background:#B8760A;color:#1C1409}
-</style>
+
 
 <div class="ss-overlay" id="ssOverlay">
   <div class="ss-topbar">
