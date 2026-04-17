@@ -1,1 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중등부 여름수련회</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --white:#FFFFFF;--bg:#F5F6FA;
+  --text:#1A1A2E;--sub:#555566;--light:#9999AA;--border:#E8E0D0;
+  --primary:#2563EB;
+  --green:#059669;--orange:#D97706;--orange-light:#FFFBEB;
+  --pink:#DB2777;--pink-light:#FDF2F8;
+  --purple:#7C3AED;--red:#DC2626;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 28px rgba(0,0,0,.15);
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
 
+/* ── 탑바 ── */
+.topbar{background:rgba(14,30,80,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);padding:0 20px;position:relative;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between}
+.site-name{font-size:1rem;font-weight:800;color:white;display:flex;align-items:center;gap:7px}
+.site-name .cross{color:#FBBF24}
+
+/* 햄버거 버튼 */
+.hamburger{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:10px;transition:.2s;box-shadow:0 2px 8px rgba(251,191,36,.45);position:relative;z-index:300}
+.hamburger:hover{transform:scale(1.06);box-shadow:0 4px 14px rgba(251,191,36,.6)}
+.hamburger span{display:block;width:20px;height:2.5px;background:#1A1A2E;border-radius:2px;transition:.3s}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ── 사이드 패널 (오른쪽에서 나타남) ── */
+.side-panel{
+  position:fixed;top:56px;right:0;
+  width:260px;height:calc(100vh - 56px);
+  background:var(--white);
+  border-left:1px solid var(--border);
+  overflow-y:auto;
+  z-index:250;
+  /* 기본: 숨겨진 상태 */
+  transform:translateX(100%);
+  opacity:0;
+  transition:transform .3s cubic-bezier(.4,0,.2,1), opacity .3s;
+  pointer-events:none;
+}
+/* 호버 미리보기: 흐릿하게 살짝 보임 */
+.side-panel.peek{
+  transform:translateX(0);
+  opacity:.55;
+  filter:none;
+  pointer-events:none;
+}
+/* 클릭 후 완전히 열림 */
+.side-panel.open{
+  transform:translateX(0);
+  opacity:1;
+  filter:none;
+  pointer-events:all;
+}
+
+/* 패널 오버레이 */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:240;display:none;top:56px}
+.panel-overlay.open{display:block}
+
+.side-header{padding:16px 16px 12px;background:linear-gradient(135deg,#0E1E50,#1E3A8A);display:flex;align-items:center;justify-content:space-between}
+.side-header-title{font-size:.93rem;font-weight:800;color:white}
+.side-close{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.15);border:none;cursor:pointer;font-size:.9rem;color:white;display:flex;align-items:center;justify-content:center}
+
+.side-section{padding:12px 0 0}
+.side-label{font-size:.66rem;font-weight:700;color:var(--light);letter-spacing:.1em;padding:0 14px 5px;text-transform:uppercase}
+.side-item{display:flex;align-items:center;gap:11px;padding:11px 14px;text-decoration:none;color:var(--text);transition:.15s;cursor:pointer;border:none;background:none;width:100%;font-family:inherit}
+.side-item:hover{background:#F0F4FF}
+.side-item.soon{opacity:.48;cursor:default}
+.side-item.soon:hover{background:none}
+.s-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.s-blue{background:#DBEAFE}.s-green{background:#D1FAE5}.s-orange{background:#FEF3C7}
+.s-pink{background:#FCE7F3}.s-purple{background:#EDE9FE}.s-red{background:#FEE2E2}
+.s-teal{background:#CCFBF1}
+.s-text{flex:1;text-align:left}
+.s-name{font-size:.87rem;font-weight:700;line-height:1.3}
+.s-desc{font-size:.68rem;color:var(--sub);margin-top:1px}
+.s-badge{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:50px;flex-shrink:0}
+.sb-live{background:#DCFCE7;color:#16A34A}
+.sb-soon{background:#F3F4F6;color:#9CA3AF}
+.sb-admin{background:#FEE2E2;color:#DC2626}
+.sb-reg{background:#FCE7F3;color:#DB2777}
+.s-divider{height:1px;background:var(--border);margin:5px 0}
+
+/* ── 히어로 ── */
+.hero{
+  position:relative;
+  height:calc(100vh - 56px);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;background:#0E1E50;overflow:hidden;
+  transition:filter .3s;
+}
+.hero.blurred{filter:brightness(.6)}
+.hero-sky{position:absolute;inset:0;background:linear-gradient(180deg,#0B1D4F 0%,#1A3A7A 30%,#1565C0 58%,#FF8C42 82%,#FFB347 100%)}
+.cloud{position:absolute;background:rgba(255,255,255,.75);border-radius:50px;animation:cf linear infinite}
+.cloud::before,.cloud::after{content:'';position:absolute;background:rgba(255,255,255,.75);border-radius:50%}
+.c1{width:70px;height:20px;top:18%;left:10%;animation-duration:26s;opacity:.6}
+.c1::before{width:30px;height:30px;top:-15px;left:9px}.c1::after{width:24px;height:24px;top:-12px;left:34px}
+.c2{width:55px;height:16px;top:30%;left:60%;animation-duration:20s;animation-direction:reverse;opacity:.4}
+.c2::before{width:24px;height:24px;top:-12px;left:7px}.c2::after{width:18px;height:18px;top:-9px;left:26px}
+@keyframes cf{0%{transform:translateX(-18px)}50%{transform:translateX(18px)}100%{transform:translateX(-18px)}}
+.mountains{position:absolute;bottom:0;left:0;right:0}
+.stars{position:absolute;top:0;left:0;right:0;height:50%}
+.star-dot{position:absolute;width:2px;height:2px;background:white;border-radius:50%;animation:tw ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.1}50%{opacity:1}}
+.hero-content{position:relative;z-index:5;padding:0 24px}
+.hero-cross{font-size:2.8rem;filter:drop-shadow(0 0 14px rgba(251,191,36,.9));display:block;margin-bottom:12px}
+.hero-badge{display:inline-block;padding:7px 20px;border-radius:50px;background:rgba(251,191,36,.22);border:1px solid rgba(251,191,36,.45);font-size:.8rem;font-weight:700;color:#FBBF24;margin-bottom:18px;letter-spacing:.05em}
+.hero h1{font-size:clamp(1.5rem,4vw,2.3rem);font-weight:900;color:white;margin-bottom:10px;line-height:1.25;text-shadow:0 2px 20px rgba(0,0,0,.4)}
+.hero h1 em{color:#FBBF24;font-style:normal}
+.hero p{font-size:.88rem;color:rgba(255,255,255,.72);margin-bottom:28px}
+.hero-register{display:inline-flex;align-items:center;gap:8px;padding:12px 26px;border-radius:50px;background:#DB2777;color:white;font-size:.9rem;font-weight:800;text-decoration:none;transition:.2s;box-shadow:0 4px 16px rgba(219,39,119,.4)}
+.hero-register:hover{background:#BE185D;transform:translateY(-2px)}
+
+/* 비밀번호 모달 */
+.pw-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.pw-overlay.open{display:flex}
+.pw-modal{background:var(--white);border-radius:20px;padding:30px 26px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.pw-icon{font-size:2rem;text-align:center;margin-bottom:10px}
+.pw-modal h3{font-size:.97rem;font-weight:800;text-align:center;margin-bottom:5px}
+.pw-modal p{font-size:.8rem;color:var(--sub);text-align:center;margin-bottom:16px}
+.pw-input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:inherit;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:7px;transition:.2s}
+.pw-input:focus{border-color:var(--primary)}
+.pw-error{font-size:.77rem;color:var(--red);text-align:center;margin-bottom:10px;display:none}
+.pw-btns{display:flex;gap:8px}
+.pw-btns button{flex:1;padding:11px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;border:none}
+.pw-cancel-b{background:#F3F4F6;color:var(--sub)}
+.pw-confirm-b{background:var(--primary);color:white}
+
+/* ── 히어로 아래 ── */
+.below-wrap{background:var(--bg)}
+.intro-section,.schedule-section,.notice-section{max-width:600px;margin:0 auto;padding:40px 20px 0}
+.sec-label{font-size:.7rem;font-weight:700;color:var(--light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;padding-left:2px}
+.intro-badge{display:inline-block;padding:5px 14px;border-radius:50px;background:#FEF3C7;color:#92400E;font-size:.75rem;font-weight:700;margin-bottom:14px;letter-spacing:.04em}
+.intro-title{font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:14px;line-height:1.3}
+.intro-desc{font-size:.88rem;color:var(--sub);line-height:1.8;margin-bottom:24px}
+.intro-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:0}
+@media(max-width:500px){.intro-cards{grid-template-columns:1fr}}
+.intro-card{background:var(--white);border-radius:14px;padding:16px 14px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.ic-icon{font-size:1.6rem;margin-bottom:8px}
+.ic-title{font-size:.88rem;font-weight:800;color:var(--text);margin-bottom:5px}
+.ic-desc{font-size:.75rem;color:var(--sub);line-height:1.6}
+.schedule-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.sch-row{display:grid;grid-template-columns:52px 4px 1fr;gap:12px;align-items:stretch;background:var(--white);border-radius:14px;padding:14px 16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.sch-day{text-align:center}
+.sch-day-num{font-size:1rem;font-weight:900;color:var(--primary);line-height:1}
+.sch-day-name{font-size:.68rem;color:var(--light);margin-top:3px}
+.sch-bar{width:4px;border-radius:4px;align-self:stretch}
+.d1{background:#3B82F6}.d2{background:#8B5CF6}.d3{background:#F59E0B}
+.sch-content{padding-left:4px}
+.sch-title{font-size:.9rem;font-weight:800;margin-bottom:4px;color:var(--text)}
+.sch-items{font-size:.75rem;color:var(--sub);line-height:1.6}
+.sch-more{display:inline-block;font-size:.83rem;font-weight:700;color:var(--primary);text-decoration:none;padding:10px 20px;border-radius:10px;background:var(--primary-light);border:1px solid #BFDBFE;transition:.2s}
+.sch-more:hover{background:#DBEAFE}
+.notice-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}
+.notice-item{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.notice-item:last-child{border-bottom:none}
+.ni-left{flex:1;display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap}
+.ni-badge{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:50px;background:var(--orange-light);color:var(--orange);flex-shrink:0;margin-top:2px}
+.ni-badge.new{background:#DBEAFE;color:#1E40AF}
+.ni-text{font-size:.83rem;line-height:1.5}
+.ni-date{font-size:.72rem;color:var(--light);flex-shrink:0;margin-top:2px}
+.notice-section{padding-bottom:0}
+.site-footer{text-align:center;padding:28px 20px 36px;color:var(--light);font-size:.76rem;border-top:1px solid var(--border);margin-top:40px}
+
+/* ── 신청 오버레이 ── */
+.reg-overlay{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;overflow-y:auto;background:var(--bg)}
+.reg-overlay.open{display:flex}
+.reg-topbar{background:rgba(14,30,80,.97);height:56px;display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:10}
+.reg-back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);border:none;cursor:pointer;color:white;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.reg-topbar-title{font-size:.95rem;font-weight:800;color:white;flex:1}
+.reg-topbar-badge{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:50px;background:rgba(219,39,119,.3);color:#F9A8D4;border:1px solid rgba(219,39,119,.4)}
+.reg-body{max-width:560px;margin:0 auto;padding:28px 20px 60px;width:100%}
+.reg-hero{text-align:center;margin-bottom:28px}
+.reg-hero-icon{font-size:2.4rem;display:block;margin-bottom:10px}
+.reg-hero-title{font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:6px}
+.reg-hero-sub{font-size:.82rem;color:var(--sub);line-height:1.7}
+.reg-count-pill{display:inline-flex;align-items:center;gap:6px;background:#FDF2F8;border:1.5px solid #FBCFE8;border-radius:50px;padding:6px 14px;margin-top:10px;font-size:.78rem;color:var(--pink);font-weight:700}
+.reg-count-num{font-size:1.05rem;font-weight:900}
+.reg-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.reg-card-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.reg-card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.reg-field{margin-bottom:16px}
+.reg-field:last-child{margin-bottom:0}
+.reg-label{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.reg-required{color:var(--pink);font-size:.75rem}
+.reg-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:.2s}
+.reg-input:focus{border-color:var(--primary);background:white}
+.reg-input::placeholder{color:var(--light)}
+.reg-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239999AA' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.reg-radio-group{display:flex;gap:8px;flex-wrap:wrap}
+.reg-radio{display:none}
+.reg-radio-label{padding:8px 16px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:600;color:var(--sub);transition:.15s;background:var(--bg)}
+.reg-radio:checked+.reg-radio-label{border-color:var(--primary);background:#EFF6FF;color:var(--primary)}
+.reg-submit{width:100%;padding:15px;background:var(--pink);color:white;border:none;border-radius:13px;font-size:.95rem;font-weight:800;font-family:inherit;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(219,39,119,.3);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.reg-submit:hover:not(:disabled){background:#BE185D;transform:translateY(-1px)}
+.reg-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── 신청 완료 화면 ── */
+.reg-success{display:none;flex-direction:column;align-items:center;text-align:center;padding:48px 28px 60px;max-width:440px;margin:0 auto;width:100%}
+.success-burst{font-size:3.5rem;display:block;margin-bottom:20px;animation:burst .6s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes burst{0%{transform:scale(0) rotate(-10deg);opacity:0}60%{transform:scale(1.18) rotate(4deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.success-badge{display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:50px;padding:6px 16px;font-size:.78rem;font-weight:700;color:var(--green);margin-bottom:18px}
+.success-title{font-size:1.7rem;font-weight:900;color:var(--text);margin-bottom:8px;line-height:1.2}
+.success-name{color:var(--pink)}
+.success-num-card{background:linear-gradient(135deg,#0E1E50,#1E3A8A);border-radius:18px;padding:24px 28px;margin:22px 0;width:100%}
+.success-num-label{font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:8px;letter-spacing:.06em}
+.success-num{font-size:4rem;font-weight:900;color:#FBBF24;line-height:1;text-shadow:0 0 24px rgba(251,191,36,.5)}
+.success-num-sub{font-size:.85rem;color:rgba(255,255,255,.7);margin-top:8px}
+.success-info{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;width:100%;margin-bottom:22px;text-align:left}
+.si-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.83rem;border-bottom:1px solid var(--border)}
+.si-row:last-child{border-bottom:none}
+.si-key{color:var(--sub);font-weight:600}
+.si-val{font-weight:700;color:var(--text)}
+.btn-go-home{width:100%;padding:15px;background:var(--pink);color:white;border:none;border-radius:13px;font-size:.95rem;font-weight:800;font-family:inherit;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(219,39,119,.3);display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:10px}
+.btn-go-home:hover{background:#BE185D;transform:translateY(-1px)}
+.btn-reg-another{width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:13px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;color:var(--sub);transition:.2s}
+.btn-reg-another:hover{border-color:var(--pink);color:var(--pink)}
+</style>
+</head>
+<body>
+
+<!-- 탑바 -->
+<div class="topbar">
+  <div class="site-name"><span class="cross">✝</span> 중등부 여름수련회</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:.9rem;font-weight:800;color:rgba(255,255,255,.92)">수련회 프로그램</span>
+    <button class="hamburger" id="hamBtn"
+    onmouseenter="peekPanel()"
+    onmouseleave="unpeekPanel()"
+    onclick="togglePanel()">
+    <span></span><span></span><span></span>
+  </button>
+  </div>
+</div>
+
+<!-- 패널 오버레이 -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+
+<!-- 사이드 패널 -->
+<div class="side-panel" id="sidePanel"
+  onmouseenter="keepPanel()"
+  onmouseleave="leavePanelHover()">
+
+  <div class="side-header">
+    <span class="side-header-title">✝ 메뉴</span>
+    <button class="side-close" onclick="closePanel()">✕</button>
+  </div>
+
+  <div class="side-section">
+    <div class="side-label">수련회 시작 전</div>
+    <a class="side-item" href="#" onclick="openRegister();closePanel();return false;">
+      <div class="s-icon s-pink">🏕️</div>
+      <div class="s-text"><div class="s-name">참가 신청</div><div class="s-desc">수련회 전 필수</div></div>
+      <span class="s-badge sb-reg">필수</span>
+    </a>
+  </div>
+
+  <div class="s-divider"></div>
+
+  <div class="side-section">
+    <div class="side-label">수련회 정보</div>
+    <a class="side-item" href="schedule.html">
+      <div class="s-icon s-orange">📅</div>
+      <div class="s-text"><div class="s-name">전체 일정표</div><div class="s-desc">36가지 활동 타임테이블</div></div>
+      <span class="s-badge sb-live">운영중</span>
+    </a>
+    <a class="side-item" href="scoreboard.html">
+      <div class="s-icon s-purple">🏆</div>
+      <div class="s-text"><div class="s-name">팀별 점수판</div><div class="s-desc">실시간 팀 점수</div></div>
+      <span class="s-badge sb-live">운영중</span>
+    </a>
+    <a class="side-item" href="meal.html">
+      <div class="s-icon s-green">🍽️</div>
+      <div class="s-text"><div class="s-name">식단표</div><div class="s-desc">아침·점심·저녁 메뉴</div></div>
+      <span class="s-badge sb-live">운영중</span>
+    </a>
+  </div>
+
+  <div class="s-divider"></div>
+
+  <div class="side-section">
+    <div class="side-label">수련회 프로그램</div>
+    <a class="side-item" href="lifemap.html">
+      <div class="s-icon s-blue">📝</div>
+      <div class="s-text"><div class="s-name">인생지도 일기</div><div class="s-desc">감정·신앙 기록 + AI 피드백</div></div>
+      <span class="s-badge sb-live">운영중</span>
+    </a>
+    <a class="side-item" href="#" onclick="openSermon();closePanel();return false;">
+      <div class="s-icon s-orange">📋</div>
+      <div class="s-text"><div class="s-name">설교 3줄 요약</div><div class="s-desc">2박 3일 설교 키워드 → AI 요약</div></div>
+      <span class="s-badge sb-live">운영중</span>
+    </a>
+    <div class="side-item soon">
+      <div class="s-icon s-pink">🎵</div>
+      <div class="s-text"><div class="s-name">찬양 & 활동</div><div class="s-desc">수련회 기간 오픈 예정</div></div>
+      <span class="s-badge sb-soon">준비중</span>
+    </div>
+    <div class="side-item soon">
+      <div class="s-icon s-teal">🔒</div>
+      <div class="s-text"><div class="s-name">방탈출 게임</div><div class="s-desc">수련회 기간 오픈 예정</div></div>
+      <span class="s-badge sb-soon">준비중</span>
+    </div>
+    <div class="side-item soon">
+      <div class="s-icon s-purple">💬</div>
+      <div class="s-text"><div class="s-name">상담 & 나눔</div><div class="s-desc">수련회 기간 오픈 예정</div></div>
+      <span class="s-badge sb-soon">준비중</span>
+    </div>
+  </div>
+
+  <div class="s-divider"></div>
+
+  <div class="side-section" style="padding-bottom:28px">
+    <div class="side-label" style="color:#DC2626">🔐 감독자 전용</div>
+    <button class="side-item" onclick="adminGo('students.html')">
+      <div class="s-icon s-red">👥</div>
+      <div class="s-text"><div class="s-name">학생 명단</div><div class="s-desc">참가 학생 관리</div></div>
+      <span class="s-badge sb-admin">감독자</span>
+    </button>
+    <button class="side-item" onclick="adminGo('ledger.html')">
+      <div class="s-icon s-red">💰</div>
+      <div class="s-text"><div class="s-name">회계 장부</div><div class="s-desc">수입·지출 관리</div></div>
+      <span class="s-badge sb-admin">감독자</span>
+    </button>
+  </div>
+</div>
+
+<!-- 히어로 -->
+<div class="hero" id="hero">
+  <div class="hero-sky"></div>
+  <div class="stars" id="stars"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="mountains">
+    <svg viewBox="0 0 400 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;height:110px;display:block">
+      <polygon points="0,110 60,35 120,80 180,15 240,65 300,25 360,75 400,45 400,110" fill="#0B1D4F" opacity=".9"/>
+      <polygon points="0,110 80,55 160,90 220,40 280,78 340,50 400,65 400,110" fill="#0D2255" opacity=".7"/>
+      <polygon points="25,110 32,90 39,110" fill="#1a4a1a"/>
+      <polygon points="353,110 360,92 367,110" fill="#1a4a1a"/>
+      <polygon points="188,110 194,94 200,110" fill="#1a4a1a"/>
+      <rect x="193" y="12" width="4" height="20" fill="#FBBF24" opacity=".55"/>
+      <rect x="187" y="19" width="16" height="4" fill="#FBBF24" opacity=".55"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <span class="hero-cross">✝</span>
+    <div class="hero-badge">2026 여름수련회</div>
+    <h1>중등부 여름수련회에<br><em>오신 것을 환영합니다!</em></h1>
+    <p>오른쪽 위 메뉴를 눌러 프로그램에 참여하세요</p>
+    <a class="hero-register" href="#" onclick="openRegister();return false;">🏕️ 참가 신청하기 →</a>
+  </div>
+</div>
+
+<!-- ── 히어로 아래 콘텐츠 ── -->
+<div class="below-wrap">
+
+  <!-- 수련회 소개 -->
+  <section class="intro-section">
+    <div class="intro-badge">✝ 2026 여름수련회</div>
+    <h2 class="intro-title">하나님과 함께하는<br>특별한 여름 3일</h2>
+    <p class="intro-desc">중등부 여름수련회는 단순한 캠프가 아닙니다.<br>말씀 안에서 나를 발견하고, 친구들과 깊이 연결되며,<br>AI를 활용한 창의적인 신앙 활동으로 가득한 시간이에요.</p>
+    <div class="intro-cards">
+      <div class="intro-card">
+        <div class="ic-icon">📖</div>
+        <div class="ic-title">말씀과 함께</div>
+        <div class="ic-desc">매일 아침 예배와 성경 기반 활동으로 하나님을 만나요</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🤖</div>
+        <div class="ic-title">AI로 창의적으로</div>
+        <div class="ic-desc">성경 방탈출·퀴즈·단편영화 등 AI 활용 36가지 프로그램</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🤝</div>
+        <div class="ic-title">함께 성장하며</div>
+        <div class="ic-desc">팀 활동과 소그룹 나눔으로 진짜 친구를 만들어요</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 일정 요약 -->
+  <section class="schedule-section">
+    <div class="sec-label">수련회 일정 요약</div>
+    <div class="schedule-rows">
+      <div class="sch-row">
+        <div class="sch-day">
+          <div class="sch-day-num">D1</div>
+          <div class="sch-day-name">7/28 월</div>
+        </div>
+        <div class="sch-bar d1"></div>
+        <div class="sch-content">
+          <div class="sch-title">만남 & 시작</div>
+          <div class="sch-items">등록·팀 배정 → 개회 예배 → 아이스브레이킹 → 인생지도 그리기 → 감정 찬양 DJ</div>
+        </div>
+      </div>
+      <div class="sch-row">
+        <div class="sch-day">
+          <div class="sch-day-num">D2</div>
+          <div class="sch-day-name">7/29 화</div>
+        </div>
+        <div class="sch-bar d2"></div>
+        <div class="sch-content">
+          <div class="sch-title">탐험 & 경쟁</div>
+          <div class="sch-items">성경 방탈출 → AI 퀴즈 대결 → 성경 그림 맞추기 → 기도문 워크숍 → 친구에게 하고 싶은 말</div>
+        </div>
+      </div>
+      <div class="sch-row">
+        <div class="sch-day">
+          <div class="sch-day-num">D3</div>
+          <div class="sch-day-name">7/30 수</div>
+        </div>
+        <div class="sch-bar d3"></div>
+        <div class="sch-content">
+          <div class="sch-title">창작 & 마무리</div>
+          <div class="sch-items">성경 단편영화 제작 → 한 줄 설교 → 상영회 & 시상 → 수료식 → 폐회 예배</div>
+        </div>
+      </div>
+    </div>
+    <a href="schedule.html" class="sch-more">전체 일정표 보기 →</a>
+  </section>
+
+  <!-- 공지사항 -->
+  <section class="notice-section">
+    <div class="sec-label">공지사항</div>
+    <div class="notice-card">
+      <div class="notice-item">
+        <div class="ni-left"><span class="ni-badge new">새소식</span><span class="ni-text">수련회 전체 일정표 및 식단표가 업데이트되었습니다</span></div>
+        <span class="ni-date">2026.04.10</span>
+      </div>
+      <div class="notice-item">
+        <div class="ni-left"><span class="ni-badge">안내</span><span class="ni-text">여름수련회 참가 신청이 시작되었습니다</span></div>
+        <span class="ni-date">2026.04.10</span>
+      </div>
+      <div class="notice-item">
+        <div class="ni-left"><span class="ni-badge">안내</span><span class="ni-text">인생지도 일기 앱이 오픈되었습니다</span></div>
+        <span class="ni-date">2026.04.10</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">Made with ❤️ for 중등부 여름수련회</footer>
+</div>
+
+<!-- 비밀번호 모달 -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-modal">
+    <div class="pw-icon">🔐</div>
+    <h3>감독자 인증</h3>
+    <p>감독자 비밀번호를 입력해주세요</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="• • • •"
+      onkeydown="if(event.key==='Enter')confirmPw()">
+    <div class="pw-error" id="pwError">비밀번호가 틀렸습니다</div>
+    <div class="pw-btns">
+      <button class="pw-cancel-b" onclick="closePw()">취소</button>
+      <button class="pw-confirm-b" onclick="confirmPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 설교 3줄 요약 오버레이 ══ -->
+<style>
+.ss-overlay{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#F5F0E8}
+.ss-overlay.open{display:flex}
+.ss-overlay *{box-sizing:border-box}
+.ss-overlay::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.13) 28px);pointer-events:none;z-index:0}
+/* 탑바 */
+.ss-topbar{background:#FDFAF5;border-bottom:1.5px solid #D4C8B4;padding:0 20px;position:sticky;top:0;z-index:100;height:52px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 8px rgba(60,40,10,.06);flex-shrink:0}
+.ss-back{width:34px;height:34px;border-radius:9px;background:#EDE6D9;border:1px solid #D4C8B4;color:#7A6A52;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-family:inherit}
+.ss-topbar-tag{font-size:.68rem;font-weight:700;background:#B8760A;color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.ss-topbar-title{font-size:.9rem;font-weight:700;color:#1C1409;flex:1}
+/* 히어로 */
+.ss-hero{position:relative;padding:28px 24px 20px;text-align:center;z-index:1}
+.ss-hero-tag{display:inline-block;background:#FDF3DC;border:1.5px solid rgba(184,118,10,.3);color:#B8760A;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
+.ss-hero h1{font-family:'Nanum Myeongjo',serif;font-size:clamp(1.7rem,6vw,2.4rem);font-weight:800;color:#1C1409;line-height:1.2;margin-bottom:8px}
+.ss-hero h1 em{color:#B8760A;font-style:normal;border-bottom:3px solid #B8760A}
+.ss-hero p{font-size:.83rem;color:#7A6A52;line-height:1.75;max-width:380px;margin:0 auto}
+/* 래퍼 */
+.ss-wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;width:100%}
+/* 진행바 */
+.ss-phase-bar{display:flex;gap:6px;margin-bottom:24px}
+.ss-pip{flex:1;height:4px;border-radius:2px;background:#D4C8B4;transition:.3s}
+.ss-pip.on{background:#B8760A}.ss-pip.done{background:#E8950C}
+/* 카드 */
+.ss-card{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 14px rgba(60,40,10,.09)}
+.ss-card-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#B0A08A;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ss-card-label::after{content:'';flex:1;height:1px;background:#D4C8B4}
+/* 팀칩 */
+.ss-team-chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.ss-tc{padding:12px;border:2px solid #D4C8B4;border-radius:11px;background:#F5F0E8;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit;text-align:center;transition:.2s;color:#7A6A52}
+.ss-tc:hover{border-color:#B8760A;color:#B8760A}
+.ss-tc.on{border-color:#B8760A;background:#FDF3DC;color:#B8760A}
+/* 인풋 */
+.ss-label{font-size:.79rem;font-weight:700;color:#3D2E18;margin-bottom:6px}
+.ss-sub{font-size:.71rem;color:#7A6A52;margin-bottom:8px;line-height:1.5}
+.ss-inp{width:100%;padding:11px 14px;background:#F5F0E8;border:1.5px solid #D4C8B4;border-radius:10px;font-size:.88rem;font-family:inherit;color:#1C1409;outline:none;transition:.2s}
+.ss-inp:focus{border-color:#B8760A;background:#FDFAF5}
+.ss-inp::placeholder{color:#B0A08A}
+textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
+.ss-char{font-size:.7rem;color:#B0A08A;text-align:right;margin-top:4px}
+/* 버튼 */
+.ss-btn-p{width:100%;padding:14px;background:#B8760A;color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ss-btn-p:hover:not(:disabled){background:#E8950C}
+.ss-btn-p:disabled{opacity:.45;cursor:not-allowed}
+.ss-btn-s{padding:11px 18px;background:#EDE6D9;border:1.5px solid #D4C8B4;border-radius:10px;color:#7A6A52;font-size:.85rem;font-family:inherit;cursor:pointer;font-weight:600;transition:.2s}
+.ss-btn-s:hover{border-color:#B8760A;color:#B8760A}
+/* 로딩 */
+.ss-loading{text-align:center;padding:44px 20px;z-index:1;position:relative;display:none}
+.ss-loading.show{display:block}
+.ss-quill{font-size:2.8rem;animation:sswrite 1s ease-in-out infinite alternate;display:block}
+@keyframes sswrite{from{transform:rotate(-8deg) translate(-4px,2px)}to{transform:rotate(8deg) translate(4px,-2px)}}
+.ss-loading-txt{font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:#B8760A;margin-top:14px;letter-spacing:.04em}
+.ss-loading-dots{display:inline-block;animation:ssdots 1.4s infinite}
+@keyframes ssdots{0%{content:'.'}33%{content:'..'}66%{content:'...'}100%{content:'.'}}
+/* 결과 */
+.ss-summary-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.ss-sl{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;overflow:hidden;box-shadow:0 2px 14px rgba(60,40,10,.09);animation:ssfadeUp .3s ease both}
+.ss-sl:nth-child(2){animation-delay:.08s}.ss-sl:nth-child(3){animation-delay:.16s}
+@keyframes ssfadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ss-sl-hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #D4C8B4;background:#F5F0E8}
+.ss-sl-num{font-family:'Nanum Myeongjo',serif;font-size:1.6rem;font-weight:800;color:#B8760A;line-height:1;width:28px;flex-shrink:0}
+.ss-sl-lbl{font-size:.72rem;font-weight:700;color:#7A6A52;flex:1}
+.ss-regen{padding:5px 11px;border-radius:7px;border:1px solid #D4C8B4;background:transparent;color:#7A6A52;font-size:.7rem;font-family:inherit;cursor:pointer;transition:.15s;flex-shrink:0}
+.ss-regen:hover{border-color:#B8760A;color:#B8760A}
+.ss-regen:disabled{opacity:.4;cursor:not-allowed}
+.ss-sl-body{padding:14px 16px}
+.ss-sl-txt{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:#1C1409;line-height:1.7;width:100%;background:transparent;border:none;outline:none;resize:none;min-height:54px;cursor:text}
+/* 구절 */
+.ss-verse-card{background:#FDF3DC;border:1.5px solid rgba(184,118,10,.25);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.ss-verse-lbl{font-size:.68rem;font-weight:700;color:#B8760A;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.ss-verse-txt{font-family:'Nanum Myeongjo',serif;font-size:.9rem;color:#3D2E18;line-height:1.7}
+/* 발표 */
+.ss-present{position:fixed;inset:0;background:#1C1409;z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+.ss-present.open{display:flex}
+.ss-present-close{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.1);border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:1.1rem}
+.ss-pt-team{font-size:.82rem;font-weight:700;color:#B8760A;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;opacity:.8}
+.ss-pt-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(.85rem,3vw,1.1rem);color:rgba(255,255,255,.5);margin-bottom:32px;text-align:center;line-height:1.6}
+.ss-pt-lines{display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px}
+.ss-pt-line{display:flex;align-items:flex-start;gap:16px}
+.ss-pt-num{font-family:'Nanum Myeongjo',serif;font-size:clamp(2rem,6vw,3rem);font-weight:800;color:#B8760A;line-height:1;flex-shrink:0;width:44px}
+.ss-pt-txt{font-family:'Nanum Myeongjo',serif;font-size:clamp(1rem,3.5vw,1.45rem);color:#FDFAF5;line-height:1.65;font-weight:700;flex:1;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:18px}
+.ss-pt-txt:last-child{border-bottom:none;padding-bottom:0}
+.ss-pt-verse{font-size:clamp(.75rem,2.5vw,.9rem);color:rgba(255,255,255,.45);margin-top:28px;font-family:'Nanum Myeongjo',serif;text-align:center;font-style:italic}
+.ss-pt-badge{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.25);letter-spacing:.08em;white-space:nowrap}
+.ss-action-row{display:flex;gap:10px;margin-top:4px}
+.ss-action-row .ss-btn-p{flex:1}
+.ss-btn-present{flex:1.4;padding:14px;background:#1C1409;color:#B8760A;border:2px solid #B8760A;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.ss-btn-present:hover{background:#B8760A;color:#1C1409}
+</style>
+
+<div class="ss-overlay" id="ssOverlay">
+  <div class="ss-topbar">
+    <button class="ss-back" onclick="closeSermon()">←</button>
+    <span class="ss-topbar-tag">중-11</span>
+    <span class="ss-topbar-title">설교 3줄 요약 챌린지</span>
+  </div>
+  <div class="ss-hero">
+    <div class="ss-hero-tag">📋 팀 경쟁 · 수련회 중 활동</div>
+    <h1>설교 3줄<br><em>요약 챌린지</em></h1>
+    <p>오늘 개회 설교를 AI로 핵심 3줄 요약 작성<br>가장 잘 정리한 조를 선정해 시상합니다</p>
+  </div>
+  <div class="ss-wrap">
+    <div class="ss-phase-bar">
+      <div class="ss-pip on" id="sspip1"></div>
+      <div class="ss-pip" id="sspip2"></div>
+      <div class="ss-pip" id="sspip3"></div>
+    </div>
+    <!-- STEP 1 -->
+    <div id="ssstep1">
+      <div class="ss-card">
+        <div class="ss-card-label">우리 팀</div>
+        <div class="ss-team-chips">
+          <button class="ss-tc" onclick="ssPickTeam(this,'베드로팀 ⚓')">베드로팀 ⚓</button>
+          <button class="ss-tc" onclick="ssPickTeam(this,'바울팀 ✝️')">바울팀 ✝️</button>
+          <button class="ss-tc" onclick="ssPickTeam(this,'에스더팀 👑')">에스더팀 👑</button>
+          <button class="ss-tc" onclick="ssPickTeam(this,'다윗팀 🎵')">다윗팀 🎵</button>
+        </div>
+      </div>
+      <div class="ss-card">
+        <div class="ss-card-label">오늘 설교</div>
+        <div style="margin-bottom:14px"><div class="ss-label">설교 제목</div><input class="ss-inp" id="ssTitle" placeholder="예) 나는 하나님의 자녀입니다" maxlength="60"></div>
+        <div style="margin-bottom:14px"><div class="ss-label">설교자</div><input class="ss-inp" id="ssPreacher" placeholder="예) 김성준 목사님" maxlength="30"></div>
+        <div><div class="ss-label">핵심 성경 구절</div><input class="ss-inp" id="ssVerse" placeholder="예) 요한1서 3:1 / 로마서 8:16"></div>
+      </div>
+      <button class="ss-btn-p" onclick="ssGoStep2()">다음 — 내용 입력하기 →</button>
+    </div>
+    <!-- STEP 2 -->
+    <div id="ssstep2" style="display:none">
+      <div class="ss-card">
+        <div class="ss-card-label">설교 내용 메모</div>
+        <div class="ss-label">기억나는 내용을 자유롭게 적어주세요</div>
+        <div class="ss-sub">핵심 단어, 예화, 감동받은 문장 등 무엇이든 좋아요.</div>
+        <textarea class="ss-inp" id="ssNotes" placeholder="예) 하나님이 우리를 자녀라고 부른다는 것이 놀랍다고 하셨어요. 탕자 비유 말씀도 하셨고..." oninput="ssCountChars(this,'ssNoteCount')"></textarea>
+        <div class="ss-char" id="ssNoteCount">0자</div>
+      </div>
+      <div class="ss-card">
+        <div class="ss-card-label">팀 의견 추가 (선택)</div>
+        <div class="ss-sub">특별히 넣고 싶은 포인트가 있으면 적어주세요.</div>
+        <textarea class="ss-inp" id="ssOpinion" placeholder="예) 우리 팀은 '아버지가 달려온다'는 장면이 가장 인상 깊었어요." rows="2" oninput="ssCountChars(this,'ssOpCount')"></textarea>
+        <div class="ss-char" id="ssOpCount">0자</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="ss-btn-s" onclick="ssGoStep1()">← 이전</button>
+        <button class="ss-btn-p" onclick="ssGenerate()" style="flex:1">✍️ AI 3줄 요약 생성</button>
+      </div>
+    </div>
+    <!-- 로딩 -->
+    <div class="ss-loading" id="ssLoading">
+      <span class="ss-quill">✍️</span>
+      <div class="ss-loading-txt">요약 작성 중<span class="ss-loading-dots">...</span></div>
+      <div style="font-size:.78rem;color:#7A6A52;margin-top:6px">AI가 핵심 메시지를 정리하고 있어요</div>
+    </div>
+    <!-- STEP 3 -->
+    <div id="ssstep3" style="display:none">
+      <div class="ss-card" style="margin-bottom:8px"><div class="ss-card-label">AI 초안 — 직접 수정 가능해요</div></div>
+      <div class="ss-summary-wrap" id="ssSummaryWrap"></div>
+      <div class="ss-verse-card" id="ssVerseCard" style="display:none">
+        <div class="ss-verse-lbl">핵심 구절</div>
+        <div class="ss-verse-txt" id="ssVerseDisplay"></div>
+      </div>
+      <div class="ss-action-row">
+        <button class="ss-btn-s" onclick="ssGoStep2()">← 다시 작성</button>
+        <button class="ss-btn-present" onclick="ssOpenPresent()">📢 발표 모드</button>
+      </div>
+      <div style="margin-top:10px"><button class="ss-btn-p" onclick="ssCopyAll()">📋 전체 복사</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 발표 모드 -->
+<div class="ss-present" id="ssPresent">
+  <button class="ss-present-close" onclick="ssClosePresent()">✕</button>
+  <div class="ss-pt-team" id="ssPtTeam"></div>
+  <div class="ss-pt-title" id="ssPtTitle"></div>
+  <div class="ss-pt-lines" id="ssPtLines"></div>
+  <div class="ss-pt-verse" id="ssPtVerse"></div>
+  <div class="ss-pt-badge">설교 3줄 요약 챌린지 · 2026 중등부 여름수련회</div>
+</div>
+
+<script>
+/* ═══ 신청 오버레이 ═══ */
+const ADMIN_PW = '1234';
+let pendingUrl = '';
+let isOpen = false;
+let hoverTimer = null;
+
+(function(){
+  var s=document.getElementById('stars');
+  for(var i=0;i<40;i++){
+    var d=document.createElement('div');d.className='star-dot';
+    d.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-delay:'+Math.random()*4+'s;animation-duration:'+(1.5+Math.random()*3)+'s;opacity:'+(Math.random()*.6+.2);
+    s.appendChild(d);
+  }
+})();
+
+function peekPanel(){if(isOpen)return;clearTimeout(hoverTimer);document.getElementById('sidePanel').classList.add('peek');document.getElementById('sidePanel').classList.remove('open');document.getElementById('hamBtn').classList.remove('open');}
+function unpeekPanel(){if(isOpen)return;hoverTimer=setTimeout(function(){document.getElementById('sidePanel').classList.remove('peek');},200);}
+function keepPanel(){clearTimeout(hoverTimer);}
+function leavePanelHover(){if(isOpen)return;hoverTimer=setTimeout(function(){document.getElementById('sidePanel').classList.remove('peek');},200);}
+function togglePanel(){if(isOpen){closePanel();return;}isOpen=true;document.getElementById('sidePanel').classList.remove('peek');document.getElementById('sidePanel').classList.add('open');document.getElementById('panelOverlay').classList.add('open');document.getElementById('hamBtn').classList.add('open');document.getElementById('hero').classList.add('blurred');}
+function closePanel(){isOpen=false;document.getElementById('sidePanel').classList.remove('open','peek');document.getElementById('panelOverlay').classList.remove('open');document.getElementById('hamBtn').classList.remove('open');document.getElementById('hero').classList.remove('blurred');}
+function adminGo(url){pendingUrl=url;document.getElementById('pwInput').value='';document.getElementById('pwError').style.display='none';document.getElementById('pwOverlay').classList.add('open');setTimeout(function(){document.getElementById('pwInput').focus();},200);}
+function confirmPw(){if(document.getElementById('pwInput').value===ADMIN_PW){var dest=pendingUrl+'?mode=admin';document.getElementById('pwOverlay').classList.remove('open');pendingUrl='';window.location.href=dest;}else{document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}}
+function closePw(){document.getElementById('pwOverlay').classList.remove('open');pendingUrl='';}
+
+/* ═══ 참가 신청 ═══ */
+function getRegistrations(){try{return JSON.parse(localStorage.getItem('retreat_registrations')||'[]');}catch(e){return[];}}
+function saveRegistrations(arr){localStorage.setItem('retreat_registrations',JSON.stringify(arr));}
+function updateCountUI(){var count=getRegistrations().length;document.getElementById('regCountNum').textContent=count;document.getElementById('regCountBadge').textContent='현재 '+count+'명 신청';}
+function openRegister(){updateCountUI();document.getElementById('regForm').style.display='block';document.getElementById('regSuccess').style.display='none';document.getElementById('regOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeRegister(){document.getElementById('regOverlay').classList.remove('open');document.body.style.overflow='';}
+function resetRegister(){['rName','rSchool','rPhone','rParentName','rParentPhone','rAllergy','rEtc'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('rGrade').value='';document.querySelectorAll('.reg-radio').forEach(function(r){r.checked=false;});document.getElementById('regSuccess').style.display='none';document.getElementById('regForm').style.display='block';updateCountUI();document.getElementById('regOverlay').scrollTop=0;}
+function autoHyphen(el){var v=el.value.replace(/[^0-9]/g,'');if(v.length<=3)el.value=v;else if(v.length<=7)el.value=v.slice(0,3)+'-'+v.slice(3);else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);}
+function submitRegister(){
+  var name=document.getElementById('rName').value.trim();
+  var grade=document.getElementById('rGrade').value;
+  var gender=document.querySelector('.reg-radio:checked')?.value||'';
+  var phone=document.getElementById('rPhone').value.trim();
+  var parentName=document.getElementById('rParentName').value.trim();
+  var parentPhone=document.getElementById('rParentPhone').value.trim();
+  if(!name){alert('이름을 입력해주세요!');document.getElementById('rName').focus();return;}
+  if(!grade){alert('학년을 선택해주세요!');document.getElementById('rGrade').focus();return;}
+  if(!gender){alert('성별을 선택해주세요!');return;}
+  if(!phone){alert('학생 연락처를 입력해주세요!');document.getElementById('rPhone').focus();return;}
+  if(!parentName){alert('보호자 이름을 입력해주세요!');document.getElementById('rParentName').focus();return;}
+  if(!parentPhone){alert('보호자 연락처를 입력해주세요!');document.getElementById('rParentPhone').focus();return;}
+  var btn=document.getElementById('regSubmitBtn');btn.disabled=true;btn.textContent='신청 중...';
+  var registrations=getRegistrations();
+  var entry={name:name,school:document.getElementById('rSchool').value.trim(),grade:grade,gender:gender,phone:phone,parentName:parentName,parentPhone:parentPhone,allergy:document.getElementById('rAllergy').value.trim(),etc:document.getElementById('rEtc').value.trim(),timestamp:new Date().toISOString()};
+  registrations.push(entry);saveRegistrations(registrations);var myNum=registrations.length;
+  setTimeout(function(){
+    btn.disabled=false;btn.textContent='🏕️ 신청 완료하기';
+    document.getElementById('successName').textContent=name;
+    document.getElementById('successNum').textContent=myNum;
+    var msgs=['첫 번째로 신청하셨어요! 🥇 최고예요!','두 번째로 신청하셨어요! 🥈','세 번째로 신청하셨어요! 🥉'];
+    document.getElementById('successNumSub').textContent=myNum<=3?msgs[myNum-1]:myNum+'번째로 신청하셨어요 🎊';
+    var school=document.getElementById('rSchool').value.trim();
+    var info=document.getElementById('successInfo');
+    info.innerHTML=[['이름',name],['학교/학년',(school?school+' ':'')+grade],['성별',gender],['연락처',phone],['보호자',parentName+' · '+parentPhone]].map(function(r){return '<div class="si-row"><span class="si-key">'+r[0]+'</span><span class="si-val">'+r[1]+'</span></div>';}).join('');
+    document.getElementById('regForm').style.display='none';document.getElementById('regSuccess').style.display='flex';document.getElementById('regOverlay').scrollTop=0;updateCountUI();
+  },400);
+}
+
+/* ═══ 설교 3줄 요약 ═══ */
+var ssTeamName='';var ssLines=['','',''];var ssInfo={};
+
+function openSermon(){
+  document.getElementById('ssOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSermon(){
+  document.getElementById('ssOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function ssPickTeam(btn,name){
+  ssTeamName=name;
+  document.querySelectorAll('.ss-tc').forEach(function(c){c.classList.remove('on')});
+  btn.classList.add('on');
+}
+function ssShow(id){document.getElementById(id).style.display='block';}
+function ssHide(id){document.getElementById(id).style.display='none';}
+function ssSetPips(n){for(var i=1;i<=3;i++){var p=document.getElementById('sspip'+i);p.classList.remove('on','done');if(i<n)p.classList.add('done');else if(i===n)p.classList.add('on');}}
+function ssGoStep1(){ssHide('ssstep2');ssHide('ssstep3');ssHide('ssLoading');ssShow('ssstep1');ssSetPips(1);}
+function ssGoStep2(){
+  if(!ssTeamName){alert('팀/조를 선택해주세요!');return;}
+  var title=document.getElementById('ssTitle').value.trim();
+  if(!title){alert('설교 제목을 입력해주세요!');return;}
+  ssHide('ssstep1');ssHide('ssstep3');ssHide('ssLoading');ssShow('ssstep2');ssSetPips(2);
+}
+function ssCountChars(el,countId){document.getElementById(countId).textContent=el.value.length+'자';}
+async function ssCallClaude(messages){
+  var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:messages})});
+  var data=await res.json();return(data.content&&data.content[0]&&data.content[0].text)||'';
+}
+async function ssGenerate(){
+  var notes=document.getElementById('ssNotes').value.trim();
+  if(!notes){alert('설교 내용 메모를 입력해주세요!');return;}
+  ssInfo={title:document.getElementById('ssTitle').value.trim(),preacher:document.getElementById('ssPreacher').value.trim(),verse:document.getElementById('ssVerse').value.trim(),notes:notes,opinion:document.getElementById('ssOpinion').value.trim()};
+  ssHide('ssstep2');document.getElementById('ssLoading').classList.add('show');ssSetPips(3);
+  var prompt=['교회 중학생 여름수련회 설교 3줄 요약 챌린지야.','아래 설교 내용 메모를 바탕으로 핵심 3줄을 작성해줘.','','설교 제목: '+(ssInfo.title||'(미입력)'),'설교자: '+(ssInfo.preacher||'(미입력)'),'핵심 구절: '+(ssInfo.verse||'(미입력)'),'설교 내용 메모:',ssInfo.notes,ssInfo.opinion?'\n팀 의견: '+ssInfo.opinion:'','','규칙:','- 3줄 각각 완결된 문장으로 (15~30자)','- 1줄: 오늘 설교의 핵심 주제/메시지','- 2줄: 가장 인상 깊은 예화나 말씀 장면','- 3줄: 나의 삶에 적용할 점 / 결단','- 중학생이 직접 쓴 것처럼 자연스럽게','','아래 형식으로만 답해줘 (다른 말 없이):','[LINE1] 첫 번째 줄','[LINE2] 두 번째 줄','[LINE3] 세 번째 줄','[VERSE] 추천 핵심 구절 (성경책 장절 + 짧은 본문)'].join('\n');
+  try{
+    var text=await ssCallClaude([{role:'user',content:prompt}]);
+    function exLine(tag){var m=text.match(new RegExp('\\['+tag+'\\]\\s*(.+)'));return m?m[1].trim():'';}
+    ssLines[0]=exLine('LINE1')||'(생성 실패 — 직접 입력해주세요)';
+    ssLines[1]=exLine('LINE2')||'(생성 실패 — 직접 입력해주세요)';
+    ssLines[2]=exLine('LINE3')||'(생성 실패 — 직접 입력해주세요)';
+    var v=exLine('VERSE');
+    ssRenderSummary();
+    var vc=document.getElementById('ssVerseCard');var vt=document.getElementById('ssVerseDisplay');
+    if(v){vt.textContent='"'+v+'"';vc.style.display='block';}else if(ssInfo.verse){vt.textContent=ssInfo.verse;vc.style.display='block';}else vc.style.display='none';
+    document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep3');
+  }catch(e){document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep2');alert('생성 중 오류가 발생했어요. 다시 시도해주세요.');}
+}
+var SS_LABELS=['핵심 메시지','인상 깊은 장면','내 삶의 적용'];
+function ssRenderSummary(){
+  var wrap=document.getElementById('ssSummaryWrap');wrap.innerHTML='';
+  ssLines.forEach(function(line,i){
+    var div=document.createElement('div');div.className='ss-sl';
+    div.innerHTML='<div class="ss-sl-hd"><span class="ss-sl-num">'+(i+1)+'</span><span class="ss-sl-lbl">'+SS_LABELS[i]+'</span><button class="ss-regen" onclick="ssRegenLine('+i+',this)">↻ 재생성</button></div><div class="ss-sl-body"><textarea class="ss-sl-txt" id="ssLine'+i+'" rows="2" oninput="ssSyncLine('+i+',this)">'+ssEscHtml(line)+'</textarea></div>';
+    wrap.appendChild(div);
+  });
+}
+function ssSyncLine(i,el){ssLines[i]=el.value;}
+async function ssRegenLine(i,btn){
+  btn.disabled=true;btn.textContent='⏳';
+  var prompts=['아래 설교 내용에서 핵심 메시지 1줄을 다시 써줘. 이전과 다른 표현으로. 문장 하나만.','아래 설교 내용에서 가장 인상 깊은 장면이나 예화를 1줄로 다시 써줘. 이전과 다른 표현으로. 문장 하나만.','아래 설교 내용을 듣고 삶에 적용할 결단을 1줄로 다시 써줘. 이전과 다른 표현으로. 문장 하나만.'];
+  var ctx='설교 제목: '+ssInfo.title+'\n내용: '+ssInfo.notes;
+  try{var text=await ssCallClaude([{role:'user',content:prompts[i]+'\n\n'+ctx+'\n\n문장 하나만 답해줘.'}]);ssLines[i]=text.trim().replace(/^["'"'「]|["'"'」]$/g,'');document.getElementById('ssLine'+i).value=ssLines[i];}catch(e){alert('재생성 실패. 다시 시도해주세요.');}
+  btn.disabled=false;btn.textContent='↻ 재생성';
+}
+function ssCopyAll(){
+  for(var i=0;i<3;i++){var el=document.getElementById('ssLine'+i);if(el)ssLines[i]=el.value;}
+  var vt=document.getElementById('ssVerseDisplay');
+  var text=['【 '+(ssInfo.title||'설교')+' 】',ssTeamName+' · 핵심 3줄 요약','','① '+ssLines[0],'② '+ssLines[1],'③ '+ssLines[2],vt?'\n'+vt.textContent:''].join('\n');
+  navigator.clipboard.writeText(text).then(function(){var btn=event.target.closest('button');var orig=btn.innerHTML;btn.innerHTML='✓ 복사됐습니다!';setTimeout(function(){btn.innerHTML=orig;},2000);});
+}
+function ssOpenPresent(){
+  for(var i=0;i<3;i++){var el=document.getElementById('ssLine'+i);if(el)ssLines[i]=el.value;}
+  document.getElementById('ssPtTeam').textContent=ssTeamName;
+  document.getElementById('ssPtTitle').textContent=(ssInfo.preacher?ssInfo.preacher+' · ':')+(ssInfo.title?'"'+ssInfo.title+'"':'오늘 설교');
+  var vt=document.getElementById('ssVerseDisplay');document.getElementById('ssPtVerse').textContent=vt?vt.textContent:'';
+  var pl=document.getElementById('ssPtLines');pl.innerHTML='';
+  ssLines.forEach(function(line,i){var div=document.createElement('div');div.className='ss-pt-line';div.innerHTML='<div class="ss-pt-num">'+(i+1)+'</div><div class="ss-pt-txt">'+ssEscHtml(line)+'</div>';pl.appendChild(div);});
+  document.getElementById('ssPresent').classList.add('open');
+}
+function ssClosePresent(){document.getElementById('ssPresent').classList.remove('open');}
+function ssEscHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+
+<div class="reg-overlay" id="regOverlay">
+
+  <!-- 탑바 -->
+  <div class="reg-topbar">
+    <button class="reg-back" onclick="closeRegister()">←</button>
+    <span class="reg-topbar-title">🏕️ 참가 신청</span>
+    <span class="reg-topbar-badge" id="regCountBadge">현재 0명 신청</span>
+  </div>
+
+  <!-- 신청 폼 -->
+  <div class="reg-body" id="regForm">
+    <div class="reg-hero">
+      <span class="reg-hero-icon">✝️</span>
+      <div class="reg-hero-title">2026 여름수련회 참가 신청</div>
+      <div class="reg-hero-sub">아래 정보를 빠짐없이 입력해주세요<br>신청 후 몇 번째 참가자인지 확인할 수 있어요</div>
+      <div class="reg-count-pill" id="regCountPill">
+        현재 <span class="reg-count-num" id="regCountNum">0</span>명이 신청했어요
+      </div>
+    </div>
+
+    <!-- 학생 정보 -->
+    <div class="reg-card">
+      <div class="reg-card-title">학생 기본 정보</div>
+      <div class="reg-field">
+        <div class="reg-label">이름 <span class="reg-required">*필수</span></div>
+        <input class="reg-input" id="rName" placeholder="이름을 입력하세요" maxlength="20">
+      </div>
+      <div class="reg-field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div class="reg-label">학교</div>
+          <input class="reg-input" id="rSchool" placeholder="예) OO중학교" maxlength="20">
+        </div>
+        <div>
+          <div class="reg-label">학년 <span class="reg-required">*</span></div>
+          <select class="reg-input reg-select" id="rGrade">
+            <option value="">선택</option>
+            <option value="중1">중학교 1학년</option>
+            <option value="중2">중학교 2학년</option>
+            <option value="중3">중학교 3학년</option>
+          </select>
+        </div>
+      </div>
+      <div class="reg-field">
+        <div class="reg-label">성별 <span class="reg-required">*</span></div>
+        <div class="reg-radio-group">
+          <input type="radio" class="reg-radio" name="gender" id="gM" value="남">
+          <label class="reg-radio-label" for="gM">남자</label>
+          <input type="radio" class="reg-radio" name="gender" id="gF" value="여">
+          <label class="reg-radio-label" for="gF">여자</label>
+        </div>
+      </div>
+      <div class="reg-field">
+        <div class="reg-label">학생 연락처 <span class="reg-required">*</span></div>
+        <input class="reg-input" id="rPhone" type="tel" placeholder="010-0000-0000" maxlength="13"
+          oninput="autoHyphen(this)">
+      </div>
+    </div>
+
+    <!-- 보호자 정보 -->
+    <div class="reg-card">
+      <div class="reg-card-title">보호자 정보</div>
+      <div class="reg-field">
+        <div class="reg-label">보호자 이름 <span class="reg-required">*</span></div>
+        <input class="reg-input" id="rParentName" placeholder="보호자 이름" maxlength="20">
+      </div>
+      <div class="reg-field">
+        <div class="reg-label">보호자 연락처 <span class="reg-required">*</span></div>
+        <input class="reg-input" id="rParentPhone" type="tel" placeholder="010-0000-0000" maxlength="13"
+          oninput="autoHyphen(this)">
+      </div>
+    </div>
+
+    <!-- 건강 및 기타 -->
+    <div class="reg-card">
+      <div class="reg-card-title">건강 & 기타</div>
+      <div class="reg-field">
+        <div class="reg-label">알레르기 / 음식 제한</div>
+        <input class="reg-input" id="rAllergy" placeholder="없으면 빈칸으로 두세요 (예: 견과류 알레르기)">
+      </div>
+      <div class="reg-field">
+        <div class="reg-label">기타 전달 사항</div>
+        <input class="reg-input" id="rEtc" placeholder="인솔자에게 미리 알릴 내용이 있으면 적어주세요">
+      </div>
+    </div>
+
+    <button class="reg-submit" id="regSubmitBtn" onclick="submitRegister()">
+      🏕️ 신청 완료하기
+    </button>
+  </div>
+
+  <!-- 신청 완료 화면 -->
+  <div class="reg-success" id="regSuccess">
+    <span class="success-burst">🎉</span>
+    <div class="success-badge">✅ 신청 완료</div>
+    <div class="success-title"><span class="success-name" id="successName"></span>님<br>신청이 완료됐어요!</div>
+
+    <div class="success-num-card">
+      <div class="success-num-label">🏕️ 수련회 신청 순번</div>
+      <div class="success-num" id="successNum">1</div>
+      <div class="success-num-sub" id="successNumSub">번째로 신청하셨어요 🎊</div>
+    </div>
+
+    <div class="success-info" id="successInfo"></div>
+
+    <button class="btn-go-home" onclick="closeRegister()">
+      🏠 홈페이지로 돌아가기
+    </button>
+    <button class="btn-reg-another" onclick="resetRegister()">
+      + 다른 학생 신청하기
+    </button>
+  </div>
+
+</div>
+
+
+</body>
