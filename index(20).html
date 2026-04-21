@@ -371,6 +371,15 @@ textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
 .stag-worship{background:#FFFBEB;color:#F59E0B}.stag-personal{background:#F5F3FF;color:#8B5CF6}
 .stag-create{background:#FDF2F8;color:#EC4899}
 </style>
+<!-- ══ iframe 오버레이 ══ -->
+<style>
+.frame-overlay{position:fixed;inset:0;z-index:700;display:none;flex-direction:column;background:#fff}
+.frame-overlay.open{display:flex}
+.frame-topbar{height:52px;background:rgba(14,30,80,.97);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0}
+.frame-back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);border:none;cursor:pointer;color:white;font-size:1rem;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.frame-title{font-size:.92rem;font-weight:800;color:white;flex:1}
+.frame-iframe{flex:1;border:none;width:100%;height:100%}
+</style>
 </head>
 <body>
 
@@ -414,7 +423,7 @@ textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
 
   <div class="side-section">
     <div class="side-label">수련회 프로그램</div>
-    <a class="side-item" href="lifemap.html">
+    <a class="side-item" href="javascript:void(0)" onclick="openFrame('lifemap.html','인생지도 일기');closePanel()">
       <div class="s-icon s-blue">📝</div>
       <div class="s-text"><div class="s-name">인생지도 일기</div><div class="s-desc">감정·신앙 기록 + AI 피드백</div></div>
       <span class="s-badge sb-live">운영중</span>
@@ -435,12 +444,12 @@ textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
       <div class="s-text"><div class="s-name">전체 일정표</div><div class="s-desc">36가지 활동 타임테이블</div></div>
       <span class="s-badge sb-live">운영중</span>
     </a>
-    <a class="side-item" href="scoreboard.html">
+    <a class="side-item" href="javascript:void(0)" onclick="openFrame('scoreboard.html','팀별 점수판');closePanel()">
       <div class="s-icon s-purple">🏆</div>
       <div class="s-text"><div class="s-name">팀별 점수판</div><div class="s-desc">실시간 팀 점수</div></div>
       <span class="s-badge sb-live">운영중</span>
     </a>
-    <a class="side-item" href="meal.html">
+    <a class="side-item" href="javascript:void(0)" onclick="openFrame('meal.html','식단표');closePanel()">
       <div class="s-icon s-green">🍽️</div>
       <div class="s-text"><div class="s-name">식단표</div><div class="s-desc">아침·점심·저녁 메뉴</div></div>
       <span class="s-badge sb-live">운영중</span>
@@ -451,12 +460,12 @@ textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
 
   <div class="side-section" style="padding-bottom:28px">
     <div class="side-label" style="color:#DC2626">🔐 감독자 전용</div>
-    <button class="side-item" onclick="adminGo('students.html')">
+    <button class="side-item" onclick="adminGoFrame('students.html','학생 명단')">
       <div class="s-icon s-red">👥</div>
       <div class="s-text"><div class="s-name">학생 명단</div><div class="s-desc">참가 학생 관리</div></div>
       <span class="s-badge sb-admin">감독자</span>
     </button>
-    <button class="side-item" onclick="adminGo('ledger.html')">
+    <button class="side-item" onclick="adminGoFrame('ledger.html','회계 장부')">
       <div class="s-icon s-red">💰</div>
       <div class="s-text"><div class="s-name">회계 장부</div><div class="s-desc">수입·지출 관리</div></div>
       <span class="s-badge sb-admin">감독자</span>
@@ -555,7 +564,7 @@ textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
         </div>
       </div>
     </div>
-    <a href="schedule.html" class="sch-more">전체 일정표 보기 →</a>
+    <a href="javascript:void(0)" class="sch-more" onclick="openSchedule()">전체 일정표 보기 →</a>
   </section>
 
   <!-- 공지사항 -->
@@ -710,7 +719,23 @@ function leavePanelHover(){if(isOpen)return;hoverTimer=setTimeout(function(){doc
 function togglePanel(){if(isOpen){closePanel();return;}isOpen=true;document.getElementById('sidePanel').classList.remove('peek');document.getElementById('sidePanel').classList.add('open');document.getElementById('panelOverlay').classList.add('open');document.getElementById('hamBtn').classList.add('open');document.getElementById('hero').classList.add('blurred');}
 function closePanel(){isOpen=false;document.getElementById('sidePanel').classList.remove('open','peek');document.getElementById('panelOverlay').classList.remove('open');document.getElementById('hamBtn').classList.remove('open');document.getElementById('hero').classList.remove('blurred');}
 function adminGo(url){pendingUrl=url;document.getElementById('pwInput').value='';document.getElementById('pwError').style.display='none';document.getElementById('pwOverlay').classList.add('open');setTimeout(function(){document.getElementById('pwInput').focus();},200);}
-function confirmPw(){if(document.getElementById('pwInput').value===ADMIN_PW){var dest=pendingUrl+'?mode=admin';document.getElementById('pwOverlay').classList.remove('open');pendingUrl='';window.location.href=dest;}else{document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}}
+function confirmPw(){
+  if(document.getElementById('pwInput').value===ADMIN_PW){
+    document.getElementById('pwOverlay').classList.remove('open');
+    if(window._pendingFrame){
+      openFrame(window._pendingFrame.url, window._pendingFrame.title);
+      window._pendingFrame = null;
+    } else {
+      var dest=pendingUrl+'?mode=admin';
+      pendingUrl='';
+      window.location.href=dest;
+    }
+  } else {
+    document.getElementById('pwError').style.display='block';
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwInput').focus();
+  }
+}
 function closePw(){document.getElementById('pwOverlay').classList.remove('open');pendingUrl='';}
 
 /* ═══ 참가 신청 ═══ */
@@ -1084,6 +1109,60 @@ function schTab(id,btn){
   document.querySelectorAll('.sch-panel').forEach(function(p){p.classList.remove('active')});
   btn.classList.add('active');
   document.getElementById('sch-'+id).classList.add('active');
+}
+</script>
+
+<!-- ══ iframe 오버레이 ══ -->
+<div class="frame-overlay" id="frameOverlay">
+  <div class="frame-topbar">
+    <button class="frame-back" onclick="closeFrame()">←</button>
+    <span class="frame-title" id="frameTitle"></span>
+  </div>
+  <iframe class="frame-iframe" id="frameIframe" src=""></iframe>
+</div>
+
+<script>
+function openFrame(url, title){
+  document.getElementById('frameTitle').textContent = title || '';
+  var iframe = document.getElementById('frameIframe');
+  iframe.onload = function(){
+    try {
+      var doc = iframe.contentDocument || iframe.contentWindow.document;
+      // index.html로 가는 모든 링크 가로채기
+      doc.querySelectorAll('a').forEach(function(a){
+        var href = a.getAttribute('href') || '';
+        if(href === 'index.html' || href === '../index.html' || href === '/' || href === './index.html'){
+          a.href = 'javascript:void(0)';
+          a.onclick = function(e){ e.preventDefault(); window.parent.closeFrame(); return false; };
+        }
+      });
+      // 홈으로/뒤로 역할의 버튼도 가로채기
+      doc.querySelectorAll('button').forEach(function(btn){
+        var txt = btn.textContent.trim();
+        var onclick = btn.getAttribute('onclick') || '';
+        if(onclick.includes('index.html') || txt === '홈으로' || txt === '← 홈' || txt === '처음으로'){
+          btn.onclick = function(e){ e.preventDefault(); window.parent.closeFrame(); return false; };
+        }
+      });
+    } catch(e){}
+  };
+  iframe.src = url;
+  document.getElementById('frameOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeFrame(){
+  document.getElementById('frameOverlay').classList.remove('open');
+  document.getElementById('frameIframe').src = '';
+  document.body.style.overflow = '';
+}
+function adminGoFrame(url, title){
+  var pw = document.getElementById('pwInput');
+  // 비밀번호 확인 후 iframe으로 열기
+  window._pendingFrame = {url: url + '?mode=admin', title: title};
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwOverlay').classList.add('open');
+  setTimeout(function(){ document.getElementById('pwInput').focus(); }, 200);
 }
 </script>
 
