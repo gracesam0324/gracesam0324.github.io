@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘 내 감정 찬양 DJ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0D0D1A;--bg2:#141428;--bg3:#1A1A35;--border:#2A2A4A;--white:#F0F0FF;--sub:#8888AA;--light:#5555AA;}
+html,body{min-height:100%;background:var(--bg);color:var(--white);font-family:'Noto Sans KR',sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(120,40,220,.15),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(40,120,255,.12),transparent 60%);pointer-events:none;z-index:0}
+.viz{position:fixed;bottom:0;left:0;right:0;height:80px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 20px;z-index:0;opacity:.18;pointer-events:none}
+.vb{width:4px;border-radius:2px 2px 0 0;background:linear-gradient(to top,#7828DC,#2878FF);animation:vb ease-in-out infinite alternate}
+@keyframes vb{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.topbar{background:rgba(13,13,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:50;height:52px;display:flex;align-items:center;gap:12px}
+.back-btn{width:34px;height:34px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);color:var(--sub);font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit}
+.tag{font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#7828DC,#2878FF);color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.tit{font-size:.9rem;font-weight:700;color:var(--white);flex:1}
+.hero{padding:28px 24px 20px;text-align:center;position:relative;z-index:1}
+.disc{font-size:3rem;display:block;margin-bottom:12px;animation:spin 4s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hero-tag{display:inline-block;background:rgba(120,40,220,.2);border:1.5px solid rgba(120,40,220,.5);color:#C078FF;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);font-weight:900;color:var(--white);line-height:1.2;margin-bottom:8px}
+h1 em{background:linear-gradient(135deg,#C078FF,#78AAFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.hero p{font-size:.83rem;color:var(--sub);line-height:1.75;max-width:360px;margin:0 auto}
+.wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1}
+.slabel{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+.emo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.chip{padding:9px 16px;border:1.5px solid var(--border);border-radius:50px;background:var(--bg2);cursor:pointer;font-size:.84rem;font-weight:600;color:var(--sub);font-family:inherit;transition:.2s}
+.chip:hover{border-color:rgba(120,40,220,.5);color:var(--white)}
+.chip.on{border-color:#7828DC;background:rgba(120,40,220,.18);color:#C078FF;font-weight:700}
+.gen-btn{width:100%;padding:15px;background:linear-gradient(135deg,#7828DC,#2878FF);color:white;border:none;border-radius:12px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover{opacity:.9;transform:translateY(-1px)}
+.result{display:none;margin-top:24px;animation:fadeUp .4s ease}
+.result.show{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.rh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:14px}
+.rh-emoji{font-size:1.8rem}
+.rh-label{font-size:.68rem;color:var(--sub);margin-bottom:2px}
+.rh-emotion{font-size:.95rem;font-weight:700;color:#C078FF}
+.playlist{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.song-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:16px;transition:.2s;cursor:pointer;animation:fadeUp .3s ease both}
+.song-card:hover{border-color:rgba(120,40,220,.6);background:rgba(120,40,220,.08);transform:translateY(-2px)}
+.song-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.song-num{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7828DC,#2878FF);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900;color:white;flex-shrink:0}
+.song-title{font-size:.95rem;font-weight:800;color:var(--white);line-height:1.3}
+.song-artist{font-size:.75rem;color:var(--sub);margin-top:2px}
+.song-note{font-size:.78rem;color:rgba(192,120,255,.85);line-height:1.6;padding:8px 12px;background:rgba(120,40,220,.1);border-radius:8px;border-left:2px solid #7828DC}
+.song-hint{font-size:.68rem;color:var(--light);margin-top:8px;text-align:right}
+.btn-again{width:100%;padding:13px;background:transparent;border:1.5px solid var(--border);border-radius:12px;color:var(--sub);font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s}
+.btn-again:hover{border-color:#7828DC;color:#C078FF}
+</style>
+</head>
+<body>
+<div class="viz" id="viz"></div>
+<div class="topbar">
+  <button class="back-btn" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</button>
+  <span class="tag">중-4</span>
+  <span class="tit">오늘 내 감정 찬양 DJ</span>
+</div>
+<div class="hero">
+  <span class="disc">🎧</span>
+  <div class="hero-tag">🎵 찬양 추천 · 수련회 중 활동</div>
+  <h1>지금 내 감정에 맞는<br><em>찬양 플레이리스트</em></h1>
+  <p>현재 감정을 선택하면 딱 맞는 찬양곡을 골라드려요</p>
+</div>
+<div class="wrap">
+  <div style="margin-bottom:20px">
+    <div class="slabel">지금 내 감정은?</div>
+    <div class="emo-grid">
+      <button class="chip" onclick="pick(this,'joy')">😊 기쁨</button>
+      <button class="chip" onclick="pick(this,'comfort')">🥺 위로가 필요해</button>
+      <button class="chip" onclick="pick(this,'thanks')">🙏 감사해</button>
+      <button class="chip" onclick="pick(this,'lonely')">😔 외로워</button>
+      <button class="chip" onclick="pick(this,'fear')">😰 두려워</button>
+      <button class="chip" onclick="pick(this,'passion')">🔥 열정이 넘쳐</button>
+      <button class="chip" onclick="pick(this,'sad')">😢 슬퍼</button>
+      <button class="chip" onclick="pick(this,'excited')">✨ 설레</button>
+      <button class="chip" onclick="pick(this,'tired')">😤 지쳐</button>
+      <button class="chip" onclick="pick(this,'grow')">🌱 성장하고 싶어</button>
+      <button class="chip" onclick="pick(this,'challenge')">💪 도전하고 싶어</button>
+      <button class="chip" onclick="pick(this,'peace')">🤍 평안해</button>
+    </div>
+  </div>
+  <button class="gen-btn" onclick="generate()">🎵 내 감정 찬양 받기</button>
+  <div class="result" id="result">
+    <div class="rh"><span class="rh-emoji">🎧</span><div><div class="rh-label">지금 내 감정</div><div class="rh-emotion" id="rhEmo"></div></div></div>
+    <div class="playlist" id="playlist"></div>
+    <button class="btn-again" onclick="reset()">↩ 다시 선택</button>
+  </div>
+</div>
+<script>
+var DB={
+  joy:{label:'😊 기쁨',songs:[{t:'주의 이름 높이세',a:'어노인팅',r:'기쁨이 넘칠 때 함께 높이 올려드리기 좋은 찬양이에요'},{t:'찬양합니다',a:'마커스워십',r:'온 마음으로 기쁘게 찬양할 수 있어요'},{t:'감사해요',a:'예수전도단',r:'감사와 기쁨이 함께 담긴 곡이에요'},{t:'할렐루야',a:'소울케이',r:'기쁨으로 할렐루야를 외치기 좋아요'},{t:'좋으신 하나님',a:'어노인팅',r:'하나님의 좋으심을 기뻐하며 부를 수 있어요'}]},
+  comfort:{label:'🥺 위로가 필요해',songs:[{t:'주님 손에 맡겨요',a:'마커스워십',r:'지치고 힘들 때 주님께 모든 걸 내려놓게 해줘요'},{t:'너의 손을 잡지 않으면',a:'소울케이',r:'외롭고 힘든 순간에 함께하시는 하나님을 느끼게 해요'},{t:'내 삶의 이유',a:'예수전도단',r:'삶이 흔들릴 때 나의 이유 되신 주님을 붙잡게 해줘요'},{t:'예수 나의 좋은 친구',a:'마커스워십',r:'예수님이 가장 좋은 친구임을 느끼게 해줘요'},{t:'상처입은 마음에',a:'어노인팅',r:'아픈 마음을 치유해주시는 주님을 만나게 해요'}]},
+  thanks:{label:'🙏 감사해',songs:[{t:'감사함으로',a:'마커스워십',r:'감사한 마음을 담아 하나님께 드리기 좋아요'},{t:'은혜 아니면',a:'어노인팅',r:'모든 것이 은혜임을 고백하는 찬양이에요'},{t:'주님 감사해요',a:'예수전도단',r:'작은 것에도 감사하는 마음을 담은 곡이에요'},{t:'내게 주어진 선물',a:'소울케이',r:'하나님의 선물 같은 매일에 감사할 수 있어요'},{t:'모든 것 위에',a:'마커스워십',r:'감사와 찬양을 동시에 드릴 수 있는 곡이에요'}]},
+  lonely:{label:'😔 외로워',songs:[{t:'나 혼자가 아니야',a:'예수전도단',r:'혼자라고 느낄 때 함께하시는 주님을 기억하게 해요'},{t:'주님 곁에',a:'마커스워십',r:'외로울 때 주님 곁으로 나아가게 해주는 곡이에요'},{t:'예수 나의 주',a:'어노인팅',r:'예수님이 나의 주인이심을 고백하며 위로받아요'},{t:'너를 향한 나의 사랑',a:'소울케이',r:'하나님이 나를 사랑하신다는 걸 느끼게 해줘요'},{t:'주의 사랑으로',a:'마커스워십',r:'주님의 사랑이 외로움을 채워줌을 노래해요'}]},
+  fear:{label:'😰 두려워',songs:[{t:'두려워 말아요',a:'마커스워십',r:'두렵고 떨릴 때 하나님의 평안을 구하게 해요'},{t:'내가 주를 향하여',a:'어노인팅',r:'두려움 속에서도 주님을 향해 나아가게 해요'},{t:'평안을 너에게 주노라',a:'예수전도단',r:'예수님의 평안이 두려움을 이기게 해줘요'},{t:'주 안에 있는 나에게',a:'마커스워십',r:'주 안에 있을 때 두려울 것이 없다는 고백이에요'},{t:'나의 피난처',a:'어노인팅',r:'하나님이 나의 피난처 되심을 선포하는 찬양이에요'}]},
+  passion:{label:'🔥 열정이 넘쳐',songs:[{t:'일어나라',a:'마커스워십',r:'열정적으로 일어나 하나님을 예배하게 해요'},{t:'하나님의 군대',a:'어노인팅',r:'힘차게 하나님 나라를 위해 나아가는 찬양이에요'},{t:'전진',a:'예수전도단',r:'두려움 없이 앞으로 나아가는 열정을 불태워요'},{t:'담대히',a:'마커스워십',r:'담대하게 외치며 열정을 주님께 드리는 곡이에요'},{t:'주의 이름으로',a:'소울케이',r:'주의 이름으로 힘차게 나아가는 찬양이에요'}]},
+  sad:{label:'😢 슬퍼',songs:[{t:'눈물로 씨를 뿌리는',a:'어노인팅',r:'눈물이 날 때 하나님께 나아가게 해주는 곡이에요'},{t:'주님의 위로',a:'마커스워십',r:'슬픔을 주님께 가져가면 위로하신다는 약속의 찬양이에요'},{t:'나의 슬픔 아시는 주',a:'예수전도단',r:'내 슬픔을 아시는 주님께 기댈 수 있어요'},{t:'회복',a:'소울케이',r:'슬픔 뒤에 찾아오는 회복을 노래해요'},{t:'고난 중에도',a:'어노인팅',r:'고난과 슬픔 중에도 주님을 신뢰하는 고백이에요'}]},
+  excited:{label:'✨ 설레',songs:[{t:'새 노래로',a:'마커스워십',r:'설레는 마음으로 새 노래를 드리는 찬양이에요'},{t:'주님과 함께라면',a:'예수전도단',r:'주님과 함께하는 설레는 여정을 노래해요'},{t:'하나님의 사랑',a:'소울케이',r:'사랑에 설레듯 하나님의 사랑을 노래해요'},{t:'나는 주님을 사랑해',a:'어노인팅',r:'주님을 향한 설레는 사랑을 고백하는 곡이에요'},{t:'더 가까이',a:'마커스워십',r:'주님께 더 가까이 나아가는 설렘을 담았어요'}]},
+  tired:{label:'😤 지쳐',songs:[{t:'쉬어요 주 안에서',a:'마커스워십',r:'지칠 때 주님 안에서 쉬게 해주는 곡이에요'},{t:'내 모든 것',a:'어노인팅',r:'지친 모든 것을 주님께 내려놓게 해줘요'},{t:'여기 내 모든 것',a:'예수전도단',r:'지쳐서 내려놓고 싶을 때 부르기 좋아요'},{t:'주님 품에',a:'소울케이',r:'지친 몸을 주님 품에 기대게 해주는 찬양이에요'},{t:'너는 내 것이라',a:'마커스워십',r:'지쳐도 하나님의 사랑받는 존재임을 기억하게 해요'}]},
+  grow:{label:'🌱 성장하고 싶어',songs:[{t:'주님 뜻대로',a:'예수전도단',r:'주님 뜻 안에서 성장하고 싶은 마음을 담았어요'},{t:'더 높은 곳으로',a:'어노인팅',r:'신앙 안에서 더 높이 성장하게 해주는 곡이에요'},{t:'변화',a:'마커스워십',r:'하나님 안에서 변화되고 성장하는 여정을 노래해요'},{t:'주의 형상',a:'소울케이',r:'주님의 형상을 닮아가며 성장하고 싶은 고백이에요'},{t:'새롭게 하소서',a:'어노인팅',r:'새롭게 거듭나고 성장하고 싶은 마음을 담았어요'}]},
+  challenge:{label:'💪 도전하고 싶어',songs:[{t:'내가 할 수 있어',a:'마커스워십',r:'주님과 함께라면 할 수 있다는 용기를 줘요'},{t:'믿음으로',a:'예수전도단',r:'믿음으로 담대하게 도전하게 해주는 찬양이에요'},{t:'거인들의 땅',a:'어노인팅',r:'두려움을 이기고 도전하는 용기를 불어넣어요'},{t:'나의 힘이 되신 주',a:'소울케이',r:'주님이 나의 힘이 되셔서 도전할 수 있게 해요'},{t:'용사여 일어나라',a:'마커스워십',r:'도전을 향해 힘차게 일어나게 해주는 곡이에요'}]},
+  peace:{label:'🤍 평안해',songs:[{t:'평강의 왕이신 주',a:'어노인팅',r:'평안함 속에서 평강의 왕께 나아가게 해요'},{t:'주 안에 평안',a:'마커스워십',r:'주 안에 있는 깊은 평안을 노래해요'},{t:'잠잠히 주를 기다리리',a:'예수전도단',r:'고요하고 평안하게 주님을 기다리는 곡이에요'},{t:'여호와 샬롬',a:'소울케이',r:'평화를 주시는 여호와께 감사드리는 찬양이에요'},{t:'고요한 물가로',a:'어노인팅',r:'고요하고 평안한 물가로 인도하시는 주님을 노래해요'}]}
+};
+
+var selected=null;
+
+(function(){var v=document.getElementById('viz');for(var i=0;i<60;i++){var b=document.createElement('div');b.className='vb';b.style.height=(Math.random()*60+20)+'px';b.style.animationDuration=(0.4+Math.random()*0.8)+'s';b.style.animationDelay=(Math.random()*0.5)+'s';v.appendChild(b);}})();
+
+function pick(btn,key){document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on')});btn.classList.add('on');selected=key;}
+
+function generate(){
+  if(!selected){alert('감정을 선택해주세요!');return;}
+  var data=DB[selected];
+  var songs=data.songs.slice().sort(function(){return Math.random()-.5}).slice(0,5);
+  document.getElementById('rhEmo').textContent=data.label;
+  var pl=document.getElementById('playlist');pl.innerHTML='';
+  songs.forEach(function(song,i){
+    var div=document.createElement('div');div.className='song-card';div.style.animationDelay=(i*0.06)+'s';
+    var top=document.createElement('div');top.className='song-top';
+    var num=document.createElement('div');num.className='song-num';num.textContent=(i+1);
+    var info=document.createElement('div');
+    var title=document.createElement('div');title.className='song-title';title.textContent='🎵 '+song.t;
+    var artist=document.createElement('div');artist.className='song-artist';artist.textContent=song.a;
+    info.appendChild(title);info.appendChild(artist);
+    top.appendChild(num);top.appendChild(info);
+    var note=document.createElement('div');note.className='song-note';note.textContent=song.r;
+    var hint=document.createElement('div');hint.className='song-hint';hint.textContent='📄 클릭하면 악보 검색 →';
+    div.appendChild(top);div.appendChild(note);div.appendChild(hint);
+    div.onclick=(function(t,a){return function(){window.open('https://www.google.com/search?q='+encodeURIComponent(t+' '+a+' 악보'),'_blank');};})(song.t,song.a);
+    pl.appendChild(div);
+  });
+  document.getElementById('result').classList.add('show');
+  window.scrollTo(0,300);
+}
+
+function reset(){selected=null;document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on')});document.getElementById('result').classList.remove('show');window.scrollTo(0,0);}
+</script>
+</body>
+</html>
