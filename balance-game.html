@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수련회 극한 밸런스 게임</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR',sans-serif;background:#0F0F0F;color:#F5F5F5;min-height:100vh}
+/* ══ 극한 밸런스 게임 ══ */
+.bl-ov{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#0F0F0F}
+.bl-ov.open{display:flex}
+.bl-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,140,0,.12),transparent 60%);pointer-events:none;z-index:0}
+.bl-top{background:rgba(15,15,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid #222;padding:0 20px;position:sticky;top:0;z-index:50;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.bl-back{width:34px;height:34px;border-radius:9px;background:#1A1A1A;border:1px solid #333;color:#888;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit}
+.bl-tag{font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#FF6B00,#FFB800);color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.bl-tit{font-size:.9rem;font-weight:700;color:#F5F5F5;flex:1}
+.bl-hero{padding:28px 24px 16px;text-align:center;position:relative;z-index:1}
+.bl-hero-icon{font-size:3rem;display:block;margin-bottom:10px;animation:blpulse 1.5s ease-in-out infinite alternate}
+@keyframes blpulse{from{transform:scale(1)}to{transform:scale(1.08)}}
+.bl-hero-tag{display:inline-block;background:rgba(255,107,0,.15);border:1.5px solid rgba(255,107,0,.4);color:#FF8C00;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:10px;letter-spacing:.06em}
+.bl-hero h1{font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:#F5F5F5;line-height:1.2;margin-bottom:6px}
+.bl-hero h1 em{background:linear-gradient(135deg,#FF6B00,#FFB800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.bl-hero p{font-size:.82rem;color:#888;line-height:1.7;max-width:340px;margin:0 auto}
+.bl-wrap{max-width:560px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;width:100%}
+.bl-progress-bar{height:4px;background:#222;border-radius:2px;margin-bottom:24px;overflow:hidden}
+.bl-progress-fill{height:100%;background:linear-gradient(90deg,#FF6B00,#FFB800);border-radius:2px;transition:width .4s ease}
+.bl-progress-txt{font-size:.72rem;color:#555;text-align:center;margin-bottom:14px;font-weight:600}
+.bl-question{background:#1A1A1A;border:1.5px solid #2A2A2A;border-radius:18px;padding:24px 20px;text-align:center;margin-bottom:20px}
+.bl-q-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:#FF8C00;text-transform:uppercase;margin-bottom:12px}
+.bl-q-txt{font-size:1.05rem;font-weight:800;color:#F5F5F5;line-height:1.55}
+.bl-vs{display:flex;align-items:stretch;gap:12px;margin-bottom:16px}
+.bl-choice{flex:1;padding:20px 14px;border-radius:16px;border:2px solid #2A2A2A;background:#141414;cursor:pointer;font-family:inherit;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.bl-choice:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.bl-choice.a:hover{border-color:#FF6B00;background:rgba(255,107,0,.08)}
+.bl-choice.b:hover{border-color:#FFB800;background:rgba(255,184,0,.08)}
+.bl-choice.selected-a{border-color:#FF6B00;background:rgba(255,107,0,.15)}
+.bl-choice.selected-b{border-color:#FFB800;background:rgba(255,184,0,.15)}
+.bl-choice-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:50px}
+.lbl-a{background:rgba(255,107,0,.2);color:#FF6B00}
+.lbl-b{background:rgba(255,184,0,.2);color:#FFB800}
+.bl-choice-icon{font-size:2rem}
+.bl-choice-txt{font-size:.88rem;font-weight:700;color:#F5F5F5;line-height:1.4}
+.bl-vs-badge{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bl-vs-txt{width:36px;height:36px;border-radius:50%;background:#222;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;color:#555}
+.bl-result-bar{display:none;background:#1A1A1A;border-radius:12px;padding:16px;margin-bottom:16px}
+.bl-result-bar.show{display:block}
+.bl-rb-label{font-size:.72rem;color:#555;margin-bottom:10px;text-align:center}
+.bl-rb-track{height:28px;background:#222;border-radius:8px;overflow:hidden;display:flex;margin-bottom:6px}
+.bl-rb-a{background:linear-gradient(90deg,#FF6B00,#FF8C40);height:100%;border-radius:8px 0 0 8px;display:flex;align-items:center;padding-left:10px;font-size:.72rem;font-weight:700;color:white;transition:width .6s ease;min-width:36px}
+.bl-rb-b{background:linear-gradient(90deg,#CC9000,#FFB800);height:100%;border-radius:0 8px 8px 0;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:.72rem;font-weight:700;color:white;transition:width .6s ease;min-width:36px}
+.bl-next-btn{width:100%;padding:15px;background:linear-gradient(135deg,#FF6B00,#FFB800);color:white;border:none;border-radius:12px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px}
+.bl-next-btn.show{display:flex}
+.bl-end{display:none;text-align:center;padding:20px 0 40px;position:relative;z-index:1}
+.bl-end.show{display:block}
+.bl-end-icon{font-size:3.5rem;display:block;margin-bottom:14px}
+.bl-end-title{font-size:1.6rem;font-weight:900;color:#F5F5F5;margin-bottom:8px}
+.bl-end-sub{font-size:.88rem;color:#888;line-height:1.7;margin-bottom:24px}
+.bl-restart-btn{padding:14px 32px;background:linear-gradient(135deg,#FF6B00,#FFB800);color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer}
+.bl-type-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bl-type-row:last-child{margin-bottom:0}
+.bl-type-label{font-size:.72rem;font-weight:700;color:#888;width:80px;flex-shrink:0}
+.bl-type-track{flex:1;height:18px;background:#222;border-radius:9px;overflow:hidden}
+.bl-type-bar{height:100%;border-radius:9px;transition:width .8s ease;display:flex;align-items:center;padding-left:8px;font-size:.65rem;font-weight:700;color:white;min-width:24px}
+.bl-type-score{font-size:.72rem;font-weight:700;color:#666;width:20px;text-align:right;flex-shrink:0}
+.bl-ov{position:relative;inset:auto;display:flex;flex-direction:column;min-height:100vh}
+.bl-top{position:sticky}
+</style>
+</head>
+<body>
+<div class="bl-ov open" id="blOv">
+  <div class="bl-bg"></div>
+  <div class="bl-top">
+    <button class="bl-back" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</button>
+    <span class="bl-tag">중-2</span>
+    <span class="bl-tit">수련회 극한 밸런스 게임</span>
+  </div>
+<div id="blIntro">
+    <div class="bl-hero">
+      <span class="bl-hero-icon">⚡</span>
+      <div class="bl-hero-tag">🔥 팀 활동 · 수련회 중 활동</div>
+      <h1>수련회 <em>극한 밸런스</em> 게임</h1>
+      <p>수련회에서 겪을 수 있는 극한 상황<br>A와 B 중 하나를 골라야 한다면?<br>친구들과 함께 골라보며 서로를 알아가요!</p>
+    </div>
+    <div class="bl-wrap">
+      <div style="background:#1A1A1A;border-radius:16px;padding:20px;margin-bottom:16px;border:1px solid #2A2A2A">
+        <div style="font-size:.78rem;color:#888;margin-bottom:10px;font-weight:700;letter-spacing:.06em">게임 방법</div>
+        <div style="font-size:.85rem;color:#CCC;line-height:1.8">
+          ① 극한 상황 질문이 하나씩 나와요<br>
+          ② A 또는 B 중 하나를 선택하세요<br>
+          ③ 친구들과 이유를 나눠봐요<br>
+          ④ 총 <strong style="color:#FF8C00">20문제</strong>가 랜덤으로 출제돼요
+        </div>
+      </div>
+      <div style="background:#1A1A1A;border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid #2A2A2A">
+        <div style="font-size:.78rem;color:#888;margin-bottom:8px;font-weight:700;letter-spacing:.06em">내 이름 입력 (선택)</div>
+        <input id="blPlayerName" type="text" placeholder="예) 김민준" maxlength="10"
+          style="width:100%;padding:10px 14px;background:#111;border:1.5px solid #333;border-radius:9px;font-size:.9rem;font-family:inherit;color:#F5F5F5;outline:none"
+          onfocus="this.style.borderColor='#FF6B00'" onblur="this.style.borderColor='#333'">
+      </div>
+      <button class="bl-next-btn show" onclick="blStart()" style="margin-bottom:10px">⚡ 게임 시작!</button>
+      <button id="blResultsBtn" onclick="blShowResultsScreen()" style="width:100%;padding:13px;background:transparent;border:1.5px solid #333;border-radius:12px;color:#888;font-size:.88rem;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px">
+        📊 우리 팀 결과 보기 <span id="blResultCount" style="background:#FF6B00;color:white;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:50px;display:none"></span>
+      </button>
+      <button onclick="blShowTypesScreen()" style="width:100%;padding:13px;background:transparent;border:1.5px solid #2A2A2A;border-radius:12px;color:#666;font-size:.88rem;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+        🔍 4가지 유형 미리 보기
+      </button>
+    </div>
+  </div>
+  <!-- 게임 화면 -->
+  <div id="blGame" style="display:none">
+    <div class="bl-wrap" style="padding-top:20px">
+      <div class="bl-progress-txt" id="blProgressTxt">1 / 20</div>
+      <div class="bl-progress-bar"><div class="bl-progress-fill" id="blProgressFill" style="width:5%"></div></div>
+      <div class="bl-question">
+        <div class="bl-q-label">⚡ 극한 상황</div>
+        <div class="bl-q-txt" id="blQTxt"></div>
+      </div>
+      <div class="bl-vs">
+        <button class="bl-choice a" id="blChoiceA" onclick="blChoose('A')">
+          <span class="bl-choice-label lbl-a">A</span>
+          <span class="bl-choice-icon" id="blIconA"></span>
+          <span class="bl-choice-txt" id="blTxtA"></span>
+        </button>
+        <div class="bl-vs-badge"><div class="bl-vs-txt">VS</div></div>
+        <button class="bl-choice b" id="blChoiceB" onclick="blChoose('B')">
+          <span class="bl-choice-label lbl-b">B</span>
+          <span class="bl-choice-icon" id="blIconB"></span>
+          <span class="bl-choice-txt" id="blTxtB"></span>
+        </button>
+      </div>
+      <div class="bl-result-bar" id="blResultBar">
+        <div class="bl-rb-label">📊 이 질문 결과</div>
+        <div class="bl-rb-track">
+          <div class="bl-rb-a" id="blBarA">A</div>
+          <div class="bl-rb-b" id="blBarB">B</div>
+        </div>
+      </div>
+      <button class="bl-next-btn" id="blNextBtn" onclick="blNext()">다음 문제 →</button>
+    </div>
+  </div>
+  <!-- 종료 화면 -->
+  <div id="blEnd" style="display:none;position:relative;z-index:1;padding:0 20px 60px">
+    <div class="bl-end show">
+      <span class="bl-end-icon" id="blEndIcon">🎉</span>
+      <div style="font-size:.72rem;font-weight:700;letter-spacing:.1em;color:#FF8C00;text-transform:uppercase;margin-bottom:8px">나의 수련회 유형</div>
+      <div class="bl-end-title" id="blEndType">분석 중...</div>
+      <div style="background:#1A1A1A;border:1.5px solid #2A2A2A;border-radius:16px;padding:20px;margin:16px 0 20px;text-align:left">
+        <div class="bl-end-sub" id="blEndDesc" style="margin-bottom:0;color:#CCC;line-height:1.8"></div>
+      </div>
+      <div style="background:#111;border-radius:12px;padding:14px;margin-bottom:20px">
+        <div style="font-size:.7rem;color:#555;margin-bottom:10px;font-weight:700;letter-spacing:.06em">📊 내 선택 분포</div>
+        <div id="blTypeChart"></div>
+      </div>
+      <button class="bl-restart-btn" onclick="blStart()" style="width:100%;margin-bottom:10px">⚡ 다시 하기</button>
+      <button style="width:100%;padding:13px;background:transparent;border:1.5px solid #333;border-radius:12px;color:#888;font-size:.88rem;font-family:inherit;cursor:pointer" onclick="blGoIntro()">↩ 게임 처음으로</button>
+    </div>
+  </div>
+
+  <!-- 유형 소개 화면 -->
+  <div id="blTypesScreen" style="display:none;position:relative;z-index:1">
+    <div class="bl-wrap" style="padding-top:20px">
+      <div style="font-size:1rem;font-weight:900;color:#F5F5F5;margin-bottom:6px">🔍 4가지 수련회 유형</div>
+      <div style="font-size:.78rem;color:#555;margin-bottom:20px">선택에 따라 이 4가지 중 하나로 분류돼요</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+        <div style="background:#1A1A1A;border:1.5px solid rgba(255,107,0,.3);border-radius:14px;padding:18px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,107,0,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">⚡</div>
+            <div><div style="font-size:.95rem;font-weight:800;color:#F5F5F5">도전 선두형</div><div style="font-size:.72rem;color:#FF6B00;font-weight:700">극한 상황에서 먼저 뛰어드는 리더</div></div>
+          </div>
+          <div style="font-size:.82rem;color:#AAA;line-height:1.7">어떤 극한 상황에서도 먼저 뛰어드는 도전자예요. 수련회의 에너지를 앞에서 이끄는 타입으로, 어렵고 힘든 상황일수록 더 빛나는 리더십을 가지고 있어요.</div>
+        </div>
+        <div style="background:#1A1A1A;border:1.5px solid rgba(139,92,246,.3);border-radius:14px;padding:18px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,92,246,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🙏</div>
+            <div><div style="font-size:.95rem;font-weight:800;color:#F5F5F5">묵상 깊이형</div><div style="font-size:.72rem;color:#8B5CF6;font-weight:700">조용하지만 내면이 깊은 영성인</div></div>
+          </div>
+          <div style="font-size:.82rem;color:#AAA;line-height:1.7">겉으로는 조용해 보여도 내면이 깊은 영성인이에요. 기도와 말씀 안에서 힘을 얻고, 어떤 상황에서도 진지하게 신앙을 추구하는 타입이에요.</div>
+        </div>
+        <div style="background:#1A1A1A;border:1.5px solid rgba(255,184,0,.3);border-radius:14px;padding:18px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(255,184,0,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🎵</div>
+            <div><div style="font-size:.95rem;font-weight:800;color:#F5F5F5">찬양 자유형</div><div style="font-size:.72rem;color:#FFB800;font-weight:700">밝고 유쾌하게 분위기 만드는 사람</div></div>
+          </div>
+          <div style="font-size:.82rem;color:#AAA;line-height:1.7">밝고 유쾌한 에너지로 주변을 환하게 만드는 타입이에요. 찬양과 표현을 즐기며 수련회 분위기를 가장 신나게 만드는 사람이에요.</div>
+        </div>
+        <div style="background:#1A1A1A;border:1.5px solid rgba(16,185,129,.3);border-radius:14px;padding:18px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🤝</div>
+            <div><div style="font-size:.95rem;font-weight:800;color:#F5F5F5">조용한 섬김형</div><div style="font-size:.72rem;color:#10B981;font-weight:700">배려심 강하고 팀을 챙기는 사람</div></div>
+          </div>
+          <div style="font-size:.82rem;color:#AAA;line-height:1.7">소리 없이 강한 배려형이에요. 팀을 위해 불편함을 기꺼이 감수하고, 관계를 소중히 여기며 따뜻하게 주변을 챙기는 사람이에요.</div>
+        </div>
+      </div>
+      <button class="bl-next-btn show" onclick="blStart()" style="margin-bottom:10px">⚡ 게임 시작!</button>
+      <button onclick="blGoIntro()" style="width:100%;padding:13px;background:transparent;border:1.5px solid #333;border-radius:12px;color:#888;font-size:.88rem;font-family:inherit;cursor:pointer">← 뒤로</button>
+    </div>
+  </div>
+
+  <!-- 전체 결과 화면 -->
+  <div id="blResultsScreen" style="display:none;position:relative;z-index:1">
+    <div class="bl-wrap" style="padding-top:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:1rem;font-weight:900;color:#F5F5F5">📊 우리 팀 결과</div>
+        <button onclick="blClearResults()" style="font-size:.72rem;color:#555;background:transparent;border:1px solid #333;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:inherit">초기화</button>
+      </div>
+      <div id="blResultsList"></div>
+      <button onclick="blGoIntro()" style="width:100%;padding:13px;background:transparent;border:1.5px solid #333;border-radius:12px;color:#888;font-size:.88rem;font-family:inherit;cursor:pointer;margin-top:8px">← 뒤로</button>
+    </div>
+  </div>
+</div>
+<script>
+var BL_QUESTIONS = [
+  // ── 수련회 극한 상황 ──
+  {q:'둘 다 싫지만 하나를 골라야 한다면?',a:{icon:'🎵',txt:'3일 내내 밥 먹을 때도 찬양만 부르기',type:'fun'},b:{icon:'📖',txt:'3일 내내 하루 10시간 설교만 듣기',type:'prayer'},cat:'retreat'},
+  {q:'차라리 어떤 게 나을 것 같아?',a:{icon:'😴',txt:'3일 내내 코 엄청 크게 구는 사람 옆에서 자기',type:'serve'},b:{icon:'💡',txt:'3일 내내 새벽 3시까지 폰 하는 사람 옆에서 자기',type:'leader'},cat:'retreat'},
+  {q:'둘 다 괴롭지만 하나만 골라야 한다면?',a:{icon:'📵',txt:'3일 내내 스마트폰 완전 금지',type:'prayer'},b:{icon:'🚿',txt:'3일 내내 샤워는 딱 1분만 가능',type:'fun'},cat:'retreat'},
+  {q:'팀 대표로 반드시 해야 한다면 어떤 게 나아?',a:{icon:'🎤',txt:'전체 학생 앞에서 혼자 찬양 부르기',type:'fun'},b:{icon:'💃',txt:'전체 학생 앞에서 혼자 율동 추기',type:'leader'},cat:'retreat'},
+  {q:'팀 벌칙으로 받는다면 어떤 게 덜 싫어?',a:{icon:'🥶',txt:'새벽 6시에 냉수로 샤워하기',type:'leader'},b:{icon:'🏃',txt:'캠프장 10바퀴 쉬지 않고 달리기',type:'prayer'},cat:'retreat'},
+  {q:'3일 내내 이 밥만 나온다면 어떤 게 나아?',a:{icon:'🥦',txt:'3일 내내 채식 반찬만',type:'serve'},b:{icon:'🌶️',txt:'3일 내내 엄청 매운 음식만',type:'fun'},cat:'retreat'},
+  {q:'실수로 이런 상황이 생긴다면 어떤 게 덜 창피해?',a:{icon:'😭',txt:'모든 친구들 앞에서 갑자기 울기',type:'serve'},b:{icon:'💨',txt:'선생님 바로 앞에서 방귀 크게 뀌기',type:'fun'},cat:'retreat'},
+  {q:'팀 게임에 진 벌칙으로 받는다면 어떤 게 나아?',a:{icon:'🎭',txt:'1시간 동안 개그맨 흉내 내며 웃기기',type:'fun'},b:{icon:'🤫',txt:'3시간 동안 무조건 한 마디도 하지 않기',type:'prayer'},cat:'retreat'},
+  {q:'3일 내내 이 역할만 해야 한다면 어떤 게 나아?',a:{icon:'🍳',txt:'매끼 식사 배식 봉사만 하기',type:'serve'},b:{icon:'🧹',txt:'화장실 청소만 전담하기',type:'prayer'},cat:'retreat'},
+  {q:'이런 숙소라면 어떤 게 덜 싫어?',a:{icon:'🏕️',txt:'한여름에 에어컨 없는 텐트에서 자기',type:'leader'},b:{icon:'🪲',txt:'에어컨은 있지만 벌레가 엄청 많은 방',type:'serve'},cat:'retreat'},
+  {q:'벌칙으로 이걸 먹어야 한다면 어떤 게 나아?',a:{icon:'🥚',txt:'날계란 1개 그냥 마시기',type:'leader'},b:{icon:'🫑',txt:'생피망 5개 날로 씹어 먹기',type:'prayer'},cat:'retreat'},
+  {q:'3일 내내 이것만 입어야 한다면 어떤 게 나아?',a:{icon:'🩴',txt:'슬리퍼만 신고 모든 활동 참여',type:'fun'},b:{icon:'🧥',txt:'한여름에 두꺼운 패딩만 입고 활동',type:'serve'},cat:'retreat'},
+  {q:'수련회 예배 중 실수로 이런 상황이 생긴다면?',a:{icon:'📢',txt:'조용한 예배 중 내 핸드폰이 최대 볼륨으로 울리기',type:'fun'},b:{icon:'💤',txt:'설교 도중 맨 앞줄에서 코 골며 잠들기',type:'serve'},cat:'retreat'},
+  {q:'팀 미션으로 반드시 해야 한다면 어떤 게 나아?',a:{icon:'🎨',txt:'팀원 얼굴 그림 그려서 전체 발표',type:'fun'},b:{icon:'🎵',txt:'팀원 전원이 찬양 직접 작사·작곡해서 발표',type:'leader'},cat:'retreat'},
+  {q:'3일 내내 이 사람 옆에 앉아야 한다면 어떤 게 나아?',a:{icon:'😤',txt:'쉬지 않고 계속 말 걸어오는 사람',type:'serve'},b:{icon:'😶',txt:'3일 내내 단 한 마디도 안 하는 사람',type:'prayer'},cat:'retreat'},
+  {q:'매일 아침 이걸 해야 한다면 어떤 게 덜 싫어?',a:{icon:'🌊',txt:'새벽 5시 기상 후 냉수로 세수하기',type:'prayer'},b:{icon:'📯',txt:'매일 아침 기상 나팔 소리로 깨어나기',type:'fun'},cat:'retreat'},
+  {q:'수련회 미션으로 주어진다면 어떤 게 나아?',a:{icon:'🤝',txt:'모르는 친구 10명에게 먼저 다가가서 인사하기',type:'leader'},b:{icon:'💬',txt:'선생님께 나의 진짜 고민 털어놓기',type:'serve'},cat:'retreat'},
+  {q:'수련회 마지막 날 반드시 해야 한다면 어떤 게 나아?',a:{icon:'📝',txt:'수련회 소감문 원고지 5장 직접 손으로 쓰기',type:'prayer'},b:{icon:'🎬',txt:'팀 수련회 영상 혼자서 편집해서 발표하기',type:'fun'},cat:'retreat'},
+  {q:'이 중에 차라리 어떤 게 나아?',a:{icon:'😴',txt:'3일 내내 밤새 기도회에 의무 참여하기',type:'prayer'},b:{icon:'🏆',txt:'3일 내내 모든 팀 게임에서 반드시 이겨야 하는 압박',type:'leader'},cat:'retreat'},
+  {q:'3일 내내 이 음식만 나온다면 어떤 게 나아?',a:{icon:'🍚',txt:'흰쌀밥 + 김치만 (반찬 없음)',type:'serve'},b:{icon:'🍕',txt:'피자만 (아침·점심·저녁 모두)',type:'fun'},cat:'retreat'},
+  // ── 교회 일상 극한 상황 ──
+  {q:'예배 중 이런 실수를 한다면 어떤 게 덜 창피해?',a:{icon:'🎤',txt:'대표기도 하다가 갑자기 내용이 기억 안 나서 멈추기',type:'fun'},b:{icon:'💰',txt:'헌금봉투를 실수로 떨어뜨려서 동전이 와르르 쏟아지기',type:'serve'},cat:'church'},
+  {q:'교회에서 이런 봉사를 1년 해야 한다면 어떤 게 나아?',a:{icon:'🧹',txt:'매주 교회 화장실 청소 봉사',type:'serve'},b:{icon:'🚗',txt:'한여름 炎 주차 안내 봉사',type:'leader'},cat:'church'},
+  {q:'목사님이 갑자기 시킨다면 어떤 게 덜 당황스러워?',a:{icon:'🙏',txt:'예배 중 갑자기 앞에 나와서 대표기도 하기',type:'prayer'},b:{icon:'📖',txt:'성경 본문을 전체 회중 앞에서 큰 소리로 낭독하기',type:'fun'},cat:'church'},
+  {q:'교회 행사로 이걸 해야 한다면 어떤 게 나아?',a:{icon:'🎵',txt:'음치인데 찬양팀에서 마이크 잡고 서기',type:'fun'},b:{icon:'💃',txt:'몸치인데 성탄절 율동팀으로 무대 올라가기',type:'leader'},cat:'church'},
+  {q:'신앙 도전으로 이걸 해야 한다면 어떤 게 나아?',a:{icon:'⏰',txt:'새벽기도 30일 개근 (새벽 5시 기상)',type:'prayer'},b:{icon:'🌙',txt:'금요 철야기도 매주 참석 (새벽 2시까지)',type:'serve'},cat:'church'},
+  {q:'교회에서 이런 상황이 생긴다면 어떤 게 덜 당황스러워?',a:{icon:'😴',txt:'설교 중 꾸벅꾸벅 졸다가 앞줄에서 코 골기',type:'fun'},b:{icon:'😂',txt:'조용한 기도 시간에 참다가 폭소가 터지기',type:'serve'},cat:'church'},
+  {q:'교회 행사 준비 봉사로 이걸 해야 한다면 어떤 게 나아?',a:{icon:'📋',txt:'주보 1000장 접기 (혼자 3시간)',type:'serve'},b:{icon:'🎪',txt:'성탄절 행사 무대 세트 혼자 만들기',type:'leader'},cat:'church'},
+  {q:'목사님이 갑자기 집에 심방 온다면 어떤 상황이 덜 곤란해?',a:{icon:'🏠',txt:'방이 완전 쓰레기장인데 심방 오심',type:'fun'},b:{icon:'📱',txt:'심방 중에 내 핸드폰에서 이상한 알림이 울리기',type:'serve'},cat:'church'},
+  // ── 일상 극한 상황 ──
+  {q:'학교에서 이런 사고가 생긴다면 어떤 게 덜 창피해?',a:{icon:'👖',txt:'수업 중 발표하다가 바지가 찢어지기',type:'fun'},b:{icon:'🍱',txt:'급식 쟁반을 전교생이 보는 앞에서 쏟아버리기',type:'serve'},cat:'daily'},
+  {q:'1주일 동안 이 식단만 허용된다면 어떤 게 나아?',a:{icon:'🏫',txt:'학교 급식만 (주말 포함 매일 3끼)',type:'serve'},b:{icon:'🏪',txt:'편의점 도시락만 (매일 3끼)',type:'fun'},cat:'daily'},
+  {q:'이런 날씨 극한 상황이라면 어떤 게 나아?',a:{icon:'☀️',txt:'한여름에 에어컨 없이 한 달 살기',type:'leader'},b:{icon:'🥶',txt:'한겨울에 난방 없이 한 달 살기',type:'prayer'},cat:'daily'},
+  {q:'이런 친구가 옆에 있다면 어떤 게 덜 힘들어?',a:{icon:'📩',txt:'하루에 카톡 100개 이상 보내는 친구',type:'serve'},b:{icon:'🔕',txt:'카톡을 절대 읽지 않는 친구',type:'fun'},cat:'daily'},
+  {q:'1주일 동안 이 앱이 금지된다면 어떤 게 더 힘들어?',a:{icon:'📸',txt:'인스타그램 완전 금지',type:'fun'},b:{icon:'▶️',txt:'유튜브 완전 금지',type:'prayer'},cat:'daily'},
+  {q:'이런 학원 스케줄이라면 어떤 게 덜 힘들어?',a:{icon:'🌅',txt:'매일 아침 6시 수학학원',type:'leader'},b:{icon:'🌙',txt:'매일 밤 11시 끝나는 영어학원',type:'prayer'},cat:'daily'},
+  {q:'시험에서 이런 실수를 했다면 어떤 게 더 억울해?',a:{icon:'📝',txt:'시험지에 이름 쓰는 걸 잊어서 0점',type:'fun'},b:{icon:'😴',txt:'시험 도중 잠들어서 절반만 풀고 제출',type:'serve'},cat:'daily'},
+  {q:'등하교 교통 상황이 이렇다면 어떤 게 나아?',a:{icon:'🚶',txt:'학교까지 매일 왕복 2시간 걷기',type:'leader'},b:{icon:'🚌',txt:'버스 3번 환승해서 1시간 반 걸리기',type:'serve'},cat:'daily'},
+  {q:'SNS에서 이런 상황이 생긴다면 어떤 게 더 싫어?',a:{icon:'👤',txt:'전교생이 나만 팔로우 안 하고 언팔하기',type:'fun'},b:{icon:'📔',txt:'내 개인 비밀 일기장이 전교생에게 공개되기',type:'prayer'},cat:'daily'},
+  {q:'이런 상황이라면 어떤 게 더 힘들어?',a:{icon:'🌧️',txt:'하루 종일 우산 없이 비 맞으며 다니기',type:'serve'},b:{icon:'🌞',txt:'하루 종일 모자 없이 땡볕에서 다니기',type:'leader'},cat:'daily'},
+  {q:'1주일 동안 이 음식이 금지된다면 어떤 게 더 힘들어?',a:{icon:'🌶️',txt:'매운 음식 모두 금지 (라면, 떡볶이 등)',type:'fun'},b:{icon:'🍫',txt:'단 음식 모두 금지 (과자, 음료, 케이크 등)',type:'serve'},cat:'daily'},
+  {q:'학교생활 중 이런 상황이라면 어떤 게 덜 싫어?',a:{icon:'🎤',txt:'조회 시간에 갑자기 전교생 앞 발표 지목받기',type:'leader'},b:{icon:'🤝',txt:'모르는 전학생 짝꿍이 되어 먼저 말 걸어야 하기',type:'serve'},cat:'daily'},
+  {q:'이런 조건이라면 어떤 게 나아?',a:{icon:'📚',txt:'시험 전날 밤새워 공부하기',type:'prayer'},b:{icon:'😴',txt:'시험 당일 아침 2시간 벼락치기 후 바로 시험 보기',type:'leader'},cat:'daily'},
+];
+
+
+var BL_TYPES={
+  leader:{icon:'⚡',name:'도전 선두형',color:'#FF6B00',
+    desc:'어떤 극한 상황에서도 먼저 뛰어드는 도전자예요! 수련회의 에너지를 앞에서 이끄는 타입이에요. 어렵고 힘든 상황일수록 더 빛나는 리더십을 가지고 있어요.'},
+  prayer:{icon:'🙏',name:'묵상 깊이형',color:'#8B5CF6',
+    desc:'겉으로는 조용해 보여도 내면이 깊은 영성인이에요. 기도와 말씀 안에서 힘을 얻고, 어떤 상황에서도 진지하게 신앙을 추구하는 타입이에요.'},
+  fun:{icon:'🎵',name:'찬양 자유형',color:'#FFB800',
+    desc:'밝고 유쾌한 에너지로 주변을 환하게 만드는 타입이에요! 찬양과 표현을 즐기며 수련회 분위기를 가장 신나게 만드는 사람이에요.'},
+  serve:{icon:'🤝',name:'조용한 섬김형',color:'#10B981',
+    desc:'소리 없이 강한 배려형이에요. 팀을 위해 불편함을 기꺼이 감수하고, 관계를 소중히 여기며 따뜻하게 주변을 챙기는 사람이에요.'}
+};
+
+var blQueue=[], blCurrent=0, blAnswers=[], blTypeScores={};
+var blResults={};
+
+function openBalance(){
+  document.getElementById('blOv').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('blIntro').style.display='block';
+  document.getElementById('blGame').style.display='none';
+  document.getElementById('blEnd').style.display='none';
+  document.getElementById('blResultsScreen').style.display='none';
+  blUpdateResultsBtn();
+}
+function closeBalance(){
+  document.getElementById('blOv').classList.remove('open');
+  document.body.style.overflow='';
+}
+function blShowTypesScreen(){
+  document.getElementById('blIntro').style.display='none';
+  document.getElementById('blTypesScreen').style.display='block';
+  document.getElementById('blOv').scrollTo(0,0);
+}
+function blGoIntro(){
+  document.getElementById('blIntro').style.display='block';
+  document.getElementById('blGame').style.display='none';
+  document.getElementById('blEnd').style.display='none';
+  document.getElementById('blResultsScreen').style.display='none';
+  document.getElementById('blTypesScreen').style.display='none';
+  document.getElementById('blOv').scrollTo(0,0);
+  blUpdateResultsBtn();
+}
+function blStart(){
+  function pickN(arr, n){ return arr.slice().sort(function(){return Math.random()-.5}).slice(0,n); }
+  var retreat = BL_QUESTIONS.filter(function(q){return q.cat==='retreat';});
+  var church  = BL_QUESTIONS.filter(function(q){return q.cat==='church';});
+  var daily   = BL_QUESTIONS.filter(function(q){return q.cat==='daily';});
+  blQueue = pickN(retreat,10).concat(pickN(church,4)).concat(pickN(daily,6));
+  blQueue = blQueue.sort(function(){return Math.random()-.5});
+  blCurrent=0;
+  blAnswers=[];
+  blResults={};
+  blTypeScores={leader:0,prayer:0,fun:0,serve:0};
+  document.getElementById('blIntro').style.display='none';
+  document.getElementById('blEnd').style.display='none';
+  document.getElementById('blResultsScreen').style.display='none';
+  document.getElementById('blGame').style.display='block';
+  blShowQuestion();
+}
+function blShowQuestion(){
+  var q=blQueue[blCurrent];
+  document.getElementById('blProgressTxt').textContent=(blCurrent+1)+' / '+blQueue.length;
+  document.getElementById('blProgressFill').style.width=((blCurrent+1)/blQueue.length*100)+'%';
+  document.getElementById('blQTxt').textContent=q.q;
+  document.getElementById('blIconA').textContent=q.a.icon;
+  document.getElementById('blTxtA').textContent=q.a.txt;
+  document.getElementById('blIconB').textContent=q.b.icon;
+  document.getElementById('blTxtB').textContent=q.b.txt;
+  document.getElementById('blChoiceA').className='bl-choice a';
+  document.getElementById('blChoiceB').className='bl-choice b';
+  document.getElementById('blChoiceA').disabled=false;
+  document.getElementById('blChoiceB').disabled=false;
+  document.getElementById('blResultBar').classList.remove('show');
+  document.getElementById('blNextBtn').classList.remove('show');
+}
+function blChoose(choice){
+  var key='bl_'+blCurrent;
+  if(!blResults[key]){blResults[key]={A:0,B:0};}
+  blResults[key][choice]++;
+  blAnswers.push(choice);
+  // 유형 점수 추가 (각 문제에 임베드된 type 사용)
+  var q=blQueue[blCurrent];
+  var t=choice==='A'?q.a.type:q.b.type;
+  if(t) blTypeScores[t]=(blTypeScores[t]||0)+1;
+  document.getElementById('blChoiceA').disabled=true;
+  document.getElementById('blChoiceB').disabled=true;
+  if(choice==='A'){
+    document.getElementById('blChoiceA').className='bl-choice a selected-a';
+  } else {
+    document.getElementById('blChoiceB').className='bl-choice b selected-b';
+  }
+  // 결과 바 표시 (이번 세션 내 누적)
+  var res=blResults[key];
+  var total=res.A+res.B;
+  var pctA=Math.round(res.A/total*100);
+  var pctB=100-pctA;
+  document.getElementById('blBarA').style.width=pctA+'%';
+  document.getElementById('blBarA').textContent='A '+pctA+'%';
+  document.getElementById('blBarB').style.width=pctB+'%';
+  document.getElementById('blBarB').textContent=pctB+'% B';
+  document.getElementById('blResultBar').classList.add('show');
+  document.getElementById('blNextBtn').classList.add('show');
+  document.getElementById('blOv').scrollTo(0,999);
+}
+function blNext(){
+  blCurrent++;
+  if(blCurrent>=blQueue.length){
+    document.getElementById('blGame').style.display='none';
+    document.getElementById('blEnd').style.display='block';
+    document.getElementById('blOv').scrollTo(0,0);
+    blShowResult();
+  } else {
+    blShowQuestion();
+    document.getElementById('blOv').scrollTo(0,0);
+  }
+}
+</script>
+
+</body>
+</html>
+
+<!-- ════ 추가 CSS ════ -->
+<style>
+/* iframe 오버레이 */
+.frame-overlay{position:fixed;inset:0;z-index:700;display:none;flex-direction:column;background:#fff}
+.frame-overlay.open{display:flex}
+.frame-topbar{height:52px;background:rgba(14,30,80,.97);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0}
+.frame-back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);border:none;cursor:pointer;color:white;font-size:1rem;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.frame-title{font-size:.92rem;font-weight:800;color:white;flex:1}
+.frame-iframe{flex:1;border:none;width:100%;height:100%}
+
+/* 참가 신청 오버레이 */
+.reg-overlay{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;overflow-y:auto;background:var(--bg)}
+.reg-overlay.open{display:flex}
+.reg-topbar{background:rgba(14,30,80,.97);height:56px;display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:10}
+.reg-back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.12);border:none;cursor:pointer;color:white;font-size:1rem;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.reg-topbar-title{font-size:.95rem;font-weight:800;color:white;flex:1}
+.reg-topbar-badge{font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:50px;background:rgba(219,39,119,.3);color:#F9A8D4;border:1px solid rgba(219,39,119,.4)}
+.reg-body{max-width:560px;margin:0 auto;padding:28px 20px 60px;width:100%}
+.reg-hero{text-align:center;margin-bottom:28px}
+.reg-hero-icon{font-size:2.4rem;display:block;margin-bottom:10px}
+.reg-hero-title{font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:6px}
+.reg-hero-sub{font-size:.82rem;color:var(--sub);line-height:1.7}
+.reg-count-pill{display:inline-flex;align-items:center;gap:6px;background:#FDF2F8;border:1.5px solid #FBCFE8;border-radius:50px;padding:6px 14px;margin-top:10px;font-size:.78rem;color:var(--pink);font-weight:700}
+.reg-count-num{font-size:1.05rem;font-weight:900}
+.reg-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.reg-card-title{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.reg-card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.reg-field{margin-bottom:16px}
+.reg-field:last-child{margin-bottom:0}
+.reg-label{font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.reg-required{color:var(--pink);font-size:.75rem}
+.reg-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:.9rem;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:.2s}
+.reg-input:focus{border-color:var(--primary);background:white}
+.reg-input::placeholder{color:var(--light)}
+.reg-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239999AA' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.reg-radio-group{display:flex;gap:8px;flex-wrap:wrap}
+.reg-radio{display:none}
+.reg-radio-label{padding:8px 16px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.84rem;font-weight:600;color:var(--sub);transition:.15s;background:var(--bg)}
+.reg-radio:checked+.reg-radio-label{border-color:var(--primary);background:#EFF6FF;color:var(--primary)}
+.reg-submit{width:100%;padding:15px;background:var(--pink);color:white;border:none;border-radius:13px;font-size:.95rem;font-weight:800;font-family:inherit;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(219,39,119,.3);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.reg-submit:disabled{opacity:.5;cursor:not-allowed}
+.reg-success{display:none;flex-direction:column;align-items:center;text-align:center;padding:48px 28px 60px;max-width:440px;margin:0 auto;width:100%}
+.success-burst{font-size:3.5rem;display:block;margin-bottom:20px;animation:burst .6s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes burst{0%{transform:scale(0);opacity:0}60%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+.success-badge{display:inline-flex;align-items:center;gap:6px;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:50px;padding:6px 16px;font-size:.78rem;font-weight:700;color:var(--green);margin-bottom:18px}
+.success-title{font-size:1.7rem;font-weight:900;color:var(--text);margin-bottom:8px;line-height:1.2}
+.success-name{color:var(--pink)}
+.success-num-card{background:linear-gradient(135deg,#0E1E50,#1E3A8A);border-radius:18px;padding:24px 28px;margin:22px 0;width:100%}
+.success-num-label{font-size:.75rem;color:rgba(255,255,255,.6);margin-bottom:8px;letter-spacing:.06em}
+.success-num{font-size:4rem;font-weight:900;color:#FBBF24;line-height:1}
+.success-num-sub{font-size:.85rem;color:rgba(255,255,255,.7);margin-top:8px}
+.success-info{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;width:100%;margin-bottom:22px;text-align:left}
+.si-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:.83rem;border-bottom:1px solid var(--border)}
+.si-row:last-child{border-bottom:none}
+.si-key{color:var(--sub);font-weight:600}
+.si-val{font-weight:700;color:var(--text)}
+.btn-go-home{width:100%;padding:15px;background:var(--pink);color:white;border:none;border-radius:13px;font-size:.95rem;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.btn-reg-another{width:100%;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:13px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;color:var(--sub)}
+
+/* 비밀번호 모달 */
+.pw-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.pw-overlay.open{display:flex}
+.pw-modal{background:var(--white);border-radius:20px;padding:30px 26px;width:100%;max-width:340px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.pw-icon{font-size:2rem;text-align:center;margin-bottom:10px}
+.pw-modal h3{font-size:.97rem;font-weight:800;text-align:center;margin-bottom:5px}
+.pw-modal p{font-size:.8rem;color:var(--sub);text-align:center;margin-bottom:16px}
+.pw-input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:10px;font-size:.95rem;font-family:inherit;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:7px;transition:.2s}
+.pw-input:focus{border-color:var(--primary)}
+.pw-error{font-size:.77rem;color:var(--red);text-align:center;margin-bottom:10px;display:none}
+.pw-btns{display:flex;gap:8px}
+.pw-btns button{flex:1;padding:11px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;border:none}
+.pw-cancel-b{background:#F3F4F6;color:var(--sub)}
+.pw-confirm-b{background:var(--primary);color:white}
+
+/* 설교 요약 오버레이 */
+.ss-overlay{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#F5F0E8}
+.ss-overlay.open{display:flex}
+.ss-overlay::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,.13) 28px);pointer-events:none;z-index:0}
+.ss-topbar{background:#FDFAF5;border-bottom:1.5px solid #D4C8B4;padding:0 20px;position:sticky;top:0;z-index:100;height:52px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 8px rgba(60,40,10,.06);flex-shrink:0}
+.ss-back{width:34px;height:34px;border-radius:9px;background:#EDE6D9;border:1px solid #D4C8B4;color:#7A6A52;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-family:inherit}
+.ss-topbar-tag{font-size:.68rem;font-weight:700;background:#B8760A;color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.ss-topbar-title{font-size:.9rem;font-weight:700;color:#1C1409;flex:1}
+.ss-hero{position:relative;padding:28px 24px 20px;text-align:center;z-index:1}
+.ss-hero-tag{display:inline-block;background:#FDF3DC;border:1.5px solid rgba(184,118,10,.3);color:#B8760A;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
+.ss-hero h1{font-family:'Nanum Myeongjo',serif;font-size:clamp(1.7rem,6vw,2.4rem);font-weight:800;color:#1C1409;line-height:1.2;margin-bottom:8px}
+.ss-hero h1 em{color:#B8760A;font-style:normal;border-bottom:3px solid #B8760A}
+.ss-hero p{font-size:.83rem;color:#7A6A52;line-height:1.75;max-width:380px;margin:0 auto}
+.ss-wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;width:100%}
+.ss-phase-bar{display:flex;gap:6px;margin-bottom:24px}
+.ss-pip{flex:1;height:4px;border-radius:2px;background:#D4C8B4;transition:.3s}
+.ss-pip.on{background:#B8760A}.ss-pip.done{background:#E8950C}
+.ss-card{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 14px rgba(60,40,10,.09)}
+.ss-card-label{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#B0A08A;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ss-card-label::after{content:'';flex:1;height:1px;background:#D4C8B4}
+.ss-team-chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.ss-tc{padding:12px;border:2px solid #D4C8B4;border-radius:11px;background:#F5F0E8;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit;text-align:center;transition:.2s;color:#7A6A52}
+.ss-tc:hover{border-color:#B8760A;color:#B8760A}
+.ss-tc.on{border-color:#B8760A;background:#FDF3DC;color:#B8760A}
+.ss-label{font-size:.79rem;font-weight:700;color:#3D2E18;margin-bottom:6px}
+.ss-sub{font-size:.71rem;color:#7A6A52;margin-bottom:8px;line-height:1.5}
+.ss-inp{width:100%;padding:11px 14px;background:#F5F0E8;border:1.5px solid #D4C8B4;border-radius:10px;font-size:.88rem;font-family:inherit;color:#1C1409;outline:none;transition:.2s}
+.ss-inp:focus{border-color:#B8760A;background:#FDFAF5}
+.ss-inp::placeholder{color:#B0A08A}
+textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
+.ss-char{font-size:.7rem;color:#B0A08A;text-align:right;margin-top:4px}
+.ss-btn-p{width:100%;padding:14px;background:#B8760A;color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ss-btn-p:hover:not(:disabled){background:#E8950C}
+.ss-btn-p:disabled{opacity:.45;cursor:not-allowed}
+.ss-btn-s{padding:11px 18px;background:#EDE6D9;border:1.5px solid #D4C8B4;border-radius:10px;color:#7A6A52;font-size:.85rem;font-family:inherit;cursor:pointer;font-weight:600;transition:.2s}
+.ss-btn-s:hover{border-color:#B8760A;color:#B8760A}
+.ss-loading{text-align:center;padding:44px 20px;display:none;position:relative;z-index:1}
+.ss-loading.show{display:block}
+.ss-quill{font-size:2.8rem;animation:sswrite 1s ease-in-out infinite alternate;display:block}
+@keyframes sswrite{from{transform:rotate(-8deg) translate(-4px,2px)}to{transform:rotate(8deg) translate(4px,-2px)}}
+.ss-loading-txt{font-family:'Nanum Myeongjo',serif;font-size:1.2rem;color:#B8760A;margin-top:14px;letter-spacing:.04em}
+.ss-summary-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.ss-sl{background:#FDFAF5;border:1.5px solid #D4C8B4;border-radius:14px;overflow:hidden;box-shadow:0 2px 14px rgba(60,40,10,.09);animation:ssfadeUp .3s ease both}
+@keyframes ssfadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ss-sl-hd{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #D4C8B4;background:#F5F0E8}
+.ss-sl-num{font-family:'Nanum Myeongjo',serif;font-size:1.6rem;font-weight:800;color:#B8760A;line-height:1;width:28px;flex-shrink:0}
+.ss-sl-lbl{font-size:.72rem;font-weight:700;color:#7A6A52;flex:1}
+.ss-regen{padding:5px 11px;border-radius:7px;border:1px solid #D4C8B4;background:transparent;color:#7A6A52;font-size:.7rem;font-family:inherit;cursor:pointer;transition:.15s;flex-shrink:0}
+.ss-regen:hover{border-color:#B8760A;color:#B8760A}
+.ss-regen:disabled{opacity:.4;cursor:not-allowed}
+.ss-sl-body{padding:14px 16px}
+.ss-sl-txt{font-family:'Nanum Myeongjo',serif;font-size:1rem;font-weight:700;color:#1C1409;line-height:1.7;width:100%;background:transparent;border:none;outline:none;resize:none;min-height:54px;cursor:text}
+.ss-verse-card{background:#FDF3DC;border:1.5px solid rgba(184,118,10,.25);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.ss-verse-lbl{font-size:.68rem;font-weight:700;color:#B8760A;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.ss-verse-txt{font-family:'Nanum Myeongjo',serif;font-size:.9rem;color:#3D2E18;line-height:1.7}
+.ss-present{position:fixed;inset:0;background:#1C1409;z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px}
+.ss-present.open{display:flex}
+.ss-present-close{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.1);border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:1.1rem}
+.ss-pt-team{font-size:.82rem;font-weight:700;color:#B8760A;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;opacity:.8}
+.ss-pt-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(.85rem,3vw,1.1rem);color:rgba(255,255,255,.5);margin-bottom:32px;text-align:center;line-height:1.6}
+.ss-pt-lines{display:flex;flex-direction:column;gap:20px;width:100%;max-width:680px}
+.ss-pt-line{display:flex;align-items:flex-start;gap:16px}
+.ss-pt-num{font-family:'Nanum Myeongjo',serif;font-size:clamp(2rem,6vw,3rem);font-weight:800;color:#B8760A;line-height:1;flex-shrink:0;width:44px}
+.ss-pt-txt{font-family:'Nanum Myeongjo',serif;font-size:clamp(1rem,3.5vw,1.45rem);color:#FDFAF5;line-height:1.65;font-weight:700;flex:1;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:18px}
+.ss-pt-verse{font-size:clamp(.75rem,2.5vw,.9rem);color:rgba(255,255,255,.45);margin-top:28px;font-family:'Nanum Myeongjo',serif;text-align:center;font-style:italic}
+.ss-action-row{display:flex;gap:10px;margin-top:4px}
+.ss-action-row .ss-btn-p{flex:1}
+.ss-btn-present{flex:1.4;padding:14px;background:#1C1409;color:#B8760A;border:2px solid #B8760A;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s}
+.ss-btn-present:hover{background:#B8760A;color:#1C1409}
+
+/* 감정 찬양 DJ */
+.dj-ov{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#0D0D1A}
+.dj-ov.open{display:flex}
+.dj-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(120,40,220,.15),transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(40,120,255,.12),transparent 60%);pointer-events:none;z-index:0}
+.dj-viz{position:fixed;bottom:0;left:0;right:0;height:80px;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding:0 20px;z-index:0;opacity:.18;pointer-events:none}
+.dj-vb{width:4px;border-radius:2px 2px 0 0;background:linear-gradient(to top,#7828DC,#2878FF);animation:djvb ease-in-out infinite alternate}
+@keyframes djvb{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.dj-top{background:rgba(13,13,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid #2A2A4A;padding:0 20px;position:sticky;top:0;z-index:50;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.dj-back{width:34px;height:34px;border-radius:9px;background:#1A1A35;border:1px solid #2A2A4A;color:#8888AA;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit}
+.dj-tag{font-size:.68rem;font-weight:700;background:linear-gradient(135deg,#7828DC,#2878FF);color:white;padding:3px 9px;border-radius:5px;letter-spacing:.04em}
+.dj-tit{font-size:.9rem;font-weight:700;color:#F0F0FF;flex:1}
+.dj-hero{position:relative;padding:28px 24px 20px;text-align:center;z-index:1}
+.dj-disc{font-size:3rem;display:block;margin-bottom:12px;animation:djspin 4s linear infinite}
+@keyframes djspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.dj-hero-tag{display:inline-block;background:rgba(120,40,220,.2);border:1.5px solid rgba(120,40,220,.5);color:#C078FF;font-size:.72rem;font-weight:700;padding:5px 14px;border-radius:50px;margin-bottom:12px;letter-spacing:.06em}
+.dj-hero h1{font-size:clamp(1.5rem,5vw,2.2rem);font-weight:900;color:#F0F0FF;line-height:1.2;margin-bottom:8px}
+.dj-hero h1 em{background:linear-gradient(135deg,#C078FF,#78AAFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.dj-hero p{font-size:.83rem;color:#8888AA;line-height:1.75;max-width:360px;margin:0 auto}
+.dj-wrap{max-width:600px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1;width:100%}
+.dj-slabel{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#5555AA;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.dj-slabel::after{content:'';flex:1;height:1px;background:#2A2A4A}
+.dj-emo-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.dj-chip{padding:9px 16px;border:1.5px solid #2A2A4A;border-radius:50px;background:#141428;cursor:pointer;font-size:.84rem;font-weight:600;color:#8888AA;font-family:inherit;transition:.2s}
+.dj-chip:hover{border-color:rgba(120,40,220,.5);color:#F0F0FF}
+.dj-chip.on{border-color:#7828DC;background:rgba(120,40,220,.18);color:#C078FF;font-weight:700}
+.dj-gen{width:100%;padding:15px;background:linear-gradient(135deg,#7828DC,#2878FF);color:white;border:none;border-radius:12px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.dj-gen:hover{opacity:.9;transform:translateY(-1px)}
+.dj-result{display:none;margin-top:24px;animation:djfadeUp .4s ease}
+.dj-result.show{display:block}
+@keyframes djfadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.dj-rh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:14px 16px;background:#141428;border:1px solid #2A2A4A;border-radius:14px}
+.dj-rh-emoji{font-size:1.8rem}
+.dj-rh-label{font-size:.68rem;color:#8888AA;margin-bottom:2px}
+.dj-rh-emotion{font-size:.95rem;font-weight:700;color:#C078FF}
+.dj-playlist{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.dj-card{background:#141428;border:1.5px solid #2A2A4A;border-radius:14px;padding:16px;transition:.2s;cursor:pointer}
+.dj-card:hover{border-color:rgba(120,40,220,.6);background:rgba(120,40,220,.08);transform:translateY(-2px)}
+.dj-card-top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.dj-card-num{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7828DC,#2878FF);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900;color:white;flex-shrink:0}
+.dj-card-title{font-size:.95rem;font-weight:800;color:#F0F0FF;line-height:1.3}
+.dj-card-artist{font-size:.75rem;color:#8888AA;margin-top:2px}
+.dj-card-note{font-size:.78rem;color:rgba(192,120,255,.85);line-height:1.6;padding:8px 12px;background:rgba(120,40,220,.1);border-radius:8px;border-left:2px solid #7828DC}
+.dj-card-hint{font-size:.68rem;color:#5555AA;margin-top:8px;text-align:right}
+.dj-actions{display:flex;gap:10px}
+.dj-btn-again{flex:1;padding:13px;background:transparent;border:1.5px solid #2A2A4A;border-radius:12px;color:#8888AA;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s}
+.dj-btn-again:hover{border-color:#7828DC;color:#C078FF}
+
+
+/* 전체 일정표 */
+.sch-overlay{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;overflow-y:auto;background:#F5F6FA}
+.sch-overlay.open{display:flex}
+.sch-overlay *{box-sizing:border-box}
+.sch-topbar-inner{max-width:680px;margin:0 auto;height:52px;display:flex;align-items:center;gap:12px;padding:0 20px}
+.sch-back{width:36px;height:36px;border-radius:10px;background:#F5F6FA;border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;color:#222;font-family:inherit}
+.sch-page-title{font-size:1rem;font-weight:800;color:#222}
+.sch-hero{background:linear-gradient(135deg,#F59E0B,#EC4899);color:white;padding:24px 20px;text-align:center}
+.sch-hero h1{font-size:1.3rem;font-weight:900;margin-bottom:4px}
+.sch-hero p{font-size:.85rem;opacity:.9}
+.sch-counts{display:flex;justify-content:center;gap:20px;margin-top:12px}
+.sch-count{text-align:center}
+.sch-count .sc-num{font-size:1.6rem;font-weight:900;line-height:1}
+.sch-count .sc-lbl{font-size:.72rem;opacity:.8;margin-top:2px}
+.sch-wrap{max-width:680px;margin:0 auto;padding:16px 16px 60px;width:100%}
+.sch-tabs{display:flex;gap:6px;margin-bottom:20px;overflow-x:auto;padding-bottom:2px}
+.sch-tabs::-webkit-scrollbar{display:none}
+.sch-tab{flex-shrink:0;padding:9px 16px;border-radius:10px;border:2px solid #E8EAF0;background:#fff;font-size:.82rem;font-weight:700;cursor:pointer;transition:.2s;color:#666;white-space:nowrap;font-family:inherit}
+.sch-tab.pre.active{background:#EC4899;border-color:#EC4899;color:white}
+.sch-tab.d1.active{background:#3B82F6;border-color:#3B82F6;color:white}
+.sch-tab.d2.active{background:#8B5CF6;border-color:#8B5CF6;color:white}
+.sch-tab.d3.active{background:#F59E0B;border-color:#F59E0B;color:white}
+.sch-tab.post.active{background:#10B981;border-color:#10B981;color:white}
+.sch-panel{display:none}.sch-panel.active{display:block}
+.sch-banner{border-radius:14px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px}
+.spb-pre{background:linear-gradient(135deg,#FDF2F8,#FCE7F3);border:1px solid #FBCFE8}
+.spb-d1{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE}
+.spb-d2{background:linear-gradient(135deg,#F5F3FF,#EDE9FE);border:1px solid #DDD6FE}
+.spb-d3{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:1px solid #FDE68A}
+.spb-post{background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border:1px solid #A7F3D0}
+.sch-banner-icon{font-size:2rem;flex-shrink:0}
+.sch-banner-title{font-size:.95rem;font-weight:800;margin-bottom:3px;color:#222}
+.sch-banner-sub{font-size:.78rem;color:#666;line-height:1.5}
+.sch-session{margin-bottom:14px}
+.sch-slabel{font-size:.7rem;font-weight:700;letter-spacing:.06em;color:#fff;padding:5px 12px;border-radius:7px 7px 0 0;display:inline-block}
+.ssl-pink{background:#EC4899}.ssl-blue{background:#3B82F6}.ssl-purple{background:#8B5CF6}
+.ssl-orange{background:#F59E0B}.ssl-green{background:#10B981}
+.sch-alist{background:#fff;border-radius:0 12px 12px 12px;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid #E8EAF0;overflow:hidden}
+.sch-arow{display:grid;grid-template-columns:1fr;border-bottom:1px solid #E8EAF0;padding:14px 16px;transition:.15s}
+.sch-arow:last-child{border-bottom:none}
+.sch-arow:hover{background:#FAFBFF}
+.sch-atop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px}
+.sch-anum{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:50px;flex-shrink:0;margin-top:2px}
+.san-pink{background:#FDF2F8;color:#EC4899}.san-blue{background:#EFF6FF;color:#3B82F6}
+.san-purple{background:#F5F3FF;color:#8B5CF6}.san-orange{background:#FFFBEB;color:#F59E0B}
+.san-green{background:#ECFDF5;color:#10B981}
+.sch-atitle{font-size:.92rem;font-weight:800;flex:1;line-height:1.4;color:#222}
+.sch-adesc{font-size:.78rem;color:#666;line-height:1.6;margin-bottom:6px}
+.sch-abottom{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sch-atool{font-size:.65rem;font-weight:600;padding:3px 9px;border-radius:50px;background:#F3F4F6;color:#6B7280}
+.sch-atag{font-size:.65rem;font-weight:600;padding:3px 9px;border-radius:50px}
+.stag-ai{background:#EFF6FF;color:#3B82F6}.stag-team{background:#ECFDF5;color:#10B981}
+.stag-worship{background:#FFFBEB;color:#F59E0B}.stag-personal{background:#F5F3FF;color:#8B5CF6}
+.stag-create{background:#FDF2F8;color:#EC4899}
+</style>
+
+<!-- iframe 오버레이 -->
+<div class="frame-overlay" id="frameOverlay">
+  <div class="frame-topbar">
+    <button class="frame-back" onclick="closeFrame()">←</button>
+    <span class="frame-title" id="frameTitle"></span>
+  </div>
+  <iframe class="frame-iframe" id="frameIframe" src=""></iframe>
+</div>
+
+<!-- 참가 신청 오버레이 -->
+<div class="reg-overlay" id="regOverlay">
+  <div class="reg-topbar">
+    <button class="reg-back" onclick="closeRegister()">←</button>
+    <span class="reg-topbar-title">🏕️ 참가 신청</span>
+    <span class="reg-topbar-badge" id="regCountBadge">현재 0명 신청</span>
+  </div>
+  <div class="reg-body" id="regForm">
+    <div class="reg-hero">
+      <span class="reg-hero-icon">✝️</span>
+      <div class="reg-hero-title">2026 여름수련회 참가 신청</div>
+      <div class="reg-hero-sub">아래 정보를 빠짐없이 입력해주세요<br>신청 후 몇 번째 참가자인지 확인할 수 있어요</div>
+      <div class="reg-count-pill">현재 <span class="reg-count-num" id="regCountNum">0</span>명이 신청했어요</div>
+    </div>
+    <div class="reg-card">
+      <div class="reg-card-title">학생 기본 정보</div>
+      <div class="reg-field"><div class="reg-label">이름 <span class="reg-required">*필수</span></div><input class="reg-input" id="rName" placeholder="이름을 입력하세요" maxlength="20"></div>
+      <div class="reg-field" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div class="reg-label">학교</div><input class="reg-input" id="rSchool" placeholder="예) OO중학교" maxlength="20"></div>
+        <div><div class="reg-label">학년 <span class="reg-required">*</span></div>
+        <select class="reg-input reg-select" id="rGrade"><option value="">선택</option><option value="중1">중학교 1학년</option><option value="중2">중학교 2학년</option><option value="중3">중학교 3학년</option></select></div>
+      </div>
+      <div class="reg-field"><div class="reg-label">성별 <span class="reg-required">*</span></div>
+      <div class="reg-radio-group"><input type="radio" class="reg-radio" name="gender" id="gM" value="남"><label class="reg-radio-label" for="gM">남자</label><input type="radio" class="reg-radio" name="gender" id="gF" value="여"><label class="reg-radio-label" for="gF">여자</label></div></div>
+      <div class="reg-field"><div class="reg-label">학생 연락처 <span class="reg-required">*</span></div><input class="reg-input" id="rPhone" type="tel" placeholder="010-0000-0000" maxlength="13" oninput="autoHyphen(this)"></div>
+    </div>
+    <div class="reg-card">
+      <div class="reg-card-title">보호자 정보</div>
+      <div class="reg-field"><div class="reg-label">보호자 이름 <span class="reg-required">*</span></div><input class="reg-input" id="rParentName" placeholder="보호자 이름" maxlength="20"></div>
+      <div class="reg-field"><div class="reg-label">보호자 연락처 <span class="reg-required">*</span></div><input class="reg-input" id="rParentPhone" type="tel" placeholder="010-0000-0000" maxlength="13" oninput="autoHyphen(this)"></div>
+    </div>
+    <div class="reg-card">
+      <div class="reg-card-title">건강 & 기타</div>
+      <div class="reg-field"><div class="reg-label">알레르기 / 음식 제한</div><input class="reg-input" id="rAllergy" placeholder="없으면 빈칸으로 두세요"></div>
+      <div class="reg-field"><div class="reg-label">기타 전달 사항</div><input class="reg-input" id="rEtc" placeholder="인솔자에게 미리 알릴 내용"></div>
+    </div>
+    <button class="reg-submit" id="regSubmitBtn" onclick="submitRegister()">🏕️ 신청 완료하기</button>
+  </div>
+  <div class="reg-success" id="regSuccess">
+    <span class="success-burst">🎉</span>
+    <div class="success-badge">✅ 신청 완료</div>
+    <div class="success-title"><span class="success-name" id="successName"></span>님<br>신청이 완료됐어요!</div>
+    <div class="success-num-card">
+      <div class="success-num-label">🏕️ 수련회 신청 순번</div>
+      <div class="success-num" id="successNum">1</div>
+      <div class="success-num-sub" id="successNumSub">번째로 신청하셨어요 🎊</div>
+    </div>
+    <div class="success-info" id="successInfo"></div>
+    <button class="btn-go-home" onclick="closeRegister()">🏠 홈페이지로 돌아가기</button>
+    <button class="btn-reg-another" onclick="resetRegister()">+ 다른 학생 신청하기</button>
+  </div>
+</div>
+
+<!-- 비밀번호 모달 -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-modal">
+    <div class="pw-icon">🔐</div>
+    <h3>감독자 인증</h3>
+    <p>감독자 비밀번호를 입력해주세요</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="• • • •" onkeydown="if(event.key==='Enter')confirmPw()">
+    <div class="pw-error" id="pwError">비밀번호가 틀렸습니다</div>
+    <div class="pw-btns">
+      <button class="pw-cancel-b" onclick="closePw()">취소</button>
+      <button class="pw-confirm-b" onclick="confirmPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 설교 3줄 요약 오버레이 -->
+<div class="ss-overlay" id="ssOverlay">
+  <div class="ss-topbar">
+    <button class="ss-back" onclick="closeSermon()">←</button>
+    <span class="ss-topbar-tag">중-11</span>
+    <span class="ss-topbar-title">설교 3줄 요약 챌린지</span>
+  </div>
+  <div class="ss-hero">
+    <div class="ss-hero-tag">📋 팀 경쟁 · 수련회 중 활동</div>
+    <h1>설교 3줄 <em>요약 챌린지</em></h1>
+    <p>오늘 개회 설교를 AI로 핵심 3줄 요약 작성<br>가장 잘 정리한 조를 선정해 시상합니다</p>
+  </div>
+  <div class="ss-wrap">
+    <div class="ss-phase-bar"><div class="ss-pip on" id="sspip1"></div><div class="ss-pip" id="sspip2"></div><div class="ss-pip" id="sspip3"></div></div>
+    <div id="ssstep1">
+      <div class="ss-card"><div class="ss-card-label">우리 팀</div>
+        <div class="ss-team-chips">
+          <button class="ss-tc" onclick="ssPickTeam(this,'베드로팀 ⚓')">베드로팀 ⚓</button>
+          <button class="ss-tc" onclick="ssPickTeam(this,'바울팀 ✝️')">바울팀 ✝️</button>
+          <button class="ss-tc" onclick="ssPickTeam(this,'에스더팀 👑')">에스더팀 👑</button>
+          <button class="ss-tc" onclick="ssPickTeam(this,'다윗팀 🎵')">다윗팀 🎵</button>
+        </div>
+      </div>
+      <div class="ss-card"><div class="ss-card-label">오늘 설교</div>
+        <div style="margin-bottom:14px"><div class="ss-label">설교 제목</div><input class="ss-inp" id="ssTitle" placeholder="예) 나는 하나님의 자녀입니다" maxlength="60"></div>
+        <div style="margin-bottom:14px"><div class="ss-label">설교자</div><input class="ss-inp" id="ssPreacher" placeholder="예) 김성준 목사님" maxlength="30"></div>
+        <div><div class="ss-label">핵심 성경 구절</div><input class="ss-inp" id="ssVerse" placeholder="예) 요한1서 3:1"></div>
+      </div>
+      <button class="ss-btn-p" onclick="ssGoStep2()">다음 — 내용 입력하기 →</button>
+    </div>
+    <div id="ssstep2" style="display:none">
+      <div class="ss-card"><div class="ss-card-label">설교 내용 메모</div>
+        <div class="ss-label">기억나는 내용을 자유롭게 적어주세요</div>
+        <div class="ss-sub">핵심 단어, 예화, 감동받은 문장 등 무엇이든 좋아요.</div>
+        <textarea class="ss-inp" id="ssNotes" placeholder="예) 하나님이 우리를 자녀라고 부르신다고..." oninput="ssCountChars(this,'ssNoteCount')"></textarea>
+        <div class="ss-char" id="ssNoteCount">0자</div>
+      </div>
+      <div class="ss-card"><div class="ss-card-label">팀 의견 추가 (선택)</div>
+        <div class="ss-sub">특별히 넣고 싶은 포인트를 적어주세요.</div>
+        <textarea class="ss-inp" id="ssOpinion" placeholder="예) 우리 팀은 '아버지가 달려온다'는 장면이 가장 인상 깊었어요." rows="2" oninput="ssCountChars(this,'ssOpCount')"></textarea>
+        <div class="ss-char" id="ssOpCount">0자</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="ss-btn-s" onclick="ssGoStep1()">← 이전</button>
+        <button class="ss-btn-p" onclick="ssGenerate()" style="flex:1">✍️ AI 3줄 요약 생성</button>
+      </div>
+    </div>
+    <div class="ss-loading" id="ssLoading"><span class="ss-quill">✍️</span><div class="ss-loading-txt">요약 작성 중...</div><div style="font-size:.78rem;color:#7A6A52;margin-top:6px">AI가 핵심 메시지를 정리하고 있어요</div></div>
+    <div id="ssstep3" style="display:none">
+      <div class="ss-card" style="margin-bottom:8px"><div class="ss-card-label">AI 초안 — 직접 수정 가능해요</div></div>
+      <div class="ss-summary-wrap" id="ssSummaryWrap"></div>
+      <div class="ss-verse-card" id="ssVerseCard" style="display:none"><div class="ss-verse-lbl">핵심 구절</div><div class="ss-verse-txt" id="ssVerseDisplay"></div></div>
+      <div class="ss-action-row">
+        <button class="ss-btn-s" onclick="ssGoStep2()">← 다시 작성</button>
+        <button class="ss-btn-present" onclick="ssOpenPresent()">📢 발표 모드</button>
+      </div>
+      <div style="margin-top:10px"><button class="ss-btn-p" onclick="ssCopyAll()">📋 전체 복사</button></div>
+    </div>
+  </div>
+</div>
+<div class="ss-present" id="ssPresent">
+  <button class="ss-present-close" onclick="ssClosePresent()">✕</button>
+  <div class="ss-pt-team" id="ssPtTeam"></div>
+  <div class="ss-pt-title" id="ssPtTitle"></div>
+  <div class="ss-pt-lines" id="ssPtLines"></div>
+  <div class="ss-pt-verse" id="ssPtVerse"></div>
+</div>
+
+<!-- 감정 찬양 DJ 오버레이 -->
+<div class="dj-ov" id="djOv">
+  <div class="dj-bg"></div>
+  <div class="dj-viz" id="djViz"></div>
+  <div class="dj-top">
+    <button class="dj-back" onclick="closeDJ()">←</button>
+    <span class="dj-tag">중-4</span>
+    <span class="dj-tit">오늘 내 감정 찬양 DJ</span>
+  </div>
+  <div class="dj-hero">
+    <span class="dj-disc">🎧</span>
+    <div class="dj-hero-tag">🎵 찬양 추천 · 수련회 중 활동</div>
+    <h1>지금 내 감정에 맞는<br><em>찬양 플레이리스트</em></h1>
+    <p>현재 감정을 선택하면 딱 맞는 찬양곡을 골라드려요</p>
+  </div>
+  <div class="dj-wrap">
+    <div style="margin-bottom:20px">
+      <div class="dj-slabel">지금 내 감정은?</div>
+      <div class="dj-emo-grid">
+        <button class="dj-chip" onclick="djPick(this,'joy')">😊 기쁨</button>
+        <button class="dj-chip" onclick="djPick(this,'comfort')">🥺 위로가 필요해</button>
+        <button class="dj-chip" onclick="djPick(this,'thanks')">🙏 감사해</button>
+        <button class="dj-chip" onclick="djPick(this,'lonely')">😔 외로워</button>
+        <button class="dj-chip" onclick="djPick(this,'fear')">😰 두려워</button>
+        <button class="dj-chip" onclick="djPick(this,'passion')">🔥 열정이 넘쳐</button>
+        <button class="dj-chip" onclick="djPick(this,'sad')">😢 슬퍼</button>
+        <button class="dj-chip" onclick="djPick(this,'excited')">✨ 설레</button>
+        <button class="dj-chip" onclick="djPick(this,'tired')">😤 지쳐</button>
+        <button class="dj-chip" onclick="djPick(this,'grow')">🌱 성장하고 싶어</button>
+        <button class="dj-chip" onclick="djPick(this,'challenge')">💪 도전하고 싶어</button>
+        <button class="dj-chip" onclick="djPick(this,'peace')">🤍 평안해</button>
+      </div>
+      <div class="dj-slabel">또는 직접 적어줘요</div>
+      <input id="djFreeInp" style="width:100%;padding:12px 16px;background:#141428;border:1.5px solid #2A2A4A;border-radius:12px;font-size:.88rem;font-family:inherit;color:#F0F0FF;outline:none;margin-bottom:20px" placeholder="예) 오늘 친구랑 싸워서 속상해요...">
+    </div>
+    <button class="dj-gen" onclick="djGenerate()">🎵 내 감정 찬양 받기</button>
+    <div class="dj-result" id="djResult">
+      <div class="dj-rh"><span class="dj-rh-emoji">🎧</span><div><div class="dj-rh-label">지금 내 감정</div><div class="dj-rh-emotion" id="djRhEmo"></div></div></div>
+      <div class="dj-playlist" id="djPlaylist"></div>
+      <div class="dj-actions">
+        <button class="dj-btn-again" onclick="djReset()">↩ 다시 선택</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PW='1234';
+let pendingUrl='',isOpen=false,hoverTimer=null;
+
+// 별 생성
+(function(){var s=document.getElementById('stars');for(var i=0;i<40;i++){var d=document.createElement('div');d.className='star-dot';d.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-delay:'+Math.random()*4+'s;animation-duration:'+(1.5+Math.random()*3)+'s;opacity:'+(Math.random()*.6+.2);s.appendChild(d);}})();
+
+// 패널
+function peekPanel(){if(isOpen)return;clearTimeout(hoverTimer);document.getElementById('sidePanel').classList.add('peek');document.getElementById('hamBtn').classList.remove('open');}
+function unpeekPanel(){if(isOpen)return;hoverTimer=setTimeout(function(){document.getElementById('sidePanel').classList.remove('peek');},200);}
+function keepPanel(){clearTimeout(hoverTimer);}
+function leavePanelHover(){if(isOpen)return;hoverTimer=setTimeout(function(){document.getElementById('sidePanel').classList.remove('peek');},200);}
+function togglePanel(){if(isOpen){closePanel();return;}isOpen=true;document.getElementById('sidePanel').classList.remove('peek');document.getElementById('sidePanel').classList.add('open');document.getElementById('panelOverlay').classList.add('open');document.getElementById('hamBtn').classList.add('open');document.getElementById('hero').classList.add('blurred');}
+function closePanel(){isOpen=false;document.getElementById('sidePanel').classList.remove('open','peek');document.getElementById('panelOverlay').classList.remove('open');document.getElementById('hamBtn').classList.remove('open');document.getElementById('hero').classList.remove('blurred');}
+
+// 관리자
+function adminGo(url){pendingUrl=url;document.getElementById('pwInput').value='';document.getElementById('pwError').style.display='none';document.getElementById('pwOverlay').classList.add('open');setTimeout(function(){document.getElementById('pwInput').focus();},200);}
+function adminGoFrame(url,title){window._pendingFrame={url:url+'?mode=admin',title:title};document.getElementById('pwInput').value='';document.getElementById('pwError').style.display='none';document.getElementById('pwOverlay').classList.add('open');setTimeout(function(){document.getElementById('pwInput').focus();},200);}
+function confirmPw(){if(document.getElementById('pwInput').value===ADMIN_PW){document.getElementById('pwOverlay').classList.remove('open');if(window._pendingFrame){openFrame(window._pendingFrame.url,window._pendingFrame.title);window._pendingFrame=null;}else{window.location.href=pendingUrl+'?mode=admin';pendingUrl='';}}else{document.getElementById('pwError').style.display='block';document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}}
+function closePw(){document.getElementById('pwOverlay').classList.remove('open');pendingUrl='';}
+
+// iframe 오버레이
+function openFrame(url,title){document.getElementById('frameTitle').textContent=title||'';var iframe=document.getElementById('frameIframe');iframe.onload=function(){try{var doc=iframe.contentDocument||iframe.contentWindow.document;doc.querySelectorAll('a').forEach(function(a){var href=a.getAttribute('href')||'';if(href==='index.html'||href==='/'||href==='./index.html'){a.href='javascript:void(0)';a.onclick=function(e){e.preventDefault();window.parent.closeFrame();return false;};}});doc.querySelectorAll('button').forEach(function(btn){var txt=btn.textContent.trim();var oc=btn.getAttribute('onclick')||'';if(oc.includes('index.html')||txt==='홈으로'||txt==='← 홈'){btn.onclick=function(e){e.preventDefault();window.parent.closeFrame();return false;};}});}catch(e){}};iframe.src=url;document.getElementById('frameOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeFrame(){document.getElementById('frameOverlay').classList.remove('open');document.getElementById('frameIframe').src='';document.body.style.overflow='';}
+
+// 참가 신청
+function getRegistrations(){try{return JSON.parse(localStorage.getItem('retreat_registrations')||'[]');}catch(e){return[];}}
+function saveRegistrations(arr){localStorage.setItem('retreat_registrations',JSON.stringify(arr));}
+function updateCountUI(){var count=getRegistrations().length;document.getElementById('regCountNum').textContent=count;document.getElementById('regCountBadge').textContent='현재 '+count+'명 신청';}
+function openRegister(){updateCountUI();document.getElementById('regForm').style.display='block';document.getElementById('regSuccess').style.display='none';document.getElementById('regOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeRegister(){document.getElementById('regOverlay').classList.remove('open');document.body.style.overflow='';}
+function resetRegister(){['rName','rSchool','rPhone','rParentName','rParentPhone','rAllergy','rEtc'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('rGrade').value='';document.querySelectorAll('.reg-radio').forEach(function(r){r.checked=false;});document.getElementById('regSuccess').style.display='none';document.getElementById('regForm').style.display='block';updateCountUI();document.getElementById('regOverlay').scrollTop=0;}
+function autoHyphen(el){var v=el.value.replace(/[^0-9]/g,'');if(v.length<=3)el.value=v;else if(v.length<=7)el.value=v.slice(0,3)+'-'+v.slice(3);else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);}
+function submitRegister(){var name=document.getElementById('rName').value.trim();var grade=document.getElementById('rGrade').value;var gender=document.querySelector('.reg-radio:checked')?.value||'';var phone=document.getElementById('rPhone').value.trim();var parentName=document.getElementById('rParentName').value.trim();var parentPhone=document.getElementById('rParentPhone').value.trim();if(!name){alert('이름을 입력해주세요!');return;}if(!grade){alert('학년을 선택해주세요!');return;}if(!gender){alert('성별을 선택해주세요!');return;}if(!phone){alert('학생 연락처를 입력해주세요!');return;}if(!parentName){alert('보호자 이름을 입력해주세요!');return;}if(!parentPhone){alert('보호자 연락처를 입력해주세요!');return;}var btn=document.getElementById('regSubmitBtn');btn.disabled=true;btn.textContent='신청 중...';var regs=getRegistrations();var entry={name:name,school:document.getElementById('rSchool').value.trim(),grade:grade,gender:gender,phone:phone,parentName:parentName,parentPhone:parentPhone,allergy:document.getElementById('rAllergy').value.trim(),etc:document.getElementById('rEtc').value.trim(),timestamp:new Date().toISOString()};regs.push(entry);saveRegistrations(regs);var myNum=regs.length;setTimeout(function(){btn.disabled=false;btn.textContent='🏕️ 신청 완료하기';document.getElementById('successName').textContent=name;document.getElementById('successNum').textContent=myNum;var msgs=['첫 번째로 신청하셨어요! 🥇 최고예요!','두 번째로 신청하셨어요! 🥈','세 번째로 신청하셨어요! 🥉'];document.getElementById('successNumSub').textContent=myNum<=3?msgs[myNum-1]:myNum+'번째로 신청하셨어요 🎊';var school=document.getElementById('rSchool').value.trim();document.getElementById('successInfo').innerHTML=[['이름',name],['학교/학년',(school?school+' ':'')+grade],['성별',gender],['연락처',phone],['보호자',parentName+' · '+parentPhone]].map(function(r){return '<div class="si-row"><span class="si-key">'+r[0]+'</span><span class="si-val">'+r[1]+'</span></div>';}).join('');document.getElementById('regForm').style.display='none';document.getElementById('regSuccess').style.display='flex';document.getElementById('regOverlay').scrollTop=0;updateCountUI();},400);}
+
+// 설교 3줄 요약
+var ssTeamName='',ssLines=['','',''],ssInfo={};
+function openSermon(){document.getElementById('ssOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeSermon(){document.getElementById('ssOverlay').classList.remove('open');document.body.style.overflow='';}
+function ssPickTeam(btn,name){ssTeamName=name;document.querySelectorAll('.ss-tc').forEach(function(c){c.classList.remove('on')});btn.classList.add('on');}
+function ssShow(id){document.getElementById(id).style.display='block';}
+function ssHide(id){document.getElementById(id).style.display='none';}
+function ssSetPips(n){for(var i=1;i<=3;i++){var p=document.getElementById('sspip'+i);p.classList.remove('on','done');if(i<n)p.classList.add('done');else if(i===n)p.classList.add('on');}}
+function ssGoStep1(){ssHide('ssstep2');ssHide('ssstep3');ssHide('ssLoading');ssShow('ssstep1');ssSetPips(1);}
+function ssGoStep2(){if(!ssTeamName){alert('팀/조를 선택해주세요!');return;}var title=document.getElementById('ssTitle').value.trim();if(!title){alert('설교 제목을 입력해주세요!');return;}ssHide('ssstep1');ssHide('ssstep3');ssHide('ssLoading');ssShow('ssstep2');ssSetPips(2);}
+function ssCountChars(el,countId){document.getElementById(countId).textContent=el.value.length+'자';}
+async function ssCallClaude(messages){var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'APIKEY_HERE','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:messages})});var data=await res.json();return(data.content&&data.content[0]&&data.content[0].text)||'';}
+async function ssGenerate(){var notes=document.getElementById('ssNotes').value.trim();if(!notes){alert('설교 내용 메모를 입력해주세요!');return;}ssInfo={title:document.getElementById('ssTitle').value.trim(),preacher:document.getElementById('ssPreacher').value.trim(),verse:document.getElementById('ssVerse').value.trim(),notes:notes,opinion:document.getElementById('ssOpinion').value.trim()};ssHide('ssstep2');document.getElementById('ssLoading').classList.add('show');ssSetPips(3);var prompt=['교회 중학생 여름수련회 설교 3줄 요약 챌린지야.','아래 설교 내용 메모를 바탕으로 핵심 3줄을 작성해줘.','','설교 제목: '+(ssInfo.title||'(미입력)'),'설교자: '+(ssInfo.preacher||'(미입력)'),'핵심 구절: '+(ssInfo.verse||'(미입력)'),'설교 내용 메모:',ssInfo.notes,ssInfo.opinion?'\n팀 의견: '+ssInfo.opinion:'','','규칙:','- 3줄 각각 완결된 문장으로 (15~30자)','- 1줄: 오늘 설교의 핵심 주제/메시지','- 2줄: 가장 인상 깊은 예화나 말씀 장면','- 3줄: 나의 삶에 적용할 점 / 결단','- 중학생이 직접 쓴 것처럼 자연스럽게','','아래 형식으로만 답해줘 (다른 말 없이):','[LINE1] 첫 번째 줄','[LINE2] 두 번째 줄','[LINE3] 세 번째 줄','[VERSE] 추천 핵심 구절 (성경책 장절 + 짧은 본문)'].join('\n');try{var text=await ssCallClaude([{role:'user',content:prompt}]);function exLine(tag){var m=text.match(new RegExp('\\['+tag+'\\]\\s*(.+)'));return m?m[1].trim():'';}ssLines[0]=exLine('LINE1')||'(생성 실패 — 직접 입력해주세요)';ssLines[1]=exLine('LINE2')||'(생성 실패 — 직접 입력해주세요)';ssLines[2]=exLine('LINE3')||'(생성 실패 — 직접 입력해주세요)';var v=exLine('VERSE');ssRenderSummary();var vc=document.getElementById('ssVerseCard');var vt=document.getElementById('ssVerseDisplay');if(v){vt.textContent='"'+v+'"';vc.style.display='block';}else if(ssInfo.verse){vt.textContent=ssInfo.verse;vc.style.display='block';}else vc.style.display='none';document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep3');}catch(e){document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep2');alert('생성 중 오류가 발생했어요. 다시 시도해주세요.');}}
+var SS_LABELS=['핵심 메시지','인상 깊은 장면','내 삶의 적용'];
+function ssRenderSummary(){var wrap=document.getElementById('ssSummaryWrap');wrap.innerHTML='';ssLines.forEach(function(line,i){var div=document.createElement('div');div.className='ss-sl';div.innerHTML='<div class="ss-sl-hd"><span class="ss-sl-num">'+(i+1)+'</span><span class="ss-sl-lbl">'+SS_LABELS[i]+'</span><button class="ss-regen" onclick="ssRegenLine('+i+',this)">↻ 재생성</button></div><div class="ss-sl-body"><textarea class="ss-sl-txt" id="ssLine'+i+'" rows="2" oninput="ssSyncLine('+i+',this)">'+ssEscHtml(line)+'</textarea></div>';wrap.appendChild(div);});}
+function ssSyncLine(i,el){ssLines[i]=el.value;}
+async function ssRegenLine(i,btn){btn.disabled=true;btn.textContent='⏳';var prompts=['아래 설교 내용에서 핵심 메시지 1줄을 다시 써줘. 이전과 다른 표현으로. 문장 하나만.','아래 설교 내용에서 가장 인상 깊은 장면이나 예화를 1줄로 다시 써줘. 이전과 다른 표현으로. 문장 하나만.','아래 설교 내용을 듣고 삶에 적용할 결단을 1줄로 다시 써줘. 이전과 다른 표현으로. 문장 하나만.'];var ctx='설교 제목: '+ssInfo.title+'\n내용: '+ssInfo.notes;try{var text=await ssCallClaude([{role:'user',content:prompts[i]+'\n\n'+ctx+'\n\n문장 하나만 답해줘.'}]);ssLines[i]=text.trim().replace(/^["'"'「]|["'"'」]$/g,'');document.getElementById('ssLine'+i).value=ssLines[i];}catch(e){alert('재생성 실패. 다시 시도해주세요.');}btn.disabled=false;btn.textContent='↻ 재생성';}
+function ssCopyAll(){for(var i=0;i<3;i++){var el=document.getElementById('ssLine'+i);if(el)ssLines[i]=el.value;}var vt=document.getElementById('ssVerseDisplay');var text=['【 '+(ssInfo.title||'설교')+' 】',ssTeamName+' · 핵심 3줄 요약','','① '+ssLines[0],'② '+ssLines[1],'③ '+ssLines[2],vt?'\n'+vt.textContent:''].join('\n');navigator.clipboard.writeText(text).then(function(){var btn=event.target.closest('button');var orig=btn.innerHTML;btn.innerHTML='✓ 복사됐습니다!';setTimeout(function(){btn.innerHTML=orig;},2000);});}
+function ssOpenPresent(){for(var i=0;i<3;i++){var el=document.getElementById('ssLine'+i);if(el)ssLines[i]=el.value;}document.getElementById('ssPtTeam').textContent=ssTeamName;document.getElementById('ssPtTitle').textContent=(ssInfo.preacher?ssInfo.preacher+' · ':'')+(ssInfo.title?'"'+ssInfo.title+'"':'오늘 설교');var vt=document.getElementById('ssVerseDisplay');document.getElementById('ssPtVerse').textContent=vt?vt.textContent:'';var pl=document.getElementById('ssPtLines');pl.innerHTML='';ssLines.forEach(function(line,i){var div=document.createElement('div');div.className='ss-pt-line';div.innerHTML='<div class="ss-pt-num">'+(i+1)+'</div><div class="ss-pt-txt">'+ssEscHtml(line)+'</div>';pl.appendChild(div);});document.getElementById('ssPresent').classList.add('open');}
+function ssClosePresent(){document.getElementById('ssPresent').classList.remove('open');}
+function ssEscHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// 전체 일정표
+function openSchedule(){document.getElementById('schOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeSchedule(){document.getElementById('schOverlay').classList.remove('open');document.body.style.overflow='';}
+function schTab(id,btn){document.querySelectorAll('.sch-tab').forEach(function(b){b.classList.remove('active')});document.querySelectorAll('.sch-panel').forEach(function(p){p.classList.remove('active')});btn.classList.add('active');document.getElementById('sch-'+id).classList.add('active');}
+
+// 감정 찬양 DJ (API 없음 - 큐레이션 데이터)
+var DJ_DB={
+  joy:{label:'😊 기쁨',songs:[{t:'주의 이름 높이세',a:'어노인팅',r:'기쁨이 넘칠 때 함께 높이 올려드리기 좋은 찬양이에요'},{t:'찬양합니다',a:'마커스워십',r:'온 마음으로 기쁘게 찬양할 수 있어요'},{t:'감사해요',a:'예수전도단',r:'감사와 기쁨이 함께 담긴 곡이에요'},{t:'할렐루야',a:'소울케이',r:'기쁨으로 할렐루야를 외치기 좋아요'},{t:'좋으신 하나님',a:'어노인팅',r:'하나님의 좋으심을 기뻐하며 부를 수 있어요'}]},
+  comfort:{label:'🥺 위로가 필요해',songs:[{t:'주님 손에 맡겨요',a:'마커스워십',r:'지치고 힘들 때 주님께 모든 걸 내려놓게 해줘요'},{t:'너의 손을 잡지 않으면',a:'소울케이',r:'외롭고 힘든 순간에 함께하시는 하나님을 느끼게 해요'},{t:'내 삶의 이유',a:'예수전도단',r:'삶이 흔들릴 때 나의 이유 되신 주님을 붙잡게 해줘요'},{t:'예수 나의 좋은 친구',a:'마커스워십',r:'예수님이 가장 좋은 친구임을 느끼게 해줘요'},{t:'상처입은 마음에',a:'어노인팅',r:'아픈 마음을 치유해주시는 주님을 만나게 해요'}]},
+  thanks:{label:'🙏 감사해',songs:[{t:'감사함으로',a:'마커스워십',r:'감사한 마음을 담아 하나님께 드리기 좋아요'},{t:'은혜 아니면',a:'어노인팅',r:'모든 것이 은혜임을 고백하는 찬양이에요'},{t:'주님 감사해요',a:'예수전도단',r:'작은 것에도 감사하는 마음을 담은 곡이에요'},{t:'내게 주어진 선물',a:'소울케이',r:'하나님의 선물 같은 매일에 감사할 수 있어요'},{t:'모든 것 위에',a:'마커스워십',r:'감사와 찬양을 동시에 드릴 수 있는 곡이에요'}]},
+  lonely:{label:'😔 외로워',songs:[{t:'나 혼자가 아니야',a:'예수전도단',r:'혼자라고 느낄 때 함께하시는 주님을 기억하게 해요'},{t:'주님 곁에',a:'마커스워십',r:'외로울 때 주님 곁으로 나아가게 해주는 곡이에요'},{t:'예수 나의 주',a:'어노인팅',r:'예수님이 나의 주인이심을 고백하며 위로받아요'},{t:'너를 향한 나의 사랑',a:'소울케이',r:'하나님이 나를 사랑하신다는 걸 느끼게 해줘요'},{t:'주의 사랑으로',a:'마커스워십',r:'주님의 사랑이 외로움을 채워줌을 노래해요'}]},
+  fear:{label:'😰 두려워',songs:[{t:'두려워 말아요',a:'마커스워십',r:'두렵고 떨릴 때 하나님의 평안을 구하게 해요'},{t:'내가 주를 향하여',a:'어노인팅',r:'두려움 속에서도 주님을 향해 나아가게 해요'},{t:'평안을 너에게 주노라',a:'예수전도단',r:'예수님의 평안이 두려움을 이기게 해줘요'},{t:'주 안에 있는 나에게',a:'마커스워십',r:'주 안에 있을 때 두려울 것이 없다는 고백이에요'},{t:'나의 피난처',a:'어노인팅',r:'하나님이 나의 피난처 되심을 선포하는 찬양이에요'}]},
+  passion:{label:'🔥 열정이 넘쳐',songs:[{t:'일어나라',a:'마커스워십',r:'열정적으로 일어나 하나님을 예배하게 해요'},{t:'하나님의 군대',a:'어노인팅',r:'힘차게 하나님 나라를 위해 나아가는 찬양이에요'},{t:'전진',a:'예수전도단',r:'두려움 없이 앞으로 나아가는 열정을 불태워요'},{t:'담대히',a:'마커스워십',r:'담대하게 외치며 열정을 주님께 드리는 곡이에요'},{t:'주의 이름으로',a:'소울케이',r:'주의 이름으로 힘차게 나아가는 찬양이에요'}]},
+  sad:{label:'😢 슬퍼',songs:[{t:'눈물로 씨를 뿌리는',a:'어노인팅',r:'눈물이 날 때 하나님께 나아가게 해주는 곡이에요'},{t:'주님의 위로',a:'마커스워십',r:'슬픔을 주님께 가져가면 위로하신다는 약속의 찬양이에요'},{t:'나의 슬픔 아시는 주',a:'예수전도단',r:'내 슬픔을 아시는 주님께 기댈 수 있어요'},{t:'회복',a:'소울케이',r:'슬픔 뒤에 찾아오는 회복을 노래해요'},{t:'고난 중에도',a:'어노인팅',r:'고난과 슬픔 중에도 주님을 신뢰하는 고백이에요'}]},
+  excited:{label:'✨ 설레',songs:[{t:'새 노래로',a:'마커스워십',r:'설레는 마음으로 새 노래를 드리는 찬양이에요'},{t:'주님과 함께라면',a:'예수전도단',r:'주님과 함께하는 설레는 여정을 노래해요'},{t:'하나님의 사랑',a:'소울케이',r:'사랑에 설레듯 하나님의 사랑을 노래해요'},{t:'나는 주님을 사랑해',a:'어노인팅',r:'주님을 향한 설레는 사랑을 고백하는 곡이에요'},{t:'더 가까이',a:'마커스워십',r:'주님께 더 가까이 나아가는 설렘을 담았어요'}]},
+  tired:{label:'😤 지쳐',songs:[{t:'쉬어요 주 안에서',a:'마커스워십',r:'지칠 때 주님 안에서 쉬게 해주는 곡이에요'},{t:'내 모든 것',a:'어노인팅',r:'지친 모든 것을 주님께 내려놓게 해줘요'},{t:'여기 내 모든 것',a:'예수전도단',r:'지쳐서 내려놓고 싶을 때 부르기 좋아요'},{t:'주님 품에',a:'소울케이',r:'지친 몸을 주님 품에 기대게 해주는 찬양이에요'},{t:'너는 내 것이라',a:'마커스워십',r:'지쳐도 하나님의 사랑받는 존재임을 기억하게 해요'}]},
+  grow:{label:'🌱 성장하고 싶어',songs:[{t:'주님 뜻대로',a:'예수전도단',r:'주님 뜻 안에서 성장하고 싶은 마음을 담았어요'},{t:'더 높은 곳으로',a:'어노인팅',r:'신앙 안에서 더 높이 성장하게 해주는 곡이에요'},{t:'변화',a:'마커스워십',r:'하나님 안에서 변화되고 성장하는 여정을 노래해요'},{t:'주의 형상',a:'소울케이',r:'주님의 형상을 닮아가며 성장하고 싶은 고백이에요'},{t:'새롭게 하소서',a:'어노인팅',r:'새롭게 거듭나고 성장하고 싶은 마음을 담았어요'}]},
+  challenge:{label:'💪 도전하고 싶어',songs:[{t:'내가 할 수 있어',a:'마커스워십',r:'주님과 함께라면 할 수 있다는 용기를 줘요'},{t:'믿음으로',a:'예수전도단',r:'믿음으로 담대하게 도전하게 해주는 찬양이에요'},{t:'거인들의 땅',a:'어노인팅',r:'두려움을 이기고 도전하는 용기를 불어넣어요'},{t:'나의 힘이 되신 주',a:'소울케이',r:'주님이 나의 힘이 되셔서 도전할 수 있게 해요'},{t:'용사여 일어나라',a:'마커스워십',r:'도전을 향해 힘차게 일어나게 해주는 곡이에요'}]},
+  peace:{label:'🤍 평안해',songs:[{t:'평강의 왕이신 주',a:'어노인팅',r:'평안함 속에서 평강의 왕께 나아가게 해요'},{t:'주 안에 평안',a:'마커스워십',r:'주 안에 있는 깊은 평안을 노래해요'},{t:'잠잠히 주를 기다리리',a:'예수전도단',r:'고요하고 평안하게 주님을 기다리는 곡이에요'},{t:'여호와 샬롬',a:'소울케이',r:'평화를 주시는 여호와께 감사드리는 찬양이에요'},{t:'고요한 물가로',a:'어노인팅',r:'고요하고 평안한 물가로 인도하시는 주님을 노래해요'}]}
+};
+var djSelected=null,djLastSongs=[],djLastLabel='';
+function openDJ(){var viz=document.getElementById('djViz');if(!viz.children.length){for(var i=0;i<60;i++){var b=document.createElement('div');b.className='dj-vb';b.style.height=(Math.random()*60+20)+'px';b.style.animationDuration=(0.4+Math.random()*0.8)+'s';b.style.animationDelay=(Math.random()*0.5)+'s';viz.appendChild(b);}}document.getElementById('djOv').classList.add('open');document.body.style.overflow='hidden';}
+function closeDJ(){document.getElementById('djOv').classList.remove('open');document.body.style.overflow='';}
+function djPick(btn,key){document.querySelectorAll('.dj-chip').forEach(function(c){c.classList.remove('on')});btn.classList.add('on');djSelected=key;}
+function djGenerate(){if(!djSelected&&!document.getElementById('djFreeInp').value.trim()){alert('감정을 선택하거나 직접 입력해주세요!');return;}var free=document.getElementById('djFreeInp').value.trim();var data=djSelected?DJ_DB[djSelected]:DJ_DB['comfort'];djLastLabel=djSelected?data.label:(free||'직접 입력');var songs=data.songs.slice().sort(function(){return Math.random()-.5});djLastSongs=songs.slice(0,5);document.getElementById('djRhEmo').textContent=djLastLabel+(free&&djSelected?' · '+free:free?free:'');djRenderPlaylist(djLastSongs);document.getElementById('djResult').classList.add('show');document.getElementById('djOv').scrollTo(0,400);}
+function djRenderPlaylist(songs){
+  var pl=document.getElementById('djPlaylist');pl.innerHTML='';
+  songs.forEach(function(song,i){
+    var div=document.createElement('div');
+    div.className='dj-card';
+    div.style.animationDelay=(i*0.06)+'s';
+    var top=document.createElement('div');top.className='dj-card-top';
+    var num=document.createElement('div');num.className='dj-card-num';num.textContent=(i+1);
+    var info=document.createElement('div');
+    var title=document.createElement('div');title.className='dj-card-title';title.textContent='🎵 '+song.t;
+    var artist=document.createElement('div');artist.className='dj-card-artist';artist.textContent=song.a;
+    info.appendChild(title);info.appendChild(artist);
+    top.appendChild(num);top.appendChild(info);
+    var note=document.createElement('div');note.className='dj-card-note';note.textContent=song.r;
+    var hint=document.createElement('div');hint.className='dj-card-hint';hint.textContent='📄 클릭하면 악보 검색 →';
+    div.appendChild(top);div.appendChild(note);div.appendChild(hint);
+    div.onclick=(function(t,a){return function(){window.open('https://www.google.com/search?q='+encodeURIComponent(t+' '+a+' 악보'),'_blank');};})(song.t,song.a);
+    pl.appendChild(div);
+  });
+}
+
+function djReset(){djSelected=null;document.querySelectorAll('.dj-chip').forEach(function(c){c.classList.remove('on')});document.getElementById('djResult').classList.remove('show');document.getElementById('djOv').scrollTop=0;}
+function djLyrics(t,a){window.open('https://www.google.com/search?q='+encodeURIComponent(t+' 가사'),'_blank');}function djSheet(t,a){window.open('https://www.google.com/search?q='+encodeURIComponent(t+' '+a+' 악보'),'_blank');}
+function djEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function blUpdateResultsBtn(){
+  var saved=JSON.parse(localStorage.getItem('bl_team_results')||'[]');
+  var cnt=document.getElementById('blResultCount');
+  if(saved.length>0){cnt.textContent=saved.length+'명';cnt.style.display='inline';}
+  else{cnt.style.display='none';}
+}
+function blShowResultsScreen(){
+  var saved=JSON.parse(localStorage.getItem('bl_team_results')||'[]');
+  var list=document.getElementById('blResultsList');
+  if(saved.length===0){
+    list.innerHTML='<div style="text-align:center;padding:40px 20px;color:#555;font-size:.88rem">아직 완료한 학생이 없어요<br>20문제를 끝내면 여기에 기록돼요!</div>';
+  } else {
+    list.innerHTML='';
+    saved.forEach(function(r,i){
+      var t=BL_TYPES[r.type];
+      var total=Object.values(r.scores).reduce(function(a,b){return a+b},0);
+      var card=document.createElement('div');
+      card.style.cssText='background:#1A1A1A;border:1.5px solid #2A2A2A;border-radius:14px;padding:16px;margin-bottom:10px';
+      var topScore=r.scores[r.type];
+      var miniChart=Object.keys(BL_TYPES).map(function(k){
+        var pct=total>0?Math.round(r.scores[k]/total*100):0;
+        return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'+
+          '<div style="font-size:.65rem;color:#666;width:20px">'+BL_TYPES[k].icon+'</div>'+
+          '<div style="flex:1;height:10px;background:#222;border-radius:5px;overflow:hidden">'+
+          '<div style="width:'+pct+'%;height:100%;background:'+BL_TYPES[k].color+';border-radius:5px"></div></div>'+
+          '<div style="font-size:.65rem;color:#555;width:28px;text-align:right">'+pct+'%</div></div>';
+      }).join('');
+      card.innerHTML=
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'+
+          '<div style="width:36px;height:36px;border-radius:9px;background:'+t.color+'22;border:1.5px solid '+t.color+'44;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">'+t.icon+'</div>'+
+          '<div style="flex:1">'+
+            '<div style="font-size:.95rem;font-weight:800;color:#F5F5F5">'+blEsc(r.name)+'</div>'+
+            '<div style="font-size:.75rem;font-weight:700;color:'+t.color+'">'+t.name+'</div>'+
+          '</div>'+
+          '<div style="font-size:.7rem;color:#444">'+(i+1)+'번째</div>'+
+        '</div>'+
+        miniChart;
+      list.appendChild(card);
+    });
+  }
+  document.getElementById('blIntro').style.display='none';
+  document.getElementById('blResultsScreen').style.display='block';
+  document.getElementById('blOv').scrollTo(0,0);
+}
+function blClearResults(){
+  if(confirm('모든 결과를 초기화할까요?')){
+    localStorage.removeItem('bl_team_results');
+    blGoIntro();
+  }
+}
+function blEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function blShowResult(){
+  // 최고 유형 찾기
+  var top='leader', topScore=0;
+  Object.keys(blTypeScores).forEach(function(k){
+    if(blTypeScores[k]>topScore){topScore=blTypeScores[k];top=k;}
+  });
+  var t=BL_TYPES[top];
+  document.getElementById('blEndIcon').textContent=t.icon;
+  document.getElementById('blEndType').textContent=t.name;
+  document.getElementById('blEndDesc').textContent=t.desc;
+  // localStorage에 저장
+  var name=document.getElementById('blPlayerName').value.trim();
+  var saved=JSON.parse(localStorage.getItem('bl_team_results')||'[]');
+  saved.push({name:name||'학생 '+(saved.length+1),type:top,scores:Object.assign({},blTypeScores),ts:Date.now()});
+  localStorage.setItem('bl_team_results',JSON.stringify(saved));
+  blUpdateResultsBtn();
+  // 차트 그리기
+  var chart=document.getElementById('blTypeChart');chart.innerHTML='';
+  var total=Object.values(blTypeScores).reduce(function(a,b){return a+b},0);
+  var order=['leader','fun','serve','prayer'];
+  order.forEach(function(k){
+    var tp=BL_TYPES[k];
+    var score=blTypeScores[k]||0;
+    var pct=total>0?Math.round(score/total*100):0;
+    var row=document.createElement('div');row.className='bl-type-row';
+    row.innerHTML='<div class="bl-type-label">'+tp.icon+' '+tp.name.split(' ')[0]+'</div>'+
+      '<div class="bl-type-track"><div class="bl-type-bar" style="width:'+pct+'%;background:'+tp.color+'">'+
+      (pct>10?pct+'%':'')+'</div></div>'+
+      '<div class="bl-type-score">'+score+'</div>';
+    chart.appendChild(row);
+  });
+}
+// 인트로로 이동
+function closeBalance(){ (window.parent!==window?window.parent.closeFrame():history.back()); }
+// 초기화
+blUpdateResultsBtn();
+</script>
+</body>
+</html>
