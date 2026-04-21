@@ -21,10 +21,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Inject API Key
+        env:
+          API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python3 -c "
+import os
 content = open('index.html').read()
-content = content.replace('APIKEY_HERE', '${{ secrets.ANTHROPIC_API_KEY }}')
+content = content.replace('APIKEY_HERE', os.environ['API_KEY'])
 open('index.html', 'w').write(content)
 "
 
