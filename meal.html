@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>식단표</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F5F6FA;--white:#FFFFFF;--text:#222;--sub:#666;--light:#999;--border:#E8EAF0;
+  --shadow:0 2px 12px rgba(0,0,0,.06);
+  --morning:#F59E0B;--morning-bg:#FFFBEB;
+  --lunch:#10B981;--lunch-bg:#ECFDF5;
+  --dinner:#8B5CF6;--dinner-bg:#F5F3FF;
+}
+body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:50}
+.topbar-inner{max-width:680px;margin:0 auto;height:52px;display:flex;align-items:center;gap:12px}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--bg);border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--text)}
+.page-title{font-size:1rem;font-weight:800}
+
+.hero-bar{background:linear-gradient(135deg,#10B981,#3B82F6);color:white;padding:24px 20px;text-align:center}
+.hero-bar h1{font-size:1.3rem;font-weight:900;margin-bottom:4px}
+.hero-bar p{font-size:.85rem;opacity:.9}
+
+.wrap{max-width:680px;margin:0 auto;padding:16px 16px 60px}
+
+.day-tabs{display:flex;gap:8px;margin-bottom:20px}
+.day-tab{flex:1;padding:10px 0;border-radius:12px;border:2px solid var(--border);background:var(--white);font-size:.85rem;font-weight:700;cursor:pointer;text-align:center;transition:.2s;color:var(--sub)}
+.day-tab.active{background:#10B981;border-color:#10B981;color:white}
+
+.day-panel{display:none}
+.day-panel.active{display:flex;flex-direction:column;gap:14px}
+
+/* 식사 카드 */
+.meal-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}
+.meal-header{padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.meal-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.md-morning{background:var(--morning)}
+.md-lunch{background:var(--lunch)}
+.md-dinner{background:var(--dinner)}
+.meal-time-label{font-size:.72rem;font-weight:700}
+.tl-morning{color:var(--morning)}
+.tl-lunch{color:var(--lunch)}
+.tl-dinner{color:var(--dinner)}
+.meal-time-sub{font-size:.7rem;color:var(--light);margin-left:auto}
+
+/* 메뉴 + 식판 레이아웃 */
+.meal-body{display:grid;grid-template-columns:1fr}
+.menu-list{padding:14px 16px;}
+.menu-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px}
+.menu-item:last-child{margin-bottom:0}
+.menu-bullet{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.mb-morning{background:var(--morning)}
+.mb-lunch{background:var(--lunch)}
+.mb-dinner{background:var(--dinner)}
+.menu-dish{font-size:.88rem;font-weight:600;line-height:1.3}
+.menu-note{font-size:.72rem;color:var(--sub);margin-top:1px}
+
+.tray-wrap{display:flex;align-items:center;justify-content:center;padding:12px 10px;background:#FAFBFF}
+
+.kcal-footer{padding:8px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.kcal-text{font-size:.72rem;color:var(--light)}
+.kcal-text span{font-weight:700;color:var(--sub)}
+.allergy-text{font-size:.68rem;color:var(--light)}
+
+@media(max-width:400px){
+  .meal-body{grid-template-columns:1fr}
+  
+  .menu-list{border-right:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <button class="back-btn" onclick="(window.parent!==window?window.parent.closeFrame():window.location.href='index.html')" style="cursor:pointer;border:none;font-family:inherit">←</button>
+    <span class="page-title">🍽️ 식단표</span>
+  </div>
+</div>
+
+<div class="hero-bar">
+  <h1>2026 여름수련회 식단표</h1>
+  <p>7월 28일 ~ 7월 30일 · 3일 2박</p>
+</div>
+
+<div class="wrap">
+  <div class="day-tabs">
+    <button class="day-tab active" onclick="switchDay(0,this)">1일차<br><span style="font-size:.7rem;font-weight:400">7/28 월</span></button>
+    <button class="day-tab" onclick="switchDay(1,this)">2일차<br><span style="font-size:.7rem;font-weight:400">7/29 화</span></button>
+    <button class="day-tab" onclick="switchDay(2,this)">3일차<br><span style="font-size:.7rem;font-weight:400">7/30 수</span></button>
+  </div>
+
+  <!-- ── 1일차 ── -->
+  <div class="day-panel active" id="day0">
+
+    <!-- 아침 -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-morning"></div>
+        <span class="meal-time-label tl-morning">🌅 아침</span>
+        <span class="meal-time-sub">07:30 ~ 08:30</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">흰쌀밥</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">된장찌개</div><div class="menu-note">두부·호박·버섯</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">계란 후라이</div><div class="menu-note">1인 2개</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">김치 · 깍두기</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">우유 (200ml)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer">
+        <span class="kcal-text">예상 칼로리 <span>약 550 kcal</span></span>
+      </div>
+    </div>
+
+    <!-- 점심 -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-lunch"></div>
+        <span class="meal-time-label tl-lunch">☀️ 점심</span>
+        <span class="meal-time-sub">11:30 ~ 12:30</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">잡곡밥</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">불고기</div><div class="menu-note">국내산 돼지고기, 양파·당근 볶음</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">미역국</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">콩나물 무침</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">김치</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">수박 🍉 (후식)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer">
+        <span class="kcal-text">예상 칼로리 <span>약 700 kcal</span></span>
+      </div>
+    </div>
+
+    <!-- 저녁 -->
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-dinner"></div>
+        <span class="meal-time-label tl-dinner">🌙 저녁</span>
+        <span class="meal-time-sub">18:00 ~ 19:00</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">흰쌀밥</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">치킨 카레</div><div class="menu-note">닭고기·감자·당근 카레소스</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">계란국</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">오이무침</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">김치</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">아이스크림 🍦 (후식)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer">
+        <span class="kcal-text">예상 칼로리 <span>약 750 kcal</span></span>
+        <span class="allergy-text">⚠️ 알레르기 시 교사에게</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2일차 ── -->
+  <div class="day-panel" id="day1">
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-morning"></div>
+        <span class="meal-time-label tl-morning">🌅 아침</span>
+        <span class="meal-time-sub">07:30 ~ 08:30</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">잡곡밥</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">북어국</div><div class="menu-note">북어채·두부·파</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">소시지 구이</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">감자조림</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">김치 · 깍두기</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">요구르트 🥛</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer"><span class="kcal-text">예상 칼로리 <span>약 600 kcal</span></span></div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-lunch"></div>
+        <span class="meal-time-label tl-lunch">☀️ 점심</span>
+        <span class="meal-time-sub">11:30 ~ 12:30</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">흰쌀밥</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">제육볶음</div><div class="menu-note">매운맛 주의 · 순한 것 별도 제공</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">콩나물국</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">시금치나물</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">김치</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">포도 🍇 (후식)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer"><span class="kcal-text">예상 칼로리 <span>약 720 kcal</span></span></div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-dinner"></div>
+        <span class="meal-time-label tl-dinner">🌙 저녁</span>
+        <span class="meal-time-sub">18:00 ~ 19:00</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">짜장밥</div><div class="menu-note">춘장·돼지고기·야채 짜장</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">단무지 · 양파</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">계란국</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">탕수육 🍖 (스페셜)</div><div class="menu-note">오늘의 특별 메뉴!</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-dinner"></div><div><div class="menu-dish">아이스크림 🍦 (후식)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer">
+        <span class="kcal-text">예상 칼로리 <span>약 800 kcal</span></span>
+        <span class="allergy-text">⚠️ 알레르기 시 교사에게</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3일차 ── -->
+  <div class="day-panel" id="day2">
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-morning"></div>
+        <span class="meal-time-label tl-morning">🌅 아침</span>
+        <span class="meal-time-sub">07:30 ~ 08:30</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">흰쌀밥</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">미역국</div><div class="menu-note">마지막 날 특식</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">동그랑땡 · 전</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">나물 무침</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">김치</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-morning"></div><div><div class="menu-dish">주스 🧃 (100ml)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer"><span class="kcal-text">예상 칼로리 <span>약 580 kcal</span></span></div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <div class="meal-dot md-lunch"></div>
+        <span class="meal-time-label tl-lunch">☀️ 점심</span>
+        <span class="meal-time-sub">12:50 ~ 13:30</span>
+      </div>
+      <div class="meal-body">
+        <div class="menu-list">
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">돈까스 덮밥</div><div class="menu-note">마지막 날 스페셜 🎉</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">된장국</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">샐러드</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">김치</div></div></div>
+          <div class="menu-item"><div class="menu-bullet mb-lunch"></div><div><div class="menu-dish">아이스크림 바 🍦 (수고했어요!)</div></div></div>
+        </div>
+</div>
+      <div class="kcal-footer">
+        <span class="kcal-text">예상 칼로리 <span>약 750 kcal</span></span>
+        <span class="allergy-text">⚠️ 알레르기 시 교사에게</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchDay(idx,btn){
+  document.querySelectorAll('.day-tab').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.day-panel').forEach(function(p){p.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById('day'+idx).classList.add('active');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수련회 회계 장부</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F5F6FA;--white:#fff;--text:#222;--sub:#666;--light:#999;--border:#E8EAF0;
+  --shadow:0 2px 12px rgba(0,0,0,.06);
+  --income:#10B981;--income-light:#ECFDF5;
+  --expense:#EF4444;--expense-light:#FEF2F2;
+  --primary:#3B82F6;--primary-light:#EFF6FF;
+  --orange:#F59E0B;--orange-light:#FFFBEB;
+}
+body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:50}
+.topbar-inner{max-width:640px;margin:0 auto;height:52px;display:flex;align-items:center;gap:12px}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--bg);border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--text);flex-shrink:0}
+.page-title{font-size:1rem;font-weight:800}
+
+.hero-bar{background:linear-gradient(135deg,#1E3A8A,#3B82F6);color:white;padding:24px 20px;text-align:center}
+.hero-bar h1{font-size:1.2rem;font-weight:900;margin-bottom:4px}
+.hero-bar p{font-size:.83rem;opacity:.85}
+
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 80px}
+
+/* 요약 카드 */
+.summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+.sum-card{background:var(--white);border-radius:14px;padding:16px 12px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border)}
+.sum-label{font-size:.7rem;font-weight:700;color:var(--sub);margin-bottom:6px}
+.sum-amount{font-size:1.2rem;font-weight:900;line-height:1}
+.sum-income .sum-amount{color:var(--income)}
+.sum-expense .sum-amount{color:var(--expense)}
+.sum-balance .sum-amount{color:var(--primary)}
+
+/* 입력 폼 */
+.form-card{background:var(--white);border-radius:16px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px}
+.form-title{font-size:.9rem;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.form-title::before{content:'';width:4px;height:16px;border-radius:2px;background:var(--primary);display:inline-block}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field label{font-size:.75rem;font-weight:700;color:var(--sub)}
+.form-field input,.form-field select{padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;color:var(--text);outline:none;transition:.2s;background:var(--white)}
+.form-field input:focus,.form-field select:focus{border-color:var(--primary)}
+.form-field select option{background:var(--white)}
+.type-row{display:flex;gap:8px;margin-bottom:10px}
+.type-btn{flex:1;padding:10px;border-radius:10px;border:2px solid var(--border);background:var(--white);font-size:.85rem;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;color:var(--sub)}
+.type-btn.income.sel{background:var(--income-light);border-color:var(--income);color:var(--income)}
+.type-btn.expense.sel{background:var(--expense-light);border-color:var(--expense);color:var(--expense)}
+.add-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--primary);color:white;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:.2s}
+.add-btn:hover{background:#2563EB}
+
+/* 탭 */
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;padding:9px 0;border-radius:10px;border:2px solid var(--border);background:var(--white);font-size:.83rem;font-weight:700;cursor:pointer;text-align:center;transition:.2s;color:var(--sub)}
+.tab.active{background:var(--primary);border-color:var(--primary);color:white}
+
+.list-panel{display:none}
+.list-panel.active{display:block}
+
+/* 항목 카드 */
+.ledger-card{background:var(--white);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:8px}
+.ledger-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);transition:.15s}
+.ledger-row:last-child{border-bottom:none}
+.ledger-row:hover{background:#FAFBFF}
+.ledger-type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-income{background:var(--income)}
+.dot-expense{background:var(--expense)}
+.ledger-info{flex:1}
+.ledger-cat{font-size:.7rem;font-weight:700;color:var(--light);margin-bottom:2px}
+.ledger-desc{font-size:.88rem;font-weight:600}
+.ledger-date{font-size:.7rem;color:var(--light);margin-top:1px}
+.ledger-amount{font-size:.97rem;font-weight:800;flex-shrink:0}
+.la-income{color:var(--income)}
+.la-expense{color:var(--expense)}
+.ledger-del{width:28px;height:28px;border-radius:7px;background:var(--bg);border:none;cursor:pointer;font-size:.8rem;color:var(--light);flex-shrink:0;transition:.15s}
+.ledger-del:hover{background:#FEE2E2;color:var(--expense)}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--sub);font-size:.88rem;background:var(--white);border-radius:14px;box-shadow:var(--shadow)}
+
+/* 비밀번호 모달 */
+.pw-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.pw-modal{background:var(--white);border-radius:20px;padding:32px 28px;width:100%;max-width:340px}
+.pw-icon{font-size:2.2rem;text-align:center;margin-bottom:10px}
+.pw-modal h3{font-size:1rem;font-weight:800;text-align:center;margin-bottom:6px}
+.pw-modal p{font-size:.82rem;color:var(--sub);text-align:center;margin-bottom:18px}
+.pw-input{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:12px;font-size:1rem;font-family:inherit;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:8px}
+.pw-input:focus{border-color:var(--primary)}
+.pw-error{font-size:.78rem;color:var(--expense);text-align:center;margin-bottom:10px;display:none}
+.pw-btns{display:flex;gap:10px}
+.pw-btns button{flex:1;padding:12px;border-radius:12px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:inherit;border:none}
+.pw-cancel{background:#F3F4F6;color:var(--sub)}
+.pw-confirm{background:var(--primary);color:white}
+
+/* 메인 콘텐츠 */
+#mainContent{display:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <button class="back-btn" onclick="(window.parent!==window?window.parent.closeFrame():window.location.href='index.html')" style="cursor:pointer;border:none;font-family:inherit">←</button>
+    <span class="page-title">💰 회계 장부</span>
+  </div>
+</div>
+
+<div class="hero-bar">
+  <h1>2026 여름수련회 회계 장부</h1>
+  <p>감독자 전용 · 수입·지출 내역 관리</p>
+</div>
+
+<!-- 비밀번호 모달 -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-modal">
+    <div class="pw-icon">🔐</div>
+    <h3>감독자 인증</h3>
+    <p>회계 장부는 감독자만 열람 가능합니다</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="• • • •"
+      onkeydown="if(event.key==='Enter')confirmPw()">
+    <div class="pw-error" id="pwError">비밀번호가 틀렸습니다</div>
+    <div class="pw-btns">
+      <button class="pw-cancel" onclick="(window.parent!==window?window.parent.closeFrame():window.location.href='index.html')">취소</button>
+      <button class="pw-confirm" onclick="confirmPw()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 메인 콘텐츠 -->
+<div id="mainContent">
+  <div class="wrap">
+
+    <!-- 요약 -->
+    <div class="summary-grid">
+      <div class="sum-card sum-income">
+        <div class="sum-label">총 수입</div>
+        <div class="sum-amount" id="totalIncome">0원</div>
+      </div>
+      <div class="sum-card sum-expense">
+        <div class="sum-label">총 지출</div>
+        <div class="sum-amount" id="totalExpense">0원</div>
+      </div>
+      <div class="sum-card sum-balance">
+        <div class="sum-label">잔액</div>
+        <div class="sum-amount" id="totalBalance">0원</div>
+      </div>
+    </div>
+
+    <!-- 입력 폼 -->
+    <div class="form-card">
+      <div class="form-title">내역 추가</div>
+      <div class="type-row">
+        <button class="type-btn income sel" id="btnIncome" onclick="setType('income')">＋ 수입</button>
+        <button class="type-btn expense" id="btnExpense" onclick="setType('expense')">－ 지출</button>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>분류</label>
+          <select id="fCategory">
+            <option value="">분류 선택</option>
+            <optgroup label="수입" id="incomeOpts">
+              <option value="참가비">참가비</option>
+              <option value="교회 지원">교회 지원</option>
+              <option value="후원">후원·헌금</option>
+              <option value="기타 수입">기타 수입</option>
+            </optgroup>
+            <optgroup label="지출" id="expenseOpts" style="display:none">
+              <option value="식비">식비</option>
+              <option value="교통비">교통비</option>
+              <option value="숙박비">숙박비</option>
+              <option value="재료비">재료비·소품</option>
+              <option value="강사비">강사비</option>
+              <option value="인쇄비">인쇄비</option>
+              <option value="간식비">간식비</option>
+              <option value="기타 지출">기타 지출</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>금액 (원)</label>
+          <input type="number" id="fAmount" placeholder="예: 150000" min="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>내용</label>
+          <input type="text" id="fDesc" placeholder="예: 홍길동 외 3명 참가비">
+        </div>
+        <div class="form-field">
+          <label>날짜</label>
+          <input type="date" id="fDate">
+        </div>
+      </div>
+      <button class="add-btn" onclick="addEntry()">+ 내역 추가</button>
+    </div>
+
+    <!-- 탭 -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('all',this)">전체</button>
+      <button class="tab" onclick="switchTab('income',this)">수입만</button>
+      <button class="tab" onclick="switchTab('expense',this)">지출만</button>
+    </div>
+
+    <div class="list-panel active" id="tab-all"><div id="list-all"></div></div>
+    <div class="list-panel" id="tab-income"><div id="list-income"></div></div>
+    <div class="list-panel" id="tab-expense"><div id="list-expense"></div></div>
+
+  </div>
+</div>
+
+<script>
+const ADMIN_PW = '1234';
+const KEY = 'retreat_ledger';
+let currentType = 'income';
+
+// 날짜 기본값
+document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+
+// 인증 처리
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('mode') === 'admin') {
+    unlock();
+  } else {
+    setTimeout(function(){ document.getElementById('pwInput').focus(); }, 150);
+  }
+})();
+
+function confirmPw() {
+  if(document.getElementById('pwInput').value === ADMIN_PW) {
+    unlock();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function unlock() {
+  document.getElementById('pwOverlay').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  renderAll();
+}
+
+function setType(t) {
+  currentType = t;
+  document.getElementById('btnIncome').classList.toggle('sel', t==='income');
+  document.getElementById('btnExpense').classList.toggle('sel', t==='expense');
+  document.getElementById('incomeOpts').style.display = t==='income' ? '' : 'none';
+  document.getElementById('expenseOpts').style.display = t==='expense' ? '' : 'none';
+  document.getElementById('fCategory').value = '';
+}
+
+function getData() { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
+function saveData(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
+
+function fmt(n) {
+  return Number(n).toLocaleString('ko-KR') + '원';
+}
+
+function addEntry() {
+  var cat = document.getElementById('fCategory').value;
+  var amt = parseInt(document.getElementById('fAmount').value);
+  var desc = document.getElementById('fDesc').value.trim();
+  var date = document.getElementById('fDate').value;
+  if(!cat) { alert('분류를 선택해주세요!'); return; }
+  if(!amt || amt <= 0) { alert('금액을 입력해주세요!'); return; }
+  if(!desc) { alert('내용을 입력해주세요!'); return; }
+  if(!date) { alert('날짜를 선택해주세요!'); return; }
+
+  var entry = {
+    id: Date.now(),
+    type: currentType,
+    category: cat,
+    amount: amt,
+    desc: desc,
+    date: date
+  };
+  var data = getData();
+  data.unshift(entry);
+  saveData(data);
+
+  document.getElementById('fCategory').value = '';
+  document.getElementById('fAmount').value = '';
+  document.getElementById('fDesc').value = '';
+  renderAll();
+}
+
+function delEntry(id) {
+  saveData(getData().filter(function(e){ return e.id !== id; }));
+  renderAll();
+}
+
+function renderAll() {
+  var data = getData();
+  var totalIncome = data.filter(function(e){return e.type==='income'}).reduce(function(s,e){return s+e.amount},0);
+  var totalExpense = data.filter(function(e){return e.type==='expense'}).reduce(function(s,e){return s+e.amount},0);
+  document.getElementById('totalIncome').textContent = fmt(totalIncome);
+  document.getElementById('totalExpense').textContent = fmt(totalExpense);
+  var bal = totalIncome - totalExpense;
+  var balEl = document.getElementById('totalBalance');
+  balEl.textContent = (bal >= 0 ? '' : '-') + fmt(Math.abs(bal));
+  balEl.style.color = bal >= 0 ? 'var(--primary)' : 'var(--expense)';
+
+  renderList('all', data);
+  renderList('income', data.filter(function(e){return e.type==='income'}));
+  renderList('expense', data.filter(function(e){return e.type==='expense'}));
+}
+
+function renderList(tab, data) {
+  var el = document.getElementById('list-' + tab);
+  if(data.length === 0) {
+    el.innerHTML = '<div class="empty-state">내역이 없습니다</div>';
+    return;
+  }
+  var html = '<div class="ledger-card">';
+  data.forEach(function(e) {
+    var isIncome = e.type === 'income';
+    html += '<div class="ledger-row">' +
+      '<div class="ledger-type-dot ' + (isIncome ? 'dot-income' : 'dot-expense') + '"></div>' +
+      '<div class="ledger-info">' +
+        '<div class="ledger-cat">' + e.category + '</div>' +
+        '<div class="ledger-desc">' + e.desc + '</div>' +
+        '<div class="ledger-date">' + e.date + '</div>' +
+      '</div>' +
+      '<div class="ledger-amount ' + (isIncome ? 'la-income' : 'la-expense') + '">' +
+        (isIncome ? '+' : '-') + fmt(e.amount) +
+      '</div>' +
+      '<button class="ledger-del" onclick="delEntry(' + e.id + ')">✕</button>' +
+      '</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.list-panel').forEach(function(p){p.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+</script>
+</body>
+</html>
