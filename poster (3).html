@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 수련회 포스터</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F4F2ED;
+  --white:#FFFFFF;
+  --text:#111111;
+  --sub:#888;
+  --dim:#C0C0C0;
+  --border:rgba(0,0,0,.09);
+  --border2:rgba(0,0,0,.15);
+  --navy:#1A1A2E;
+  --gold:#B8852C;
+  --gold-bg:rgba(184,133,44,.08);
+  --gold-bd:rgba(184,133,44,.25);
+}
+html,body{min-height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ─ 탑바 ─ */
+.bar{height:52px;display:flex;align-items:center;padding:0 18px;gap:12px;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(244,242,237,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border)}
+.back{width:34px;height:34px;border-radius:9px;background:rgba(0,0,0,.06);
+  border:none;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;color:var(--text);font-size:.9rem;flex-shrink:0;transition:.15s}
+.back:hover{background:rgba(0,0,0,.1)}
+.bar-mid{flex:1;text-align:center}
+.bar-title{font-size:.88rem;font-weight:700;color:var(--text)}
+.bar-sub{font-size:.62rem;color:var(--sub);margin-top:1px}
+
+/* 진행 바 */
+.pgtrack{position:fixed;top:52px;left:0;right:0;height:2px;background:rgba(0,0,0,.07);z-index:199}
+.pgfill{height:100%;background:var(--navy);transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* ─ 슬라이드 ─ */
+.wrap{padding-top:54px;overflow:hidden}
+.deck{display:flex;transition:transform .42s cubic-bezier(.4,0,.2,1)}
+.screen{min-width:100vw;min-height:calc(100vh - 54px);display:flex;flex-direction:column}
+.inner{max-width:460px;margin:0 auto;padding:28px 20px 32px;flex:1;display:flex;flex-direction:column;width:100%}
+
+/* ─ 타이포 ─ */
+.eyebrow{font-size:.67rem;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.headline{font-family:'Black Han Sans',sans-serif;font-size:1.55rem;line-height:1.2;color:var(--navy);margin-bottom:6px}
+.headline em{color:var(--gold);font-style:normal}
+.desc{font-size:.8rem;color:var(--sub);line-height:1.7;margin-bottom:22px}
+
+/* 스텝 도트 */
+.dots{display:flex;gap:5px;margin-bottom:22px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.3s}
+.dot.on{background:var(--navy);width:16px;border-radius:3px}
+.dot.done{background:rgba(26,26,46,.35)}
+
+/* ─ 날짜 칩 ─ */
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.chip{padding:8px 15px;border-radius:8px;border:1px solid var(--border2);background:var(--white);
+  font-size:.78rem;font-weight:500;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.chip:hover{border-color:var(--navy);color:var(--navy)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#FFF}
+
+/* ─ 키워드 태그 ─ */
+.field-label{font-size:.68rem;font-weight:700;letter-spacing:.07em;color:var(--sub);
+  text-transform:uppercase;margin-bottom:7px;display:block}
+.tag-field{display:flex;flex-wrap:wrap;gap:5px;background:var(--white);
+  border:1px solid var(--border2);border-radius:10px;padding:9px 12px;
+  min-height:46px;cursor:text;transition:.18s;margin-bottom:9px}
+.tag-field:focus-within{border-color:var(--navy)}
+.kwtag{display:inline-flex;align-items:center;gap:4px;background:var(--gold-bg);
+  border:1px solid var(--gold-bd);border-radius:5px;padding:3px 9px;
+  font-size:.74rem;color:var(--gold);white-space:nowrap}
+.kwtag button{background:none;border:none;cursor:pointer;color:var(--gold);
+  font-size:.72rem;opacity:.65;padding:0;line-height:1}
+.kwtag button:hover{opacity:1}
+.kw-inp{flex:1;min-width:70px;background:none;border:none;outline:none;
+  font-size:.84rem;color:var(--text);font-family:'Noto Sans KR',sans-serif;padding:3px 2px}
+.kw-inp::placeholder{color:var(--dim)}
+
+/* 추천 */
+.sugg-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:24px}
+.sugg{padding:5px 11px;border-radius:6px;border:1px solid var(--border);background:var(--white);
+  font-size:.73rem;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:.13s}
+.sugg:hover{border-color:var(--gold-bd);color:var(--gold)}
+
+/* ─ 무드 그리드 ─ */
+.mood-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:20px}
+.mood-card{border-radius:12px;border:1.5px solid var(--border);background:var(--white);
+  cursor:pointer;overflow:hidden;transition:.18s}
+.mood-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.mood-card.on{border-color:var(--navy)}
+.mood-prev{height:60px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;position:relative;overflow:hidden}
+.mood-body{padding:10px 12px}
+.mood-name{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:1px}
+.mood-desc{font-size:.68rem;color:var(--sub)}
+
+/* ─ 버튼 ─ */
+.btn-primary{width:100%;padding:15px;border-radius:10px;background:var(--navy);color:#FFF;
+  font-size:.92rem;font-weight:700;font-family:'Black Han Sans',sans-serif;
+  border:none;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-primary:hover{background:#2a2a44}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed}
+.btn-back{width:100%;padding:11px;border-radius:10px;background:none;border:none;
+  font-size:.78rem;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;margin-top:8px;transition:.13s}
+.btn-back:hover{color:var(--text)}
+
+/* ─ 로딩 ─ */
+.loading-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px}
+.loader{width:44px;height:44px;margin:0 auto 24px;position:relative}
+.lr{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;animation:lspin linear infinite}
+.lr:nth-child(1){border-top-color:var(--navy);animation-duration:1.5s}
+.lr:nth-child(2){inset:9px;border-right-color:var(--gold);animation-duration:2s;animation-direction:reverse}
+.lcore{position:absolute;inset:18px;border-radius:50%;background:var(--navy);opacity:.5;animation:lpulse 1.3s ease-in-out infinite}
+@keyframes lspin{to{transform:rotate(360deg)}}
+@keyframes lpulse{0%,100%{transform:scale(.8);opacity:.35}50%{transform:scale(1.1);opacity:.7}}
+.loading-t{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--navy);margin-bottom:8px}
+.loading-d{font-size:.78rem;color:var(--sub);line-height:1.8}
+.loading-d strong{color:var(--navy);display:block;margin-bottom:3px}
+
+/* ─ 포스터 ─ */
+.poster-card{
+  width:100%;aspect-ratio:9/16;border-radius:16px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:28px 24px;box-shadow:0 12px 40px rgba(0,0,0,.15);margin-bottom:16px;
+}
+.poster-card::after{content:'';position:absolute;inset:0;pointer-events:none}
+.pc-deco{position:absolute;border-radius:50%;opacity:.12}
+
+/* 무드별 배경 */
+.pm-hot{background:linear-gradient(155deg,#1C0408 0%,#5C1218 45%,#A82020 100%)}
+.pm-hot .pc-deco{border:1px solid rgba(255,80,20,.4)}
+.pm-cool{background:linear-gradient(155deg,#040D1C 0%,#0A2648 45%,#0E4080 100%)}
+.pm-cool .pc-deco{border:1px solid rgba(30,140,255,.3)}
+.pm-warm{background:linear-gradient(155deg,#120A02 0%,#3C1E06 45%,#6E380E 100%)}
+.pm-warm .pc-deco{border:1px solid rgba(255,160,40,.35)}
+.pm-night{background:linear-gradient(155deg,#06040F 0%,#120830 45%,#220C58 100%)}
+.pm-night .pc-deco{border:1px solid rgba(140,80,255,.3)}
+
+/* 포스터 내부 */
+.p-top{position:relative;z-index:2}
+.p-tag{display:inline-block;padding:4px 11px;border-radius:4px;font-size:.62rem;
+  font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;
+  border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.65);background:rgba(255,255,255,.07)}
+.p-headline{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.45rem,4.5vw,2rem);
+  line-height:1.15;color:#FFF;margin-bottom:10px;word-break:keep-all}
+.p-sub{font-size:.77rem;line-height:1.75;color:rgba(255,255,255,.6);word-break:keep-all}
+.p-mid{position:relative;z-index:2;flex:1;display:flex;align-items:center;justify-content:center}
+.p-verse-box{text-align:center;padding:16px 14px;border-radius:9px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);max-width:92%}
+.p-verse{font-size:.79rem;line-height:1.85;color:rgba(255,255,255,.85);font-style:italic;word-break:keep-all}
+.p-ref{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:7px;font-weight:600;letter-spacing:.05em}
+.p-bot{position:relative;z-index:2}
+.p-kws{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:13px}
+.p-kw{padding:3px 9px;border-radius:4px;font-size:.62rem;font-weight:600;
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)}
+.p-brand{display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+.p-church{font-size:.65rem;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.p-date{font-size:.62rem;color:rgba(255,255,255,.3);font-weight:600}
+
+/* ─ 결과 하단 ─ */
+.prompt-box{background:var(--white);border:1px solid var(--border2);border-radius:10px;
+  padding:13px 14px;font-size:.75rem;line-height:1.75;color:var(--sub);
+  position:relative;margin-bottom:10px;word-break:break-all}
+.prompt-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;color:var(--dim);
+  text-transform:uppercase;margin-bottom:6px}
+.copy-btn{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:5px;
+  border:1px solid var(--border2);background:var(--bg);color:var(--sub);
+  font-size:.62rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.13s}
+.copy-btn:hover{color:var(--text);border-color:var(--border2)}
+.copy-btn.ok{color:var(--gold);border-color:var(--gold-bd)}
+
+.regen-btn{width:100%;padding:12px;border-radius:10px;background:none;
+  border:1px solid var(--border2);font-size:.82rem;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:.13s;margin-bottom:9px}
+.regen-btn:hover{color:var(--text);border-color:rgba(0,0,0,.22)}
+
+/* ─ 토스트 ─ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:var(--navy);border-radius:50px;padding:10px 20px;font-size:.79rem;
+  color:#FFF;z-index:999;transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  opacity:0;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#FFF;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a class="back" href="index.html">←</a>
+  <div class="bar-mid">
+    <div class="bar-title">🖼️ 오늘의 수련회 포스터</div>
+    <div class="bar-sub">키워드만 넣으면 AI가 만들어줘요</div>
+  </div>
+  <div style="width:34px"></div>
+</div>
+<div class="pgtrack"><div class="pgfill" id="pg" style="width:0%"></div></div>
+
+<div class="wrap">
+<div class="deck" id="deck">
+
+<!-- ══ S0: 날짜 + 키워드 ══ -->
+<div class="screen" id="s0">
+<div class="inner">
+  <div class="eyebrow">STEP 1 · 기본 정보</div>
+  <h1 class="headline"><em>날짜</em>와<br>키워드를 골라요</h1>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+
+  <div style="margin-bottom:16px">
+    <label class="field-label">날짜</label>
+    <div class="chip-row" id="dateRow">
+      <button class="chip" onclick="pickDate(this,'D-7')">D-7</button>
+      <button class="chip" onclick="pickDate(this,'D-3')">D-3</button>
+      <button class="chip" onclick="pickDate(this,'D-DAY')">D-DAY</button>
+      <button class="chip" onclick="pickDate(this,'7.28 첫째날')">7.28 첫째날</button>
+      <button class="chip" onclick="pickDate(this,'7.29 둘째날')">7.29 둘째날</button>
+      <button class="chip" onclick="pickDate(this,'7.30 마지막날')">7.30 마지막날</button>
+    </div>
+  </div>
+
+  <div>
+    <label class="field-label">키워드 <span style="text-transform:none;font-weight:400;opacity:.6">(Enter로 추가)</span></label>
+    <div class="tag-field" id="tagField" onclick="document.getElementById('kwInp').focus()">
+      <input class="kw-inp" id="kwInp" placeholder="예: 믿음, 여름, 함께…" maxlength="12"
+        onkeydown="kwKey(event)">
+    </div>
+    <div class="sugg-row">
+      <button class="sugg" onclick="addKw('하나님의 은혜')">하나님의 은혜</button>
+      <button class="sugg" onclick="addKw('믿음')">믿음</button>
+      <button class="sugg" onclick="addKw('함께')">함께</button>
+      <button class="sugg" onclick="addKw('성장')">성장</button>
+      <button class="sugg" onclick="addKw('찬양')">찬양</button>
+      <button class="sugg" onclick="addKw('기도')">기도</button>
+      <button class="sugg" onclick="addKw('여름')">여름</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="toS1()" style="margin-top:20px">다음 →</button>
+</div>
+</div>
+
+<!-- ══ S1: 무드 ══ -->
+<div class="screen" id="s1">
+<div class="inner">
+  <div class="eyebrow">STEP 2 · 포스터 무드</div>
+  <h1 class="headline">어떤 느낌으로<br><em>만들까요?</em></h1>
+  <div class="dots"><div class="dot done"></div><div class="dot on"></div><div class="dot"></div></div>
+
+  <div class="mood-grid">
+    <div class="mood-card" onclick="pickMood(this,'hot')">
+      <div class="mood-prev" style="background:linear-gradient(135deg,#5C1218,#A82020)">🔥</div>
+      <div class="mood-body">
+        <div class="mood-name">뜨겁게</div>
+        <div class="mood-desc">열정 · 도전 · 강렬함</div>
+      </div>
+    </div>
+    <div class="mood-card" onclick="pickMood(this,'cool')">
+      <div class="mood-prev" style="background:linear-gradient(135deg,#0A2648,#0E4080)">🌊</div>
+      <div class="mood-body">
+        <div class="mood-name">청량하게</div>
+        <div class="mood-desc">자유 · 시원함 · 소망</div>
+      </div>
+    </div>
+    <div class="mood-card" onclick="pickMood(this,'warm')">
+      <div class="mood-prev" style="background:linear-gradient(135deg,#3C1E06,#6E380E)">🌿</div>
+      <div class="mood-body">
+        <div class="mood-name">따뜻하게</div>
+        <div class="mood-desc">감사 · 포근함 · 사랑</div>
+      </div>
+    </div>
+    <div class="mood-card" onclick="pickMood(this,'night')">
+      <div class="mood-prev" style="background:linear-gradient(135deg,#120830,#220C58)">✨</div>
+      <div class="mood-body">
+        <div class="mood-name">신비롭게</div>
+        <div class="mood-desc">경외 · 거룩함 · 임재</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="makeBtn" onclick="runAI()" disabled>포스터 만들기 →</button>
+  <button class="btn-back" onclick="go(0)">← 이전</button>
+</div>
+</div>
+
+<!-- ══ S2: 로딩 ══ -->
+<div class="screen" id="s2">
+<div class="inner" style="justify-content:center">
+  <div class="loading-wrap">
+    <div class="loader">
+      <div class="lr"></div><div class="lr"></div>
+      <div class="lcore"></div>
+    </div>
+    <div class="loading-t">포스터 만드는 중</div>
+    <div class="loading-d">
+      <strong id="lmsg">키워드를 분석하는 중…</strong>
+      잠시만 기다려 주세요 🖼️
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ S3: 결과 ══ -->
+<div class="screen" id="s3">
+<div class="inner">
+  <div class="eyebrow">완성!</div>
+  <div class="dots" style="margin-bottom:16px">
+    <div class="dot done"></div><div class="dot done"></div><div class="dot on"></div>
+  </div>
+
+  <div class="poster-card" id="pCard">
+    <div class="pc-deco" id="deco1" style="width:180px;height:180px;top:-60px;right:-50px"></div>
+    <div class="pc-deco" id="deco2" style="width:110px;height:110px;bottom:80px;left:-30px"></div>
+    <div class="p-top">
+      <div class="p-tag" id="pTag"></div>
+      <div class="p-headline" id="pHL"></div>
+      <div class="p-sub" id="pSub"></div>
+    </div>
+    <div class="p-mid">
+      <div class="p-verse-box">
+        <div class="p-verse" id="pVerse"></div>
+        <div class="p-ref" id="pRef"></div>
+      </div>
+    </div>
+    <div class="p-bot">
+      <div class="p-kws" id="pKws"></div>
+      <div class="p-brand">
+        <div class="p-church">2026 중등부 여름수련회</div>
+        <div class="p-date" id="pDate"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-box">
+    <div class="prompt-label">DALL-E 프롬프트</div>
+    <button class="copy-btn" id="cb1" onclick="cp('dalle',this)">복사</button>
+    <div id="dalleOut" style="padding-right:46px"></div>
+  </div>
+  <div class="prompt-box">
+    <div class="prompt-label">Canva 검색 키워드</div>
+    <button class="copy-btn" id="cb2" onclick="cp('canva',this)">복사</button>
+    <div id="canvaOut" style="padding-right:46px"></div>
+  </div>
+
+  <button class="regen-btn" onclick="go(0)">🔄 새로 만들기</button>
+  <button class="btn-primary" onclick="go(0)">홈으로</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PG=[0,50,50,100];
+let state={date:'',kws:[],mood:'',moodClass:''};
+const moodCls={hot:'pm-hot',cool:'pm-cool',warm:'pm-warm',night:'pm-night'};
+const moodTxt={hot:'열정적이고 강렬한',cool:'시원하고 자유로운',warm:'따뜻하고 포근한',night:'신비롭고 거룩한'};
+const MSGS=['키워드를 분석하는 중…','문구를 다듬는 중…','말씀을 선별하는 중…','마무리 중…'];
+let lt;
+
+function go(n){
+  document.getElementById('deck').style.transform=`translateX(-${n*100}vw)`;
+  document.getElementById('pg').style.width=PG[n]+'%';
+  window.scrollTo(0,0);
+}
+
+function pickDate(btn,v){
+  document.querySelectorAll('.chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); state.date=v;
+}
+
+function kwKey(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    const v=e.target.value.trim();
+    if(v) addKw(v);
+    e.target.value='';
+  }
+  if(e.key==='Backspace'&&!e.target.value&&state.kws.length){
+    state.kws.pop(); renderKws();
+  }
+}
+function addKw(v){
+  if(state.kws.includes(v)||state.kws.length>=5)return;
+  state.kws.push(v); renderKws();
+  document.getElementById('kwInp').value='';
+}
+function removeKw(i){state.kws.splice(i,1);renderKws()}
+function renderKws(){
+  const inp=document.getElementById('kwInp');
+  const f=document.getElementById('tagField');
+  f.querySelectorAll('.kwtag').forEach(t=>t.remove());
+  state.kws.forEach((k,i)=>{
+    const t=document.createElement('div');
+    t.className='kwtag';
+    t.innerHTML=`${esc(k)}<button onclick="removeKw(${i})">×</button>`;
+    f.insertBefore(t,inp);
+  });
+}
+
+function toS1(){
+  if(!state.date){toast('📅 날짜를 선택해주세요');return}
+  if(!state.kws.length){toast('✏️ 키워드를 입력해주세요');return}
+  go(1);
+}
+
+function pickMood(card,m){
+  document.querySelectorAll('.mood-card').forEach(c=>c.classList.remove('on'));
+  card.classList.add('on');
+  state.mood=m; state.moodClass=moodCls[m];
+  document.getElementById('makeBtn').disabled=false;
+}
+
+async function runAI(){
+  go(2);
+  let mi=0;
+  lt=setInterval(()=>{mi=(mi+1)%MSGS.length;document.getElementById('lmsg').textContent=MSGS[mi]},1700);
+
+  const kwStr=state.kws.join(', ');
+  const mood=moodTxt[state.mood]||'감동적인';
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:600,
+        messages:[{role:'user',content:`중등부 여름수련회 홍보 포스터 문구를 만들어줘.
+날짜: ${state.date}
+키워드: ${kwStr}
+분위기: ${mood}
+
+JSON만 응답 (코드블록 없이):
+{"tag":"태그라인 (영문 혹은 한글, 10자 이내)","headline":"메인 헤드라인 (한국어, 2줄, 개행은 \\n)","sub":"서브카피 (1~2줄, 40자 이내)","verse":"어울리는 성경구절 전체","ref":"성경 출처 (예: 이사야 40:31)","dalle":"DALL-E 프롬프트 (영어, ${mood} atmosphere, youth retreat, cinematic, 55자 이내)","canva":"Canva 검색 키워드 (5개, 쉼표 구분)"}`}]
+      })
+    });
+    const data=await res.json();
+    clearInterval(lt);
+    const j=JSON.parse(data.content.find(b=>b.type==='text').text.replace(/```json|```/g,'').trim());
+    render(j); go(3);
+  }catch(e){
+    clearInterval(lt);
+    toast('⚠️ 오류가 발생했어요. 다시 시도해주세요.');
+    go(1);
+  }
+}
+
+function render(j){
+  const card=document.getElementById('pCard');
+  card.className='poster-card '+state.moodClass;
+  document.getElementById('pTag').textContent=j.tag||'2026 SUMMER';
+  document.getElementById('pHL').innerHTML=esc(j.headline||'').replace(/\\n/g,'<br>');
+  document.getElementById('pSub').textContent=j.sub||'';
+  document.getElementById('pVerse').textContent=j.verse||'';
+  document.getElementById('pRef').textContent=j.ref||'';
+  document.getElementById('pDate').textContent=state.date;
+  document.getElementById('pKws').innerHTML=state.kws.map(k=>`<span class="p-kw">#${esc(k)}</span>`).join('');
+  document.getElementById('dalleOut').textContent=j.dalle||'';
+  document.getElementById('canvaOut').textContent=j.canva||'';
+  window._dalle=j.dalle||''; window._canva=j.canva||'';
+}
+
+function cp(type,btn){
+  const txt=type==='dalle'?window._dalle:window._canva;
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✓'; btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='복사';btn.classList.remove('ok')},2000);
+  });
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+let tt;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2500)}
+</script>
+</body>
+</html>
