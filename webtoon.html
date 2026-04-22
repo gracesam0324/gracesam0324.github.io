@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수련회 미리보기 웹툰</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#f0f0f0;font-family:'Noto Sans KR',sans-serif;color:#111}
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:#fff;border-bottom:3px solid #111}
+.back-btn{width:36px;height:36px;border-radius:8px;background:#f0f0f0;border:2px solid #111;font-size:1rem;cursor:pointer;font-family:inherit;font-weight:900}
+.tag{font-size:.65rem;font-weight:900;background:#FF4E8B;color:white;padding:3px 8px;border-radius:4px;border:2px solid #111}
+.topbar-title{font-size:.88rem;font-weight:900;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:#f0f0f0;border:2px solid #111;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:#666}
+.hero{background:linear-gradient(135deg,#FF4E8B,#FF8CB4 50%,#FFD43B);padding:22px 20px 18px;text-align:center;border-bottom:3px solid #111;position:relative;overflow:hidden}
+.hero::before{content:'📖✨🎬⭐💬🌟';position:absolute;top:5px;left:0;right:0;font-size:1rem;letter-spacing:5px;opacity:.18;white-space:nowrap}
+.hero-badge{display:inline-block;background:#fff;border:2px solid #111;border-radius:4px;font-size:.65rem;font-weight:900;padding:3px 10px;margin-bottom:8px;color:#FF4E8B;box-shadow:2px 2px 0 #111}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.4rem,5vw,1.9rem);color:#fff;line-height:1.2;margin-bottom:3px;text-shadow:2px 2px 0 rgba(0,0,0,.12)}
+.hero h1 span{color:#FFD43B}
+.hero p{font-size:.76rem;color:rgba(255,255,255,.85);line-height:1.6}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 60px}
+.card{background:#fff;border:3px solid #111;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:4px 4px 0 #111}
+.card-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;color:#FF4E8B;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-label::after{content:'';flex:1;height:2px;background:#111}
+.inp{width:100%;padding:10px 14px;border:2px solid #111;border-radius:8px;font-size:.88rem;font-family:inherit;background:#f0f0f0;font-weight:600}
+.inp:focus{outline:none;border-color:#FF4E8B;background:#fff}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-btn{padding:12px 8px;border:2.5px solid #111;border-radius:10px;font-size:.85rem;font-weight:800;cursor:pointer;font-family:inherit;background:#f0f0f0;text-align:center;transition:.15s}
+.team-btn.t0.on{background:#FF4E8B;color:#fff}.team-btn.t1.on{background:#3B5BFF;color:#fff}.team-btn.t2.on{background:#FF8C00;color:#fff}.team-btn.t3.on{background:#2ECC71;color:#fff}
+.act-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2.5px solid #111;border-radius:10px;font-family:inherit;cursor:pointer;background:#f0f0f0;text-align:left;width:100%;margin-bottom:8px}
+.act-btn:last-child{margin-bottom:0}
+.act-btn.on{background:#111;color:#FFD43B}
+.act-btn.on .act-name{color:#FFD43B}.act-btn.on .act-sub{color:rgba(255,212,59,.6)}.act-btn.on .act-tag{background:#FFD43B;color:#111;border-color:#FFD43B}
+.act-icon{font-size:1.4rem;flex-shrink:0}.act-info{flex:1}.act-name{font-size:.86rem;font-weight:800;color:#111;line-height:1.3}.act-sub{font-size:.7rem;color:#888;margin-top:1px}
+.act-tag{font-size:.6rem;font-weight:900;padding:2px 7px;background:#FF4E8B;color:#fff;border-radius:4px;flex-shrink:0;border:1.5px solid #111}
+.gen-btn{width:100%;padding:15px;background:#FF4E8B;color:#fff;border:3px solid #111;border-radius:10px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:4px 4px 0 #111;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111}
+.gen-btn:disabled{background:#ccc;cursor:not-allowed;transform:none}
+.loading{display:none;text-align:center;padding:50px 20px}
+.loading-pen{font-size:3rem;animation:draw 1s ease-in-out infinite alternate}
+@keyframes draw{from{transform:rotate(-15deg) scale(1)}to{transform:rotate(15deg) scale(1.1)}}
+.loading-txt{font-weight:900;font-size:1rem;margin-top:12px}
+.loading-sub{font-size:.78rem;color:#888;margin-top:4px}
+.loading-dots::after{content:'...';animation:dots 1.2s steps(3,end) infinite}
+@keyframes dots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+
+/* ═══ 웹툰 레이아웃 ═══ */
+.webtoon-wrap{display:none;max-width:520px;margin:0 auto}
+.webtoon-wrap.show{display:block}
+.ep-header{background:#111;color:#fff;padding:14px 20px;text-align:center}
+.ep-num{font-size:.7rem;font-weight:900;color:#FFD43B;letter-spacing:.1em;margin-bottom:4px}
+.ep-title{font-family:'Black Han Sans',sans-serif;font-size:1.35rem}
+
+/* 패널 */
+.wt-panel{border:3px solid #111;border-top:none;position:relative;overflow:hidden;animation:panelIn .5s ease both;background:#fff}
+.wt-panel:first-child{border-top:3px solid #111}
+@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* 배경 레이어 */
+.panel-bg{position:absolute;inset:0;z-index:0}
+
+/* 내레이션 */
+.narr-top{position:relative;z-index:10;background:#111;color:#FFD43B;padding:8px 16px;font-size:.73rem;font-weight:700;font-style:italic;letter-spacing:.04em}
+.narr-white{background:#FFF9E0;border:2px solid #E6B800;color:#7A5200;margin:10px 14px 0;padding:7px 12px;border-radius:4px;font-size:.72rem;font-style:italic;position:relative;z-index:10}
+
+/* 씬 영역 */
+.scene-illust{position:relative;z-index:5;overflow:hidden;border-bottom:2px solid #111;width:100%;display:block;line-height:0;min-height:260px}.scene-illust svg{width:100%;height:auto;display:block;min-height:260px}
+.panel-dialogue-row{position:relative;z-index:5;padding:14px 12px 12px;display:flex;align-items:flex-end;gap:8px;background:rgba(255,255,255,0.92)}
+
+/* 효과음 */
+.sfx{font-family:'Black Han Sans',sans-serif;position:absolute;z-index:20;line-height:1;pointer-events:none;text-shadow:3px 3px 0 #111,-2px -2px 0 #111,2px -2px 0 #111,-2px 2px 0 #111}
+
+/* 캐릭터 영역 */
+.char-col{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0}
+.char-col.right{flex-direction:column}
+.char-name-lbl{font-size:.6rem;font-weight:900;color:#555;background:rgba(255,255,255,.85);border:1.5px solid #111;padding:2px 8px;border-radius:50px;margin-top:4px}
+
+/* 대화 영역 */
+.dialogs-col{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+
+/* 말풍선 */
+.bubble{position:relative;padding:9px 13px;font-size:.82rem;font-weight:700;line-height:1.6;border-radius:18px;border:2.5px solid #111;background:#fff;word-break:keep-all;max-width:100%;align-self:flex-start}
+.bubble.from-right{align-self:flex-end}
+.bubble.shout{border-color:#FF4E8B;color:#CC0033;font-size:.88rem;background:#FFF0F4}
+.bubble.think{border-style:dashed;border-color:#888;color:#555;font-style:italic;font-size:.76rem;background:#F8F8F8}
+
+/* 말풍선 꼬리 - 왼쪽 캐릭터 */
+.bubble.tail-left::after{content:'';position:absolute;left:-10px;bottom:10px;border-style:solid;border-width:6px 10px 6px 0;border-color:transparent #111 transparent transparent}
+.bubble.tail-left::before{content:'';position:absolute;left:-7px;bottom:10px;border-style:solid;border-width:6px 10px 6px 0;border-color:transparent #fff transparent transparent;z-index:1}
+.bubble.shout.tail-left::before{border-color:transparent #FFF0F4 transparent transparent}
+/* 말풍선 꼬리 - 오른쪽 캐릭터 */
+.bubble.tail-right::after{content:'';position:absolute;right:-10px;bottom:10px;border-style:solid;border-width:6px 0 6px 10px;border-color:transparent transparent transparent #111}
+.bubble.tail-right::before{content:'';position:absolute;right:-7px;bottom:10px;border-style:solid;border-width:6px 0 6px 10px;border-color:transparent transparent transparent #fff;z-index:1}
+.bubble.shout.tail-right::before{border-color:transparent transparent transparent #FFF0F4}
+
+/* 패널 하단 캡션 */
+.panel-caption{border-top:2px dashed #ddd;padding:8px 14px;font-size:.72rem;color:#888;font-style:italic;background:#fafafa;position:relative;z-index:10}
+
+/* 엔딩 */
+.ep-ending{background:#111;border:3px solid #111;border-top:none;padding:16px;text-align:center}
+.ep-ending-main{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#FFD43B;margin-bottom:3px}
+.ep-ending-sub{font-size:.7rem;color:rgba(255,255,255,.55)}
+
+/* 하단 */
+.wt-footer{padding:14px 16px;border:3px solid #111;border-top:none;background:#fff;margin-bottom:40px}
+.again-btn{width:100%;padding:12px;border:2.5px solid #111;border-radius:10px;font-size:.9rem;font-weight:900;font-family:inherit;cursor:pointer;background:#f0f0f0;box-shadow:3px 3px 0 #111;transition:.15s}
+.again-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #111}
+
+/* 모달 */
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+.key-modal.open{display:flex}
+.key-box{background:#fff;border:3px solid #111;border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:6px 6px 0 #111}
+.key-box h3{font-weight:900;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:#888;margin-bottom:14px;line-height:1.6}
+.key-save{width:100%;padding:12px;background:#FF4E8B;color:#fff;border:2px solid #111;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem;margin-top:6px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</button>
+  <span class="tag">전-2</span>
+  <span class="topbar-title">🎬 수련회 미리보기 웹툰</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">📚 D-7~D-4 · 사전 기대감 조성</div>
+  <h1>4컷으로 미리 보는<br><span>수련회 하이라이트!</span></h1>
+  <p>재밌을 것 같은 활동을 골라봐요<br>AI가 웹툰으로 만들어드려요</p>
+</div>
+
+<div class="wrap">
+  <div id="inputCard">
+    <div class="card">
+      <div class="card-label">내 이름</div>
+      <input class="inp" id="nameInp" placeholder="이름 입력 (예: 김민준)" maxlength="8">
+    </div>
+    <div class="card">
+      <div class="card-label">우리 팀</div>
+      <div class="team-grid">
+        <button class="team-btn t0 on" onclick="pickTeam(this,'베드로팀','#FF4E8B')">⚓ 베드로팀</button>
+        <button class="team-btn t1" onclick="pickTeam(this,'바울팀','#3B5BFF')">✉️ 바울팀</button>
+        <button class="team-btn t2" onclick="pickTeam(this,'다윗팀','#FF8C00')">🎵 다윗팀</button>
+        <button class="team-btn t3" onclick="pickTeam(this,'에스더팀','#2ECC71')">👑 에스더팀</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">어떤 활동이 제일 궁금해?</div>
+      <button class="act-btn on" onclick="pickAct(this)" data-act="아이스브레이킹 게임" data-detail="수련회 첫날 처음 만나는 조원들끼리 게임으로 친해지는 시간">
+        <span class="act-icon">🎯</span><div class="act-info"><div class="act-name">우리 조 맞춤 아이스브레이킹</div><div class="act-sub">조원들과 처음 만나는 순간</div></div><span class="act-tag">중-1</span>
+      </button>
+      <button class="act-btn" onclick="pickAct(this)" data-act="극한 밸런스 게임" data-detail="둘 다 싫지만 하나를 골라야 하는 A vs B 극한 선택 게임">
+        <span class="act-icon">⚡</span><div class="act-info"><div class="act-name">수련회 극한 밸런스 게임</div><div class="act-sub">A vs B, 넌 어느 쪽이야?</div></div><span class="act-tag">중-2</span>
+      </button>
+      <button class="act-btn" onclick="pickAct(this)" data-act="성경 방탈출 게임" data-detail="AI가 내는 성경 미션과 힌트로 방을 탈출하는 팀 게임">
+        <span class="act-icon">🔒</span><div class="act-info"><div class="act-name">성경 방탈출 게임</div><div class="act-sub">탈출할 수 있겠어?</div></div><span class="act-tag">중-5</span>
+      </button>
+      <button class="act-btn" onclick="pickAct(this)" data-act="성경 그림 맞추기 게임" data-detail="AI가 그린 성경 장면을 보고 어느 이야기인지 맞히는 팀 대결">
+        <span class="act-icon">🖼️</span><div class="act-info"><div class="act-name">성경 장면 그림 맞추기</div><div class="act-sub">이 그림이 어느 성경 장면?</div></div><span class="act-tag">중-7</span>
+      </button>
+      <button class="act-btn" onclick="pickAct(this)" data-act="성경 단편영화 제작 및 상영회" data-detail="팀끼리 성경 스토리로 단편영화를 직접 찍어서 전체 상영하는 대형 프로젝트">
+        <span class="act-icon">🎬</span><div class="act-info"><div class="act-name">성경 단편영화 제작</div><div class="act-sub">우리 팀이 감독·배우가 된다면?</div></div><span class="act-tag">중-12</span>
+      </button>
+      <button class="act-btn" onclick="pickAct(this)" data-act="사랑이란 무엇인지 창의력 대결" data-detail="사랑을 팀별로 가장 창의적인 방법으로 표현하는 대결">
+        <span class="act-icon">❤️</span><div class="act-info"><div class="act-name">사랑이란? 창의력 대결</div><div class="act-sub">사랑을 어떻게 표현할래?</div></div><span class="act-tag">중-8</span>
+      </button>
+    </div>
+    <button class="gen-btn" id="genBtn" onclick="generate()">✏️ 4컷 웹툰 만들기!</button>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="loading-pen">✏️</div>
+    <div class="loading-txt" id="loadingTxt">스토리 구상 중<span class="loading-dots"></span></div>
+    <div class="loading-sub" id="loadingSub">잠깐만요! 곧 완성돼요 🎨</div>
+  </div>
+</div>
+
+<div class="webtoon-wrap" id="webtoonWrap">
+  <div class="ep-header">
+    <div class="ep-num">📚 2026 중등부 수련회 · 미리보기</div>
+    <div class="ep-title" id="epTitle">로딩 중</div>
+  </div>
+  <div id="wtPanels"></div>
+  <div class="ep-ending">
+    <div class="ep-ending-main">— 2026 중등부 여름수련회 —</div>
+    <div class="ep-ending-sub">7월 28일 ~ 30일 · 2박3일</div>
+  </div>
+  <div class="wt-footer">
+    <button class="again-btn" onclick="resetForm()">↩ 다시 만들기</button>
+  </div>
+</div>
+
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 Claude API 키 설정</h3>
+    <p>Claude API 키를 입력하면 AI가 웹툰을 만들어줘요. 키는 이 기기에만 저장돼요.</p>
+    <input class="inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+
+<script>
+var selectedTeam='베드로팀', selectedTeamColor='#FF4E8B';
+var selectedAct='아이스브레이킹 게임', selectedDetail='수련회 첫날 처음 만나는 조원들끼리 게임으로 친해지는 시간';
+
+function pickTeam(btn,team,color){
+  document.querySelectorAll('.team-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on'); selectedTeam=team; selectedTeamColor=color;
+}
+function pickAct(btn){
+  document.querySelectorAll('.act-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on'); selectedAct=btn.dataset.act; selectedDetail=btn.dataset.detail;
+}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open');}
+function closeKeyModal(){document.getElementById('keyModal').classList.remove('open');}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);closeKeyModal();alert('저장됐어요!');}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)closeKeyModal();});
+
+/* ──────────── SVG 캐릭터 생성 ──────────── */
+var HAIR_COLORS = {dark:'#2C1810', brown:'#6B3A2A', black:'#1A1A1A', orange:'#CC5500', blonde:'#D4A017'};
+
+function makeChar(gender, hairKey, bodyColor, expr, size) {
+  size = size || 1;
+  var w = Math.round(90*size), h = Math.round(150*size);
+  var sc = size;
+  var hair = HAIR_COLORS[hairKey] || HAIR_COLORS.dark;
+  var skin = '#F5C3A0';
+  var eyes='', mouth='', extra='';
+  switch(expr){
+    case 'happy':
+      eyes='<path d="M26 44 Q30 39 34 44" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M46 44 Q50 39 54 44" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+      mouth='<path d="M28 57 Q40 68 52 57" stroke="#333" stroke-width="2.5" fill="#FFB0C8" stroke-linecap="round"/>';
+      break;
+    case 'surprised':
+      eyes='<ellipse cx="30" cy="43" rx="7" ry="8" fill="#222"/><ellipse cx="50" cy="43" rx="7" ry="8" fill="#222"/><ellipse cx="28" cy="41" rx="2.5" ry="2.5" fill="white"/><ellipse cx="48" cy="41" rx="2.5" ry="2.5" fill="white"/>';
+      mouth='<ellipse cx="40" cy="59" rx="9" ry="8" fill="#222"/><ellipse cx="40" cy="58" rx="6" ry="5" fill="#AA0000"/>';
+      break;
+    case 'sweat':
+      eyes='<ellipse cx="30" cy="44" rx="5" ry="5" fill="#222"/><ellipse cx="50" cy="44" rx="5" ry="5" fill="#222"/><ellipse cx="28.5" cy="42.5" rx="1.8" ry="1.8" fill="white"/><ellipse cx="48.5" cy="42.5" rx="1.8" ry="1.8" fill="white"/>';
+      mouth='<path d="M31 57 Q36 53 40 57 Q44 61 49 57" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>';
+      extra='<ellipse cx="63" cy="35" rx="5" ry="7" fill="#AEE6FF" stroke="#66CCFF" stroke-width="1.2"/><line x1="63" y1="43" x2="64" y2="52" stroke="#66CCFF" stroke-width="1.5"/>';
+      break;
+    case 'excited':
+      eyes='<text x="20" y="51" font-size="16" fill="#FF4E8B" font-family="serif">★</text><text x="43" y="51" font-size="16" fill="#FF4E8B" font-family="serif">★</text>';
+      mouth='<path d="M27 56 Q40 70 53 56" stroke="#333" stroke-width="2.5" fill="#FFB0C8" stroke-linecap="round"/>';
+      extra='<text x="62" y="28" font-size="14" fill="#FFD43B" font-weight="900">✦</text><text x="68" y="42" font-size="10" fill="#FFD43B">✦</text>';
+      break;
+    case 'nervous':
+      eyes='<ellipse cx="30" cy="44" rx="5" ry="5" fill="#222"/><ellipse cx="50" cy="44" rx="5" ry="5" fill="#222"/><ellipse cx="31.5" cy="42.5" rx="1.8" ry="1.8" fill="white"/><ellipse cx="51.5" cy="42.5" rx="1.8" ry="1.8" fill="white"/>';
+      mouth='<path d="M33 58 Q40 56 47 58" stroke="#333" stroke-width="2" fill="none"/>';
+      extra='<path d="M65 25 Q68 30 65 35 Q68 40 65 45" stroke="#3333CC" stroke-width="2" fill="none" opacity="0.6" stroke-linecap="round"/>';
+      break;
+    case 'sad':
+      eyes='<path d="M27 46 Q30 41 33 46" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M47 46 Q50 41 53 46" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+      mouth='<path d="M31 60 Q40 55 49 60" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>';
+      extra='<ellipse cx="26" cy="53" rx="3.5" ry="4.5" fill="#AEE6FF" opacity="0.8"/><ellipse cx="54" cy="53" rx="3.5" ry="4.5" fill="#AEE6FF" opacity="0.8"/>';
+      break;
+    default:
+      eyes='<ellipse cx="30" cy="44" rx="5.5" ry="5.5" fill="#222"/><ellipse cx="50" cy="44" rx="5.5" ry="5.5" fill="#222"/><ellipse cx="28.5" cy="42.5" rx="2" ry="2" fill="white"/><ellipse cx="48.5" cy="42.5" rx="2" ry="2" fill="white"/>';
+      mouth='<path d="M33 57 Q40 63 47 57" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  }
+  var hairPath = gender==='girl'
+    ? '<path d="M10 44 Q8 105 22 135" stroke="'+hair+'" stroke-width="18" fill="none" stroke-linecap="round"/><path d="M70 44 Q72 105 58 135" stroke="'+hair+'" stroke-width="18" fill="none" stroke-linecap="round"/><path d="M10 42 Q10 5 40 5 Q70 5 70 42 L70 52 Q62 10 40 10 Q18 10 10 52 Z" fill="'+hair+'"/><path d="M10 42 Q15 30 26 37 Q30 33 36 39 Q40 34 44 39 Q50 33 54 37 Q65 30 70 42" fill="'+hair+'"/>'
+    : '<path d="M10 42 Q10 5 40 5 Q70 5 70 42 L67 35 Q56 9 40 9 Q24 9 13 35 Z" fill="'+hair+'"/><path d="M10 38 Q10 26 18 31" fill="'+hair+'"/><path d="M70 38 Q70 26 62 31" fill="'+hair+'"/>';
+  var clothesPath = gender==='girl'
+    ? '<rect x="20" y="73" width="40" height="38" rx="8" fill="'+bodyColor+'" stroke="#111" stroke-width="2"/><path d="M31 73 L40 87 L49 73" fill="white" stroke="#111" stroke-width="1.5"/><path d="M37 78 Q40 83 43 78" stroke="#FF4E8B" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M19 100 Q40 110 61 100 L66 140 L14 140 Z" fill="'+bodyColor+'" stroke="#111" stroke-width="2" opacity="0.75"/>'
+    : '<rect x="20" y="73" width="40" height="58" rx="10" fill="'+bodyColor+'" stroke="#111" stroke-width="2"/><path d="M31 73 L40 87 L49 73" fill="white" stroke="#111" stroke-width="1.5"/><path d="M38 80 L40 96 L42 80" fill="#E62020" stroke="#111" stroke-width="1"/>';
+  var armL='<path d="M20 82 Q4 100 12 120" stroke="'+bodyColor+'" stroke-width="14" stroke-linecap="round" fill="none"/><path d="M20 82 Q4 100 12 120" stroke="#111" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.12"/>';
+  var armR='<path d="M60 82 Q76 100 68 120" stroke="'+bodyColor+'" stroke-width="14" stroke-linecap="round" fill="none"/><path d="M60 82 Q76 100 68 120" stroke="#111" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.12"/>';
+
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 80 145" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block">'
+    + hairPath
+    + armL + armR
+    + '<rect x="33" y="63" width="14" height="14" rx="3" fill="'+skin+'"/>'
+    + clothesPath
+    + '<ellipse cx="40" cy="43" rx="30" ry="30" fill="'+skin+'" stroke="#111" stroke-width="2.5"/>'
+    + (gender==='girl'
+        ? '<path d="M10 42 Q10 5 40 5 Q70 5 70 42 L70 52 Q62 10 40 10 Q18 10 10 52 Z" fill="'+hair+'"/><path d="M10 42 Q15 30 26 37 Q30 33 36 39 Q40 34 44 39 Q50 33 54 37 Q65 30 70 42" fill="'+hair+'"/>'
+        : '<path d="M10 42 Q10 5 40 5 Q70 5 70 42 L67 35 Q56 9 40 9 Q24 9 13 35 Z" fill="'+hair+'"/>')
+    + '<ellipse cx="23" cy="51" rx="7" ry="4.5" fill="#FFB0B0" opacity="0.45"/>'
+    + '<ellipse cx="57" cy="51" rx="7" ry="4.5" fill="#FFB0B0" opacity="0.45"/>'
+    + eyes + mouth + extra
+    + '</svg>';
+}
+
+/* ──────────── SVG 배경 생성 ──────────── */
+function makeBg(type) {
+  var S = {w:400, h:220};
+  switch(type) {
+    case 'outdoor':
+      return '<svg width="100%" height="100%" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+        +'<defs><linearGradient id="sky'+type+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#87CEEB"/><stop offset="100%" stop-color="#C9E8FF"/></linearGradient></defs>'
+        +'<rect width="400" height="220" fill="url(#sky'+type+')"/>'
+        +'<circle cx="340" cy="48" r="30" fill="#FFE566" opacity="0.92"/>'
+        +'<ellipse cx="80" cy="55" rx="42" ry="18" fill="white" opacity="0.88"/><ellipse cx="108" cy="46" rx="32" ry="16" fill="white" opacity="0.9"/>'
+        +'<ellipse cx="260" cy="60" rx="38" ry="15" fill="white" opacity="0.75"/>'
+        +'<path d="M0 155 Q80 140 160 155 Q240 168 320 155 Q360 148 400 155 L400 220 L0 220 Z" fill="#7BC67E"/>'
+        +'<path d="M0 168 Q100 158 200 168 Q300 178 400 168 L400 220 L0 220 Z" fill="#5DB060"/>'
+        +'<polygon points="20,158 38,108 56,158" fill="#2D7A3B"/><rect x="36" y="152" width="5" height="12" fill="#6B3E26"/>'
+        +'<polygon points="320,158 340,102 360,158" fill="#2D7A3B"/><rect x="338" y="152" width="5" height="12" fill="#6B3E26"/>'
+        +'<path d="M0 150 L100 80 L180 150 Z" fill="#7CB99C" opacity="0.5"/><path d="M220 150 L320 55 L420 150 Z" fill="#5A9E7C" opacity="0.6"/>'
+        +'</svg>';
+    case 'gym':
+      return '<svg width="100%" height="220" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+        +'<rect width="400" height="220" fill="#F8F4EE"/>'
+        +'<path d="M0 155 L200 130 L400 155 L400 220 L0 220 Z" fill="#D4A96A" opacity="0.45"/>'
+        +'<line x1="0" y1="115" x2="400" y2="115" stroke="#DDD" stroke-width="2"/>'
+        +'<line x1="100" y1="115" x2="75" y2="0" stroke="#DDD" stroke-width="1"/><line x1="300" y1="115" x2="325" y2="0" stroke="#DDD" stroke-width="1"/>'
+        +'<rect x="110" y="8" width="180" height="44" rx="5" fill="#FF4E8B" opacity="0.65"/>'
+        +'<text x="200" y="37" font-size="18" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">수련회</text>'
+        +'<rect x="305" y="18" width="75" height="80" rx="4" fill="#AEE6FF" opacity="0.4" stroke="#CCC" stroke-width="2"/>'
+        +'<line x1="342" y1="18" x2="342" y2="98" stroke="#CCC" stroke-width="1.5"/><line x1="305" y1="58" x2="380" y2="58" stroke="#CCC" stroke-width="1.5"/>'
+        +'<line x1="50" y1="115" x2="350" y2="115" stroke="#C4A882" stroke-width="3" opacity="0.4"/>'
+        +'</svg>';
+    case 'night':
+      var stars='';
+      for(var i=0;i<35;i++){stars+='<circle cx="'+(((i*137)%380)+10)+'" cy="'+(((i*97)%100)+5)+'" r="'+(i%3===0?2:1)+'" fill="white" opacity="'+(0.4+((i*0.07)%0.5))+'"/>';}
+      return '<svg width="100%" height="220" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+        +'<defs><radialGradient id="fire" cx="50%" cy="85%" r="45%"><stop offset="0%" stop-color="#FF8C00" stop-opacity="0.5"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>'
+        +'<rect width="400" height="220" fill="#1A1A3E"/><rect width="400" height="220" fill="url(#fire)"/>'
+        +stars
+        +'<circle cx="330" cy="40" r="26" fill="#FFF5CC"/><circle cx="340" cy="35" r="21" fill="#1A1A3E"/>'
+        +'<path d="M0 170 Q200 158 400 170 L400 220 L0 220 Z" fill="#1A3320"/>'
+        +'<ellipse cx="200" cy="186" rx="22" ry="6" fill="#4A2A0A" opacity="0.7"/>'
+        +'<path d="M188 182 Q196 148 204 182 Q200 162 196 182 Z" fill="#FF8C00"/><path d="M193 182 Q200 155 207 182 Q203 165 200 182 Z" fill="#FFD43B"/>'
+        +'<path d="M35 172 L88 118 L141 172 Z" fill="#2D5A3D"/><path d="M248 172 L308 112 L368 172 Z" fill="#2D5A3D"/>'
+        +'</svg>';
+    case 'action':
+      var lines='';
+      for(var j=0;j<24;j++){var a=(j*15)*Math.PI/180;lines+='<line x1="200" y1="110" x2="'+(200+Math.cos(a)*320)+'" y2="'+(110+Math.sin(a)*320)+'" stroke="#111" stroke-width="'+(j%4===0?1.5:0.4)+'" opacity="0.18"/>';}
+      return '<svg width="100%" height="220" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+        +'<rect width="400" height="220" fill="#fff"/>'
+        +lines+'<circle cx="200" cy="110" r="35" fill="white" opacity="0.95"/>'
+        +'</svg>';
+    case 'church':
+      return '<svg width="100%" height="220" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">'
+        +'<rect width="400" height="220" fill="#F5F0E8"/>'
+        +'<path d="M200 0 L145 220 L200 205 L255 220 Z" fill="#FFE8A0" opacity="0.3"/>'
+        +'<path d="M200 0 L95 220 L200 215 L305 220 Z" fill="#FFE8A0" opacity="0.12"/>'
+        +'<rect x="191" y="8" width="18" height="85" rx="5" fill="#D4A96A" opacity="0.55"/>'
+        +'<rect x="168" y="32" width="64" height="16" rx="5" fill="#D4A96A" opacity="0.55"/>'
+        +'<rect x="22" y="155" width="155" height="18" rx="4" fill="#8B6914" opacity="0.35"/>'
+        +'<rect x="223" y="155" width="155" height="18" rx="4" fill="#8B6914" opacity="0.35"/>'
+        +'<rect x="22" y="186" width="155" height="18" rx="4" fill="#8B6914" opacity="0.3"/>'
+        +'<rect x="223" y="186" width="155" height="18" rx="4" fill="#8B6914" opacity="0.3"/>'
+        +'<path d="M0 212 L400 212 L400 220 L0 220 Z" fill="#C4A882" opacity="0.4"/>'
+        +'</svg>';
+    default:
+      return '<svg width="100%" height="220" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">'
+        +'<defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFE4F0"/><stop offset="100%" stop-color="#E4EDFF"/></linearGradient></defs>'
+        +'<rect width="400" height="220" fill="url(#gr)"/>'
+        +'<circle cx="50" cy="50" r="60" fill="white" opacity="0.2"/><circle cx="350" cy="170" r="80" fill="white" opacity="0.15"/>'
+        +'</svg>';
+  }
+}
+
+
+/* ──────────── 장면 일러스트 ──────────── */
+function makeScene(type, actKey) {
+  // actKey: icebreaking, balance, escape, picture, film, love, sermon, worship, default
+  var scenes = {
+    icebreaking: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <rect width="320" height="260" fill="#EFF6FF"/>
+      <!-- 원형 둘러앉기 -->
+      <circle cx="160" cy="80" r="55" fill="none" stroke="#BFDBFE" stroke-width="3" stroke-dasharray="6,4"/>
+      <!-- 사람들 이름표 원 -->
+      <circle cx="160" cy="26" r="18" fill="#3B82F6" stroke="#111" stroke-width="2"/>
+      <text x="160" y="31" text-anchor="middle" fill="white" font-size="11" font-weight="900" font-family="sans-serif">나</text>
+      <circle cx="213" cy="53" r="15" fill="#FF4E8B" stroke="#111" stroke-width="2"/>
+      <text x="213" y="58" text-anchor="middle" fill="white" font-size="10" font-weight="900" font-family="sans-serif">?</text>
+      <circle cx="213" cy="107" r="15" fill="#FFB800" stroke="#111" stroke-width="2"/>
+      <text x="213" y="112" text-anchor="middle" fill="white" font-size="10" font-weight="900" font-family="sans-serif">?</text>
+      <circle cx="160" cy="134" r="15" fill="#2ECC71" stroke="#111" stroke-width="2"/>
+      <text x="160" y="139" text-anchor="middle" fill="white" font-size="10" font-weight="900" font-family="sans-serif">?</text>
+      <circle cx="107" cy="107" r="15" fill="#8B5CF6" stroke="#111" stroke-width="2"/>
+      <text x="107" y="112" text-anchor="middle" fill="white" font-size="10" font-weight="900" font-family="sans-serif">?</text>
+      <circle cx="107" cy="53" r="15" fill="#EF4444" stroke="#111" stroke-width="2"/>
+      <text x="107" y="58" text-anchor="middle" fill="white" font-size="10" font-weight="900" font-family="sans-serif">?</text>
+      <!-- 이름표 -->
+      <rect x="130" y="65" width="60" height="30" rx="4" fill="white" stroke="#111" stroke-width="2"/>
+      <text x="160" y="77" text-anchor="middle" fill="#111" font-size="8" font-family="sans-serif">이름: ___</text>
+      <text x="160" y="89" text-anchor="middle" fill="#3B82F6" font-size="8" font-family="sans-serif">MBTI: ___</text>
+      <!-- 말풍선들 -->
+      <text x="42" y="78" fill="#FF4E8B" font-size="10" font-weight="900" font-family="sans-serif">안녕!</text>
+      <text x="255" y="78" fill="#3B82F6" font-size="10" font-weight="900" font-family="sans-serif">반가워!</text>
+    </svg>`,
+    balance: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <rect width="320" height="260" fill="#FFF5F0"/>
+      <!-- 저울 -->
+      <line x1="160" y1="20" x2="160" y2="80" stroke="#111" stroke-width="3"/>
+      <rect x="150" y="15" width="20" height="10" rx="3" fill="#FFD43B" stroke="#111" stroke-width="2"/>
+      <line x1="60" y1="80" x2="260" y2="80" stroke="#111" stroke-width="3"/>
+      <!-- 왼쪽 접시 A -->
+      <line x1="80" y1="80" x2="80" y2="120" stroke="#111" stroke-width="2"/>
+      <ellipse cx="80" cy="122" rx="40" ry="10" fill="#FF4E8B" stroke="#111" stroke-width="2"/>
+      <text x="80" y="118" text-anchor="middle" fill="white" font-size="22" font-weight="900" font-family="Black Han Sans,sans-serif">A</text>
+      <!-- 오른쪽 접시 B -->
+      <line x1="240" y1="80" x2="240" y2="120" stroke="#111" stroke-width="2"/>
+      <ellipse cx="240" cy="122" rx="40" ry="10" fill="#3B82F6" stroke="#111" stroke-width="2"/>
+      <text x="240" y="118" text-anchor="middle" fill="white" font-size="22" font-weight="900" font-family="Black Han Sans,sans-serif">B</text>
+      <!-- VS -->
+      <text x="160" y="110" text-anchor="middle" fill="#111" font-size="16" font-weight="900" font-family="Black Han Sans,sans-serif">VS</text>
+      <!-- 번개 효과 -->
+      <text x="140" y="150" fill="#FFD43B" font-size="12" font-weight="900">⚡</text>
+      <text x="170" y="150" fill="#FFD43B" font-size="12" font-weight="900">⚡</text>
+    </svg>`,
+    escape: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <rect width="320" height="260" fill="#1A1A2E"/>
+      <!-- 문 -->
+      <rect x="105" y="20" width="110" height="130" rx="6" fill="#4A3728" stroke="#FFD43B" stroke-width="3"/>
+      <rect x="115" y="30" width="90" height="110" rx="4" fill="#3A2818"/>
+      <!-- 자물쇠 -->
+      <rect x="142" y="75" width="36" height="30" rx="5" fill="#FFD43B" stroke="#111" stroke-width="2"/>
+      <path d="M150 75 Q150 55 160 55 Q170 55 170 75" fill="none" stroke="#FFD43B" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="160" cy="88" r="5" fill="#111"/>
+      <!-- 물음표들 -->
+      <text x="40" y="60" fill="#FFD43B" font-size="24" font-weight="900" opacity="0.8">?</text>
+      <text x="258" y="90" fill="#FF4E8B" font-size="20" font-weight="900" opacity="0.8">?</text>
+      <text x="50" y="130" fill="#3B82F6" font-size="16" font-weight="900" opacity="0.7">?</text>
+      <!-- 열쇠 -->
+      <circle cx="270" cy="40" r="10" fill="none" stroke="#FFD43B" stroke-width="2.5"/>
+      <line x1="280" y1="40" x2="295" y2="40" stroke="#FFD43B" stroke-width="2.5"/>
+      <line x1="295" y1="40" x2="295" y2="48" stroke="#FFD43B" stroke-width="2.5"/>
+      <line x1="289" y1="40" x2="289" y2="46" stroke="#FFD43B" stroke-width="2.5"/>
+      <!-- 성경 -->
+      <rect x="25" y="100" width="50" height="38" rx="3" fill="#8B5CF6" stroke="#111" stroke-width="2"/>
+      <text x="50" y="124" text-anchor="middle" fill="white" font-size="9" font-family="sans-serif">성경</text>
+    </svg>`,
+    picture: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <rect width="320" height="260" fill="#F0F4FF"/>
+      <!-- 스크린/화이트보드 -->
+      <rect x="50" y="15" width="220" height="120" rx="8" fill="white" stroke="#111" stroke-width="3"/>
+      <rect x="58" y="23" width="204" height="104" rx="4" fill="#EFF6FF"/>
+      <!-- 그림 프레임 (성경 장면 미스터리) -->
+      <rect x="70" y="30" width="180" height="90" rx="4" fill="#DBEAFE" stroke="#93C5FD" stroke-width="2"/>
+      <!-- 예수님 실루엣 (단순화) -->
+      <circle cx="160" cy="55" r="15" fill="#FCD34D" stroke="#111" stroke-width="2"/>
+      <path d="M145 70 Q160 65 175 70 L180 115 L140 115 Z" fill="#7C3AED" stroke="#111" stroke-width="1.5"/>
+      <!-- 물결 (바다 걷기?) -->
+      <path d="M70 105 Q95 95 120 105 Q145 115 170 105 Q195 95 220 105 Q245 115 250 105" fill="none" stroke="#3B82F6" stroke-width="2.5"/>
+      <!-- 물음표 오버레이 -->
+      <text x="155" y="78" fill="rgba(0,0,0,0.15)" font-size="40" font-weight="900" font-family="sans-serif">?</text>
+      <!-- 하단 바 -->
+      <rect x="58" y="120" width="204" height="12" rx="2" fill="#BFDBFE"/>
+      <text x="160" y="130" text-anchor="middle" fill="#1E40AF" font-size="8" font-weight="700" font-family="sans-serif">이 장면은 어느 성경 이야기일까요?</text>
+      <!-- 스탠드 -->
+      <line x1="160" y1="135" x2="160" y2="150" stroke="#666" stroke-width="3"/>
+      <line x1="135" y1="150" x2="185" y2="150" stroke="#666" stroke-width="3"/>
+    </svg>`,
+    film: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <rect width="320" height="260" fill="#111"/>
+      <!-- 스포트라이트 -->
+      <path d="M40 0 L0 160 L80 160 Z" fill="#FFD43B" opacity="0.08"/>
+      <path d="M280 0 L240 160 L320 160 Z" fill="#FFD43B" opacity="0.08"/>
+      <!-- 카메라 -->
+      <rect x="180" y="55" width="85" height="55" rx="8" fill="#333" stroke="#FFD43B" stroke-width="2"/>
+      <circle cx="210" cy="82" r="20" fill="#1A1A1A" stroke="#FFD43B" stroke-width="2"/>
+      <circle cx="210" cy="82" r="12" fill="#0A0A0A" stroke="#666" stroke-width="1"/>
+      <circle cx="210" cy="82" r="5" fill="#3B82F6" opacity="0.8"/>
+      <rect x="265" y="65" width="20" height="12" rx="3" fill="#444"/>
+      <!-- 클래퍼보드 -->
+      <rect x="55" y="45" width="90" height="70" rx="5" fill="white" stroke="#111" stroke-width="2.5"/>
+      <rect x="55" y="45" width="90" height="22" rx="5" fill="#111"/>
+      <line x1="55" y1="56" x2="145" y2="56" stroke="white" stroke-width="1.5"/>
+      <!-- 클래퍼 줄 -->
+      <line x1="63" y1="45" x2="70" y2="67" stroke="white" stroke-width="1.5"/>
+      <line x1="78" y1="45" x2="85" y2="67" stroke="white" stroke-width="1.5"/>
+      <line x1="93" y1="45" x2="100" y2="67" stroke="white" stroke-width="1.5"/>
+      <line x1="108" y1="45" x2="115" y2="67" stroke="white" stroke-width="1.5"/>
+      <line x1="123" y1="45" x2="130" y2="67" stroke="white" stroke-width="1.5"/>
+      <text x="100" y="90" text-anchor="middle" fill="#111" font-size="9" font-weight="700" font-family="sans-serif">성경영화</text>
+      <text x="100" y="102" text-anchor="middle" fill="#FF4E8B" font-size="8" font-family="sans-serif">Scene 1 Take 1</text>
+      <!-- 별들 -->
+      <text x="20" y="40" fill="#FFD43B" font-size="14">★</text>
+      <text x="285" y="140" fill="#FFD43B" font-size="12">★</text>
+      <text x="150" y="148" fill="#FF4E8B" font-size="10">❤</text>
+      <!-- 액션! -->
+      <text x="160" y="30" text-anchor="middle" fill="#FF4E8B" font-size="16" font-weight="900" font-family="Black Han Sans,sans-serif">ACTION!</text>
+    </svg>`,
+    love: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <defs><radialGradient id="lovebg" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#FFF0F7"/><stop offset="100%" stop-color="#FFE4F0"/></radialGradient></defs>
+      <rect width="320" height="260" fill="url(#lovebg)"/>
+      <!-- 큰 하트 -->
+      <path d="M160 130 L60 60 Q45 20 90 20 Q125 20 160 60 Q195 20 230 20 Q275 20 260 60 Z" fill="#FF4E8B" stroke="#111" stroke-width="2.5"/>
+      <path d="M160 115 L80 65 Q70 40 100 40 Q130 40 160 70 Q190 40 220 40 Q250 40 240 65 Z" fill="#FF8CB4" opacity="0.5"/>
+      <!-- 하트 안 텍스트 -->
+      <text x="160" y="88" text-anchor="middle" fill="white" font-size="13" font-weight="900" font-family="Black Han Sans,sans-serif">사랑이란?</text>
+      <!-- 작은 하트들 -->
+      <text x="25" y="50" fill="#FF4E8B" font-size="18" opacity="0.6">♥</text>
+      <text x="280" y="50" fill="#FF8CB4" font-size="14" opacity="0.7">♥</text>
+      <text x="40" y="130" fill="#FFB0C8" font-size="12" opacity="0.7">♥</text>
+      <text x="265" y="140" fill="#FF4E8B" font-size="16" opacity="0.6">♥</text>
+      <!-- 창의적 표현들 -->
+      <rect x="20" y="65" width="35" height="25" rx="4" fill="white" stroke="#FF4E8B" stroke-width="2"/>
+      <text x="37" y="82" text-anchor="middle" fill="#FF4E8B" font-size="9" font-family="sans-serif">노래</text>
+      <rect x="268" y="80" width="35" height="25" rx="4" fill="white" stroke="#3B82F6" stroke-width="2"/>
+      <text x="285" y="97" text-anchor="middle" fill="#3B82F6" font-size="9" font-family="sans-serif">그림</text>
+    </svg>`,
+    default: `<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px">
+      <rect width="320" height="260" fill="#FFF9F0"/>
+      <!-- 수련회 로고 -->
+      <circle cx="160" cy="80" r="55" fill="none" stroke="#FFD43B" stroke-width="3" stroke-dasharray="8,4"/>
+      <text x="160" y="70" text-anchor="middle" fill="#FF4E8B" font-size="22" font-family="Black Han Sans,sans-serif">수련회</text>
+      <text x="160" y="95" text-anchor="middle" fill="#3B82F6" font-size="13" font-family="sans-serif">2026 중등부</text>
+      <text x="35" y="40" fill="#FFD43B" font-size="16">✦</text>
+      <text x="270" y="130" fill="#FF4E8B" font-size="16">✦</text>
+      <text x="280" y="45" fill="#3B82F6" font-size="12">✦</text>
+      <text x="25" y="130" fill="#2ECC71" font-size="14">✦</text>
+    </svg>`
+  };
+
+  // Select based on actKey + type hint from API
+  var key = 'default';
+  if(actKey && actKey.indexOf('아이스브레이킹')>=0) key='icebreaking';
+  else if(actKey && actKey.indexOf('밸런스')>=0) key='balance';
+  else if(actKey && actKey.indexOf('방탈출')>=0) key='escape';
+  else if(actKey && actKey.indexOf('그림')>=0) key='picture';
+  else if(actKey && (actKey.indexOf('영화')>=0||actKey.indexOf('필름')>=0)) key='film';
+  else if(actKey && (actKey.indexOf('사랑')>=0||actKey.indexOf('창의')>=0)) key='love';
+
+  // Override with API's scene_type if available
+  if(type && scenes[type]) key=type;
+
+  return scenes[key]||scenes.default;
+}
+
+/* ──────────── API 호출 ──────────── */
+async function generate(){
+  var name=document.getElementById('nameInp').value.trim()||'민준';
+  var key=localStorage.getItem('retreat_api_key')||'';
+  if(!key){openKeyModal();return;}
+  document.getElementById('inputCard').style.display='none';
+  document.getElementById('genBtn').disabled=true;
+  document.getElementById('loading').style.display='block';
+  document.getElementById('webtoonWrap').classList.remove('show');
+
+  try{
+    // ─── 1차: 스토리 JSON ───
+    var storyPrompt=[
+      '너는 네이버 웹툰 스타일 4컷 만화 작가야.',
+      '',
+      '주인공A: '+name+' ('+selectedTeam+')',
+      '주인공B: 같은 팀 친구',
+      '활동: '+selectedAct,
+      '설명: '+selectedDetail,
+      '배경: 2026 중등부 여름수련회 (7.28~7.30)',
+      '',
+      '4컷: 1컷=활동 직전 기대/긴장, 2컷=활동 시작 상황, 3컷=반전/웃긴 사건, 4컷=감동 마무리',
+      '두 캐릭터가 생생하게 대화하게 해.',
+      '',
+      '반드시 JSON만 답해:',
+      '{"title":"제목(15자이내)","charA_gender":"boy또는girl","charA_hair":"dark또는brown또는black또는orange","charB_name":"친구이름","charB_gender":"boy또는girl","charB_hair":"dark또는brown또는black또는orange","panels":[{"scene_desc":"이 컷 장면 묘사(누가 어디서 무엇을, 소품 포함, 60자이내)","narr":"내레이션(20자이내,없으면null)","sfx":"효과음(없으면null)","sfx_color":"#FF4E8B","charA_expr":"normal또는happy또는surprised또는sweat또는excited또는nervous또는sad","charB_expr":"normal또는happy또는surprised또는sweat또는excited또는nervous또는sad","dialogue":[{"who":"A","text":"대사(30자이내)","type":"normal또는shout또는think"},{"who":"B","text":"대사(30자이내)","type":"normal또는shout또는think"}],"caption":"코멘트(20자이내,없으면null)"}]}'
+    ].join('\n');
+    var r1=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:1500,messages:[{role:'user',content:storyPrompt}]})
+    });
+    var d1=await r1.json();
+    if(d1.error)throw new Error(d1.error.message);
+    var story=JSON.parse(d1.content[0].text.replace(/```json|```/g,'').trim());
+    var panels=story.panels||[];
+
+    // ─── 2차: SVG 4컷 한번에 ───
+    var descs=panels.map(function(p,i){return (i+1)+'컷: '+(p.scene_desc||'');}).join('\n');
+    var svgPrompt=[
+      '웹툰 4컷의 각 장면을 SVG로 그려줘.',
+      '',
+      descs,
+      '',
+      '활동: '+selectedAct,
+      '',
+      '각 컷을 아래 형식으로 구분해서 답해. 다른 말 없이.',
+      '===CUT1===',
+      '<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">...</svg>',
+      '===CUT2===',
+      '<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">...</svg>',
+      '===CUT3===',
+      '<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">...</svg>',
+      '===CUT4===',
+      '<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">...</svg>',
+      '',
+      'SVG 규칙: 배경+인물+소품 포함, 색 풍부하게, 인물은 원+선으로 단순화해도 되지만 표정/동작 느껴지게, 한국어 텍스트 써도 됨'
+    ].join('\n');
+    var r2=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:svgPrompt}]})
+    });
+    var d2=await r2.json();
+    if(!d2.error){
+      var svgText=d2.content[0].text;
+      // === CUT N === 구분자로 분리, 공백/줄바꿈 허용
+      var cutMatches=svgText.split(/={2,}CUT\d+={2,}/);
+      cutMatches.shift(); // 첫 빈 요소 제거
+      cutMatches.forEach(function(block,i){
+        if(panels[i]){
+          // svg 시작~끝 찾기 (greedy, 마지막 </svg> 기준)
+          var s=block.indexOf('<svg');
+          var e=block.lastIndexOf('</svg>');
+          if(s>=0 && e>=0){
+            panels[i].scene_svg=block.slice(s, e+6);
+          } else {
+            panels[i].scene_svg='';
+          }
+        }
+      });
+      // 혹시 구분자 없이 한 덩어리로 왔을 때 대비: svg 태그를 순서대로 추출
+      var foundAny=panels.some(function(p){return p.scene_svg && p.scene_svg.length>50;});
+      if(!foundAny){
+        // 전체 텍스트에서 <svg...>.....</svg> 블록들을 순서대로 추출
+        var allSvgs=[], pos=0;
+        while(pos<svgText.length){
+          var ss=svgText.indexOf('<svg',pos);
+          if(ss<0)break;
+          var se=svgText.lastIndexOf('</svg>');
+          if(se<=ss)break;
+          // 이 svg 블록에서만 가장 가까운 </svg> 찾기
+          var nextEnd=svgText.indexOf('</svg>',ss);
+          if(nextEnd<0)break;
+          allSvgs.push(svgText.slice(ss,nextEnd+6));
+          pos=nextEnd+6;
+        }
+        allSvgs.forEach(function(svg,i){if(panels[i])panels[i].scene_svg=svg;});
+      }
+    }
+
+    render(story,name);
+  }catch(e){
+    document.getElementById('inputCard').style.display='block';
+    document.getElementById('loading').style.display='none';
+    document.getElementById('genBtn').disabled=false;
+    alert('오류: '+e.message);
+  }
+}
+
+function render(data, name){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('epTitle').textContent=data.title||'수련회 하이라이트';
+
+  var charAGender=data.charA_gender||'boy';
+  var charAHair=data.charA_hair||'dark';
+  var charBGender=data.charB_gender||'girl';
+  var charBHair=data.charB_hair||'brown';
+  var charBName=data.charB_name||'지원';
+  var teamColor=selectedTeamColor;
+  var bColor='#4A90D9';
+
+  var panels=document.getElementById('wtPanels');
+  panels.innerHTML='';
+
+  (data.panels||[]).slice(0,4).forEach(function(p,idx){
+    var delay=(idx*0.12)+'s';
+    var div=document.createElement('div');
+    div.className='wt-panel';
+    div.style.animationDelay=delay;
+
+    var html='';
+
+    // 배경
+    html+='<div class="panel-bg">'+makeBg(p.bg||'soft')+'</div>';
+
+    // 내레이션
+    if(p.narr)html+='<div class="narr-top">'+esc(p.narr)+'</div>';
+
+    // 효과음
+    if(p.sfx){
+      var sfxColor=p.sfx_color||'#FF4E8B';
+      var sfxSize=(p.sfx_size||2.2)+'rem';
+      var sfxTop=(p.sfx_top||15)+'%';
+      var sfxRight=(p.sfx_right||4)+'%';
+      html+='<div class="sfx" style="color:'+sfxColor+';font-size:'+sfxSize+';top:'+sfxTop+';right:'+sfxRight+'">'+esc(p.sfx)+'</div>';
+    }
+
+    // 장면 일러스트 (상단) - AI가 직접 생성한 SVG
+    var sceneSvg = (p.scene_svg && p.scene_svg.length > 10)
+      ? p.scene_svg
+      : '<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg"><rect width="320" height="260" fill="#EFF6FF"/><text x="160" y="130" text-anchor="middle" font-size="14" fill="#94A3B8" font-family="sans-serif">장면 로딩 중...</text></svg>';
+    html+='<div class="scene-illust" style="background:#f5f5f5">'+sceneSvg+'</div>';
+
+    // 캐릭터 + 대화 (하단)
+    html+='<div class="panel-dialogue-row">';
+
+    // A 캐릭터 (왼쪽)
+    html+='<div class="char-col">';
+    html+=makeChar(charAGender, charAHair, teamColor, p.charA_expr||'normal', 0.72);
+    html+='<div class="char-name-lbl">'+esc(name)+'</div>';
+    html+='</div>';
+
+    // 대화 버블들
+    html+='<div class="dialogs-col">';
+    (p.dialogue||[]).forEach(function(d){
+      var isA = d.who==='A';
+      var cls='bubble '+(isA?'tail-left from-left':'tail-right from-right');
+      if(d.type==='shout')cls+=' shout';
+      if(d.type==='think')cls+=' think';
+      html+='<div class="'+cls+'" style="align-self:'+(isA?'flex-start':'flex-end')+'">'+esc(d.text||'')+'</div>';
+    });
+    html+='</div>';
+
+    // B 캐릭터 (오른쪽)
+    html+='<div class="char-col right">';
+    html+=makeChar(charBGender, charBHair, bColor, p.charB_expr||'normal', 0.72);
+    html+='<div class="char-name-lbl">'+esc(charBName)+'</div>';
+    html+='</div>';
+
+    html+='</div>'; // panel-dialogue-row
+
+    if(p.caption)html+='<div class="panel-caption">'+esc(p.caption)+'</div>';
+
+    div.innerHTML=html;
+    panels.appendChild(div);
+  });
+
+  document.getElementById('webtoonWrap').classList.add('show');
+  window.scrollTo(0,0);
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function resetForm(){
+  document.getElementById('webtoonWrap').classList.remove('show');
+  document.getElementById('inputCard').style.display='block';
+  document.getElementById('genBtn').disabled=false;
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
