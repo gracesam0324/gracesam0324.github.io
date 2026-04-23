@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘, 친구에게 하고 싶은 말</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#f0f0f0;font-family:'Noto Sans KR',sans-serif;color:#111}
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:#fff;border-bottom:3px solid #111}
+.back-btn{width:36px;height:36px;border-radius:8px;background:#f0f0f0;border:2px solid #111;font-size:1rem;cursor:pointer;font-family:inherit;font-weight:900;flex-shrink:0}
+.tag{font-size:.65rem;font-weight:900;background:#7C3AED;color:white;padding:3px 8px;border-radius:4px;border:2px solid #111}
+.topbar-title{font-size:.88rem;font-weight:900;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:#f0f0f0;border:2px solid #111;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:#666}
+.hero{background:linear-gradient(135deg,#2E1065,#7C3AED 50%,#A78BFA);padding:22px 20px 18px;text-align:center;border-bottom:3px solid #111;position:relative;overflow:hidden}
+.hero::before{content:'💌✉️💜🤝💬✨🙏💕';position:absolute;top:5px;left:0;right:0;font-size:1rem;letter-spacing:4px;opacity:.15;white-space:nowrap}
+.hero-badge{display:inline-block;background:#fff;border:2px solid #111;border-radius:4px;font-size:.65rem;font-weight:900;padding:3px 10px;margin-bottom:8px;color:#7C3AED;box-shadow:2px 2px 0 #111}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.3rem,5vw,1.8rem);color:#fff;line-height:1.2;margin-bottom:3px;text-shadow:2px 2px 0 rgba(0,0,0,.2)}
+.hero h1 span{color:#FFD43B}
+.hero p{font-size:.76rem;color:rgba(255,255,255,.85);line-height:1.6}
+.step-wrap{background:#fff;border-bottom:3px solid #111;padding:12px 20px}
+.step-bar{display:flex;align-items:center;max-width:480px;margin:0 auto}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;border:2.5px solid #111;background:#f0f0f0;color:#aaa;transition:all .3s}
+.step-dot.active{background:#7C3AED;color:#fff;border-color:#111;box-shadow:2px 2px 0 #111}
+.step-dot.done{background:#FFD43B;color:#111;border-color:#111}
+.step-line{flex:1;height:3px;background:#ddd;transition:background .4s}
+.step-line.done{background:#FFD43B}
+.wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px}
+.section{display:none}
+.section.visible{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card{background:#fff;border:3px solid #111;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:4px 4px 0 #111}
+.card-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;color:#7C3AED;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-label::after{content:'';flex:1;height:2px;background:#111}
+.feeling-grid{display:flex;gap:7px;flex-wrap:wrap}
+.feel-btn{padding:7px 13px;border:2px solid #111;border-radius:50px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;background:#f0f0f0;transition:.15s}
+.feel-btn:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 #111}
+.feel-btn.sel{box-shadow:3px 3px 0 #111}
+.feel-btn.sel.f-thanks{background:#FEF3C7;border-color:#F59E0B;color:#92400E}
+.feel-btn.sel.f-sorry{background:#FEE2E2;border-color:#EF4444;color:#991B1B}
+.feel-btn.sel.f-cheer{background:#D1FAE5;border-color:#059669;color:#065F46}
+.feel-btn.sel.f-miss{background:#DBEAFE;border-color:#2563EB;color:#1E3A8A}
+.feel-btn.sel.f-awkward{background:#F3E8FF;border-color:#7C3AED;color:#5B21B6}
+.feel-btn.sel.f-love{background:#FDF2F8;border-color:#EC4899;color:#9D174D}
+.anon-row{display:flex;gap:8px}
+.anon-btn{flex:1;padding:10px;border:2.5px solid #111;border-radius:8px;font-size:.85rem;font-weight:900;cursor:pointer;font-family:inherit;background:#f0f0f0;text-align:center;transition:.15s}
+.anon-btn:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 #111}
+.anon-btn.sel-named{background:#7C3AED;color:#fff;box-shadow:3px 3px 0 #111}
+.anon-btn.sel-anon{background:#111;color:#FFD43B;box-shadow:3px 3px 0 #7C3AED}
+.inp{width:100%;padding:11px 14px;border:2.5px solid #111;border-radius:8px;font-size:.9rem;font-family:inherit;background:#f0f0f0;font-weight:600;outline:none;-webkit-appearance:none;transition:.2s}
+.inp:focus{border-color:#7C3AED;background:#fff}
+.inp::placeholder{color:#bbb;font-weight:400}
+.inp-area{width:100%;padding:13px 15px;border:2.5px solid #111;border-radius:10px;font-size:.92rem;font-family:'Noto Sans KR',sans-serif;background:#FFFDF7;font-weight:600;line-height:1.8;resize:vertical;min-height:130px;outline:none;-webkit-appearance:none;transition:.2s}
+.inp-area:focus{border-color:#7C3AED;background:#fff}
+.inp-area::placeholder{color:#bbb;font-weight:400}
+.char-c{text-align:right;font-size:.7rem;color:#aaa;margin-top:3px;font-weight:600}
+.guide-box{background:#F5F3FF;border:2px solid #7C3AED;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.guide-title{font-size:.68rem;font-weight:900;color:#7C3AED;letter-spacing:.06em;margin-bottom:7px;text-transform:uppercase}
+.guide-q{font-size:.8rem;font-weight:700;color:#4C1D95;line-height:1.65;padding:3px 0;border-bottom:1px dashed #C4B5FD}
+.guide-q:last-child{border-bottom:none;padding-bottom:0}
+.guide-q::before{content:'💜 ';font-size:.8rem}
+.gen-btn{width:100%;padding:15px;color:#fff;border:3px solid #111;border-radius:10px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:4px 4px 0 #111;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.gen-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-purple{background:#7C3AED}
+.ghost-btn{width:100%;padding:12px;border:2.5px solid #111;border-radius:10px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;background:#f0f0f0;box-shadow:3px 3px 0 #111;transition:.15s;margin-top:10px}
+.ghost-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #111}
+.letter-card{background:#FFFDF7;border:3px solid #111;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:5px 5px 0 #111;position:relative;overflow:hidden}
+.letter-card::before{content:'💌';position:absolute;top:-8px;right:12px;font-size:2.5rem;opacity:.1}
+.letter-to{font-size:.78rem;font-weight:900;color:#7C3AED;margin-bottom:6px}
+.letter-from-badge{display:inline-block;font-size:.65rem;font-weight:900;padding:2px 8px;border:2px solid #111;border-radius:4px;margin-bottom:14px}
+.badge-named{background:#7C3AED;color:#fff}
+.badge-anon{background:#111;color:#FFD43B}
+.letter-body{font-size:.93rem;font-weight:600;line-height:1.9;color:#111;white-space:pre-wrap;word-break:keep-all}
+.letter-sign{text-align:right;font-size:.8rem;font-weight:700;color:#7C3AED;margin-top:14px;padding-top:10px;border-top:1.5px dashed #C4B5FD}
+.ver-label{font-size:.68rem;font-weight:900;color:#888;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.ver-card{background:#fff;border:2.5px solid #111;border-radius:10px;padding:12px 14px;margin-bottom:10px;box-shadow:3px 3px 0 #111;font-size:.86rem;font-weight:600;line-height:1.8;color:#111;white-space:pre-wrap}
+.ver-card.my-ver{border-color:#aaa;background:#f8f8f8;box-shadow:3px 3px 0 #aaa}
+.tip-card{background:#F5F3FF;border:2.5px solid #7C3AED;border-radius:10px;padding:12px 14px;margin-bottom:14px;box-shadow:2px 2px 0 #7C3AED}
+.tip-lbl{font-size:.65rem;font-weight:900;color:#7C3AED;letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+.tip-txt{font-size:.83rem;font-weight:600;line-height:1.75;color:#4C1D95}
+.send-wrap{text-align:center;padding:24px 10px 16px}
+.send-icon{font-size:3.5rem;display:block;margin-bottom:12px;animation:float 2s ease-in-out infinite alternate}
+@keyframes float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+.send-title{font-family:'Black Han Sans',sans-serif;font-size:1.3rem;color:#111;margin-bottom:6px}
+.send-sub{font-size:.82rem;color:#666;line-height:1.7}
+.loading-box{text-align:center;padding:30px 10px}
+.loading-icon{font-size:2.2rem;display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.loading-txt{font-weight:900;font-size:.9rem;margin-top:10px}
+.loading-sub{font-size:.75rem;color:#888;margin-top:4px}
+.err-box{background:#FEE2E2;border:2.5px solid #EF4444;border-radius:10px;padding:10px 13px;font-size:.82rem;font-weight:700;color:#991B1B;margin-top:8px}
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+.key-modal.open{display:flex}
+.key-box{background:#fff;border:3px solid #111;border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:6px 6px 0 #111}
+.key-box h3{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:#888;margin-bottom:14px;line-height:1.6}
+.key-inp{width:100%;padding:11px 14px;border:2.5px solid #111;border-radius:8px;font-size:.88rem;font-family:inherit;background:#f0f0f0;font-weight:600;outline:none;-webkit-appearance:none}
+.key-inp:focus{border-color:#7C3AED;background:#fff}
+.key-save{width:100%;padding:12px;background:#7C3AED;color:#fff;border:2px solid #111;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem;margin-top:8px;box-shadow:3px 3px 0 #111}
+.key-cancel{width:100%;padding:10px;background:#f0f0f0;border:2px solid #111;border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" id="backBtn">&#8592;</button>
+  <span class="tag">&#51473;-10</span>
+  <span class="topbar-title">&#128140; 오늘, 친구에게 하고 싶은 말</span>
+  <button class="key-btn" id="keyModalBtn">&#128273; API키</button>
+</div>
+<div class="hero">
+  <div class="hero-badge">&#128140; 2일차 저녁 · 관계 회복</div>
+  <h1>평소에 못 했던 말<br><span>오늘 꺼내봐요</span></h1>
+  <p>솔직한 마음을 쓰면 AI가 진심 담긴 메시지로 다듬어줘요<br>익명 또는 실명으로 작성할 수 있어요</p>
+</div>
+<div class="step-wrap">
+  <div class="step-bar">
+    <div class="step-dot active" id="sd0">1</div>
+    <div class="step-line" id="sl0"></div>
+    <div class="step-dot" id="sd1">2</div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">&#128140;</div>
+  </div>
+</div>
+<div class="wrap">
+  <!-- STEP 0: 입력 -->
+  <div class="section visible" id="s0">
+    <div class="card">
+      <div class="card-label">&#128101; 받는 사람</div>
+      <input class="inp" id="toName" placeholder="친구 이름 (예: 민준이, 지원이)" maxlength="20">
+    </div>
+    <div class="card">
+      <div class="card-label">&#128149; 어떤 마음인가요?</div>
+      <div class="feeling-grid">
+        <button class="feel-btn f-thanks" data-feel="감사">&#128591; 감사</button>
+        <button class="feel-btn f-sorry" data-feel="미안함">&#128532; 미안함</button>
+        <button class="feel-btn f-cheer" data-feel="응원">&#128170; 응원</button>
+        <button class="feel-btn f-miss" data-feel="그리움">&#129402; 그리움</button>
+        <button class="feel-btn f-awkward" data-feel="화해">&#129309; 화해</button>
+        <button class="feel-btn f-love" data-feel="고마움">&#10084;&#65039; 고마움</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">&#128394; 전달 방식</div>
+      <div class="anon-row">
+        <button class="anon-btn sel-named" id="btnNamed">&#128104; 실명으로</button>
+        <button class="anon-btn" id="btnAnon">&#128373; 익명으로</button>
+      </div>
+    </div>
+    <div class="guide-box">
+      <div class="guide-title">&#128221; 이런 말을 써봐요</div>
+      <div class="guide-q">항상 옆에 있어줘서 정말 고마웠어</div>
+      <div class="guide-q">그때 내가 잘못한 것 같아서 미안해</div>
+      <div class="guide-q">네가 힘들 때 내가 못 챙겨서 미안했어</div>
+      <div class="guide-q">앞으로도 우리 친하게 지내고 싶어</div>
+    </div>
+    <div class="card">
+      <div class="card-label">&#9997;&#65039; 하고 싶은 말</div>
+      <textarea class="inp-area" id="rawMsg" placeholder="솔직하게 써봐요. 잘 쓰지 않아도 돼요&#10;AI가 더 자연스럽게 다듬어줄 거예요 &#128522;" maxlength="300"></textarea>
+      <div class="char-c" id="charC">0 / 300자</div>
+    </div>
+    <button class="gen-btn btn-purple" id="refineBtn">&#129302; AI가 다듬어주기</button>
+    <div id="s0Err"></div>
+  </div>
+
+  <!-- STEP 1: 생성 중 / 결과 -->
+  <div class="section" id="s1">
+    <div id="loadingArea" class="loading-box">
+      <div class="loading-icon">&#128140;</div>
+      <div class="loading-txt">마음을 다듬는 중...</div>
+      <div class="loading-sub">진심이 잘 전달되도록 정리하고 있어요</div>
+    </div>
+    <div id="resultArea" style="display:none">
+      <div class="ver-label">&#9997;&#65039; 내가 쓴 원문</div>
+      <div class="ver-card my-ver" id="origDisplay"></div>
+      <div class="ver-label" style="margin-top:4px">&#128140; AI가 다듬은 메시지</div>
+      <div class="letter-card">
+        <div class="letter-to" id="letterTo"></div>
+        <div id="letterFromBadge"></div>
+        <div class="letter-body" id="letterBody"></div>
+        <div class="letter-sign" id="letterSign"></div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-lbl">&#128161; AI의 한마디</div>
+        <div class="tip-txt" id="tipTxt"></div>
+      </div>
+      <button class="gen-btn btn-purple" id="toSendBtn">&#128140; 완성! 마무리하기 &#8594;</button>
+      <button class="ghost-btn" id="rewriteBtn">&#8592; 다시 쓰기</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 완료 -->
+  <div class="section" id="s2">
+    <div class="send-wrap">
+      <span class="send-icon">&#128140;</span>
+      <div class="send-title" id="sendTitle"></div>
+      <div class="send-sub" id="sendSub"></div>
+    </div>
+    <div class="letter-card" id="finalLetter">
+      <div class="letter-to" id="finalTo"></div>
+      <div id="finalBadge"></div>
+      <div class="letter-body" id="finalBody"></div>
+      <div class="letter-sign" id="finalSign"></div>
+    </div>
+    <div class="tip-card" style="background:#D1FAE5;border-color:#059669;box-shadow:2px 2px 0 #059669">
+      <div class="tip-lbl" style="color:#065F46">&#129309; 용기 있게 표현했어요!</div>
+      <div class="tip-txt" style="color:#064E3B">진심을 표현하는 것 자체가 이미 대단한 일이에요.<br>오늘 이 마음이 소중한 관계를 더 깊게 만들어줄 거예요 &#128149;</div>
+    </div>
+    <button class="gen-btn btn-purple" id="anotherBtn">&#128140; 다른 친구에게도 쓰기</button>
+    <button class="ghost-btn" id="restartBtn">&#8634; 처음으로</button>
+  </div>
+</div>
+
+<!-- API 키 모달 -->
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>&#128273; API 키 설정</h3>
+    <p>Anthropic API 키를 입력하면<br>AI가 메시지를 다듬어줘요.</p>
+    <input class="key-inp" id="keyInput" type="password" placeholder="sk-ant-api03-...">
+    <button class="key-save" id="keySaveBtn">저장하기</button>
+    <button class="key-cancel" id="keyCancelBtn">취소</button>
+  </div>
+</div>
+
+<script>
+var CLAUDE_KEY='YOUR_API_KEY_HERE';
+var isAnon=false,selectedFeel='',refinedMsg='';
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getKey(){return localStorage.getItem('retreat_api_key')||CLAUDE_KEY;}
+
+function callClaude(msgs,sys){
+  var key=getKey();
+  if(!key||key==='YOUR_API_KEY_HERE'||!/^[\x00-\xFF]+$/.test(key))
+    return Promise.reject(new Error('API 키를 설정해주세요. 🔑 버튼을 눌러주세요.'));
+  return fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:sys||'',messages:msgs})
+  }).then(function(r){return r.json();}).then(function(d){if(d.error)throw new Error(d.error.message);return d.content[0].text;});
+}
+
+function goTo(n){
+  document.querySelectorAll('.section').forEach(function(s,i){s.classList.toggle('visible',i===n);});
+  for(var i=0;i<3;i++){
+    var dot=document.getElementById('sd'+i);
+    var line=document.getElementById('sl'+i);
+    if(dot)dot.className='step-dot'+(i<n?' done':i===n?' active':'');
+    if(line)line.className='step-line'+(i<n?' done':'');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function refine(){
+  var toName=document.getElementById('toName').value.trim();
+  var raw=document.getElementById('rawMsg').value.trim();
+  if(!toName){document.getElementById('s0Err').innerHTML='<div class="err-box">받는 사람 이름을 입력해주세요!</div>';return;}
+  if(!raw||raw.length<5){document.getElementById('s0Err').innerHTML='<div class="err-box">하고 싶은 말을 조금 더 써봐요!</div>';return;}
+  document.getElementById('s0Err').innerHTML='';
+  document.getElementById('refineBtn').disabled=true;
+  goTo(1);
+  document.getElementById('loadingArea').style.display='block';
+  document.getElementById('resultArea').style.display='none';
+
+  var sys='너는 중학생의 진심을 더 잘 전달되도록 메시지를 다듬어주는 AI야.\n원래 의미와 감정을 최대한 살리면서, 자연스럽고 진심 있게 다듬어줘.\n너무 과장하거나 어색하지 않게. 중학생다운 말투로.';
+  var prompt='받는 사람: '+toName+'\n감정: '+(selectedFeel||'미선택')+'\n보내는 방식: '+(isAnon?'익명':'실명')+'\n\n원문:\n"'+raw+'"\n\n아래 형식으로만 답해줘:\n[MESSAGE] 다듬은 메시지 (3-5문장)\n[TIP] 전달할 때 도움이 되는 한마디 (1-2문장)';
+
+  callClaude([{role:'user',content:prompt}],sys)
+    .then(function(text){
+      function extr(tag){var m=text.match(new RegExp('\\['+tag+'\\]([\\s\\S]*?)(?=\\[|$)'));return m?m[1].trim():'';}
+      refinedMsg=extr('MESSAGE');
+      var tip=extr('TIP');
+      document.getElementById('origDisplay').textContent=raw;
+      document.getElementById('letterTo').textContent='To. '+toName+'에게';
+      document.getElementById('letterFromBadge').innerHTML=isAnon
+        ?'<span class="letter-from-badge badge-anon">익명의 친구로부터</span>'
+        :'<span class="letter-from-badge badge-named">수련회 친구로부터</span>';
+      document.getElementById('letterBody').textContent=refinedMsg;
+      document.getElementById('letterSign').textContent=isAnon?'— 익명의 친구로부터':'— 수련회에서';
+      document.getElementById('tipTxt').textContent=tip||'용기 내어 전달해봐요. 진심은 반드시 전달돼요 💜';
+      document.getElementById('loadingArea').style.display='none';
+      document.getElementById('resultArea').style.display='block';
+      document.getElementById('refineBtn').disabled=false;
+    })
+    .catch(function(e){
+      document.getElementById('loadingArea').innerHTML='<div class="err-box">오류: '+esc(e.message)+'</div><button class="gen-btn btn-purple" id="retryBtn" style="margin-top:10px">다시 시도</button>';
+      document.getElementById('retryBtn').addEventListener('click',function(){goTo(0);document.getElementById('refineBtn').disabled=false;});
+    });
+}
+
+function finalize(){
+  var toName=document.getElementById('toName').value.trim();
+  goTo(2);
+  document.getElementById('sendTitle').textContent=toName+'에게 보내는 편지 완성! 💌';
+  document.getElementById('sendSub').textContent='진심이 담긴 메시지예요.\n용기 내어 써줘서 고마워요 💜';
+  document.getElementById('finalTo').textContent='To. '+toName+'에게';
+  document.getElementById('finalBadge').innerHTML=isAnon
+    ?'<span class="letter-from-badge badge-anon">익명의 친구로부터</span>'
+    :'<span class="letter-from-badge badge-named">수련회 친구로부터</span>';
+  document.getElementById('finalBody').textContent=refinedMsg;
+  document.getElementById('finalSign').textContent=isAnon?'— 익명의 친구로부터':'— 수련회에서';
+}
+
+function another(){
+  document.getElementById('toName').value='';
+  document.getElementById('rawMsg').value='';
+  document.getElementById('charC').textContent='0 / 300자';
+  document.getElementById('s0Err').innerHTML='';
+  document.getElementById('refineBtn').disabled=false;
+  document.querySelectorAll('.feel-btn').forEach(function(b){b.classList.remove('sel');});
+  selectedFeel='';
+  goTo(0);
+}
+
+function restart(){
+  another();
+  isAnon=false;
+  document.getElementById('btnNamed').className='anon-btn sel-named';
+  document.getElementById('btnAnon').className='anon-btn';
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('backBtn').addEventListener('click',function(){history.back();});
+  document.querySelectorAll('.feel-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.feel-btn').forEach(function(b){b.classList.remove('sel');});
+      btn.classList.add('sel');
+      selectedFeel=btn.getAttribute('data-feel');
+    });
+  });
+  document.getElementById('btnNamed').addEventListener('click',function(){
+    isAnon=false;this.className='anon-btn sel-named';
+    document.getElementById('btnAnon').className='anon-btn';
+  });
+  document.getElementById('btnAnon').addEventListener('click',function(){
+    isAnon=true;this.className='anon-btn sel-anon';
+    document.getElementById('btnNamed').className='anon-btn';
+  });
+  document.getElementById('rawMsg').addEventListener('input',function(){
+    document.getElementById('charC').textContent=this.value.length+' / 300자';
+  });
+  document.getElementById('refineBtn').addEventListener('click',refine);
+  document.getElementById('toSendBtn').addEventListener('click',finalize);
+  document.getElementById('rewriteBtn').addEventListener('click',function(){goTo(0);document.getElementById('refineBtn').disabled=false;});
+  document.getElementById('anotherBtn').addEventListener('click',another);
+  document.getElementById('restartBtn').addEventListener('click',restart);
+  document.getElementById('keyModalBtn').addEventListener('click',function(){
+    document.getElementById('keyInput').value=localStorage.getItem('retreat_api_key')||'';
+    document.getElementById('keyModal').classList.add('open');
+  });
+  document.getElementById('keySaveBtn').addEventListener('click',function(){
+    var v=document.getElementById('keyInput').value.trim();
+    if(v){
+      if(!/^[\x00-\xFF]+$/.test(v)){alert('API 키에 잘못된 문자가 포함되어 있어요.');return;}
+      localStorage.setItem('retreat_api_key',v);
+    }
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyCancelBtn').addEventListener('click',function(){document.getElementById('keyModal').classList.remove('open');});
+  document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
+</script>
+</body>
+</html>
