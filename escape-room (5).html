@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성경 방탈출 게임</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#f0f0f0;font-family:'Noto Sans KR',sans-serif;color:#111}
+
+/* ── topbar ── */
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:#fff;border-bottom:3px solid #111}
+.back-btn{width:36px;height:36px;border-radius:8px;background:#f0f0f0;border:2px solid #111;font-size:1rem;cursor:pointer;font-family:inherit;font-weight:900;flex-shrink:0}
+.tag{font-size:.65rem;font-weight:900;background:#FF4E8B;color:white;padding:3px 8px;border-radius:4px;border:2px solid #111}
+.topbar-title{font-size:.88rem;font-weight:900;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:#f0f0f0;border:2px solid #111;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:#666}
+
+/* ── hero ── */
+.hero{background:linear-gradient(135deg,#1A1A2E,#2563EB 50%,#FF4E8B);padding:22px 20px 18px;text-align:center;border-bottom:3px solid #111;position:relative;overflow:hidden}
+.hero::before{content:'🔒📖❓💡🗝️✝️🔓⭐';position:absolute;top:5px;left:0;right:0;font-size:1rem;letter-spacing:4px;opacity:.15;white-space:nowrap}
+.hero-badge{display:inline-block;background:#fff;border:2px solid #111;border-radius:4px;font-size:.65rem;font-weight:900;padding:3px 10px;margin-bottom:8px;color:#2563EB;box-shadow:2px 2px 0 #111}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.4rem,5vw,1.9rem);color:#fff;line-height:1.2;margin-bottom:3px;text-shadow:2px 2px 0 rgba(0,0,0,.2)}
+.hero h1 span{color:#FFD43B}
+.hero p{font-size:.76rem;color:rgba(255,255,255,.85);line-height:1.6}
+
+/* ── stage bar ── */
+.stage-wrap{background:#fff;border-bottom:3px solid #111;padding:14px 20px}
+.stage-bar{display:flex;align-items:center;max-width:480px;margin:0 auto}
+.stage-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;border:2.5px solid #111;background:#f0f0f0;color:#aaa;transition:all .3s}
+.stage-dot.active{background:#FF4E8B;color:#fff;border-color:#111;box-shadow:2px 2px 0 #111}
+.stage-dot.done{background:#FFD43B;color:#111;border-color:#111}
+.stage-dot.locked{background:#f0f0f0;color:#ccc}
+.stage-line{flex:1;height:3px;background:#ddd;transition:background .4s}
+.stage-line.done{background:#FFD43B}
+
+/* ── wrap ── */
+.wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px}
+
+/* ── section ── */
+.section{display:none}
+.section.visible{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── card ── */
+.card{background:#fff;border:3px solid #111;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:4px 4px 0 #111}
+.card-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;color:#FF4E8B;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-label::after{content:'';flex:1;height:2px;background:#111}
+
+/* ── team grid ── */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.team-btn{padding:16px 8px;border:2.5px solid #111;border-radius:10px;font-size:.85rem;font-weight:900;cursor:pointer;font-family:inherit;background:#f0f0f0;text-align:center;transition:all .15s}
+.team-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #111}
+.team-btn .t-icon{font-size:1.8rem;display:block;margin-bottom:5px}
+.team-btn.sel-peter{background:#FF4E8B;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+.team-btn.sel-paul{background:#3B5BFF;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+.team-btn.sel-esther{background:#2ECC71;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+.team-btn.sel-david{background:#FF8C00;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+
+/* ── gen-btn ── */
+.gen-btn{width:100%;padding:15px;color:#fff;border:3px solid #111;border-radius:10px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:4px 4px 0 #111;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111}
+.gen-btn:disabled{background:#ccc !important;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #111}
+.gen-btn-pink{background:#FF4E8B}
+.gen-btn-blue{background:#2563EB}
+.gen-btn-green{background:#10B981}
+
+/* ── ghost btn ── */
+.ghost-btn{width:100%;padding:12px;border:2.5px solid #111;border-radius:10px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;background:#f0f0f0;box-shadow:3px 3px 0 #111;transition:.15s;margin-top:10px}
+.ghost-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #111}
+
+/* ── mission card ── */
+.mission-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.stage-lbl{font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#111;color:#FFD43B;padding:4px 10px;border-radius:4px}
+.timer-box{font-size:.78rem;font-weight:900;color:#111;background:#FFD43B;border:2px solid #111;padding:4px 10px;border-radius:6px;box-shadow:2px 2px 0 #111}
+.team-active{display:inline-block;font-size:.78rem;font-weight:900;background:#fff;border:2px solid #111;border-radius:50px;padding:4px 12px;margin-bottom:12px;box-shadow:2px 2px 0 #111}
+
+.mission-card{background:#fff;border:3px solid #111;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:4px 4px 0 #111;position:relative;overflow:hidden}
+.mission-card-accent{position:absolute;top:0;left:0;right:0;height:5px}
+.acc-blue{background:#2563EB}.acc-amber{background:#FF8C00}.acc-red{background:#FF4E8B}
+.mission-icon-lbl{font-size:2rem;margin-bottom:8px;display:block}
+.mission-cat{font-size:.65rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:6px}
+.mission-text{font-size:.92rem;font-weight:700;color:#111;line-height:1.65;margin-bottom:14px;padding:12px;background:#f0f0f0;border:2px solid #111;border-radius:8px}
+.q-label{font-size:.65rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#FF4E8B;margin-bottom:6px}
+.mission-q{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#111;line-height:1.5;padding:12px 14px;background:#FFF9E0;border:2px solid #FFD43B;border-radius:8px;box-shadow:2px 2px 0 #111}
+
+/* ── hint ── */
+.hint-card{background:#FFF9E0;border:2.5px solid #FFD43B;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;box-shadow:2px 2px 0 #111}
+.hint-icon{font-size:1.1rem;flex-shrink:0}
+.hint-text{font-size:.82rem;font-weight:700;color:#7A5200;line-height:1.6}
+
+/* ── input ── */
+.inp{width:100%;padding:11px 14px;border:2.5px solid #111;border-radius:8px;font-size:.92rem;font-family:inherit;background:#f0f0f0;font-weight:700;color:#111;outline:none;transition:.15s;-webkit-appearance:none}
+.inp:focus{border-color:#FF4E8B;background:#fff}
+.inp::placeholder{color:#aaa;font-weight:400}
+.inp-label{font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#111;margin-bottom:6px;margin-top:14px;display:block}
+
+/* ── result ── */
+.result-box{border-radius:10px;padding:14px 16px;margin:12px 0;border:2.5px solid #111;box-shadow:3px 3px 0 #111}
+.result-ok{background:#D1FAE5}
+.result-no{background:#FEE2E2}
+.result-hdr{font-family:'Black Han Sans',sans-serif;font-size:1rem;margin-bottom:4px}
+.result-ok .result-hdr{color:#065F46}
+.result-no .result-hdr{color:#991B1B}
+.result-body{font-size:.82rem;font-weight:600;line-height:1.6}
+.result-ok .result-body{color:#064E3B}
+.result-no .result-body{color:#7F1D1D}
+
+/* ── score / trophy ── */
+.trophy-wrap{text-align:center;padding:20px 0 12px}
+.trophy-icon{font-size:4rem;display:block;margin-bottom:10px;animation:bounce .8s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.trophy-name{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:#111;margin-bottom:6px}
+.score-row{display:flex;align-items:center;justify-content:space-between;background:#fff;border:2.5px solid #111;border-radius:10px;padding:12px 16px;margin-bottom:8px;box-shadow:3px 3px 0 #111}
+.score-winner{background:#FFD43B}
+.score-team-info{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:900}
+
+/* ── 최종 점수 카드 ── */
+.final-score-card{background:#111;border:3px solid #111;border-radius:14px;padding:20px;text-align:center;margin-bottom:12px;box-shadow:5px 5px 0 #FFD43B}
+.fs-label{font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:6px}
+.fs-number{font-family:'Black Han Sans',sans-serif;font-size:3.2rem;color:#FFD43B;line-height:1;margin-bottom:8px;animation:scoreIn .6s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes scoreIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.fs-grade{display:inline-block;font-family:'Black Han Sans',sans-serif;font-size:1rem;padding:5px 16px;border-radius:50px;border:2.5px solid;margin-bottom:12px}
+.grade-s{background:#FFD43B;color:#111;border-color:#FFD43B}
+.grade-a{background:#D1FAE5;color:#065F46;border-color:#059669}
+.grade-b{background:#DBEAFE;color:#1E3A8A;border-color:#2563EB}
+.grade-c{background:#FEF3C7;color:#92400E;border-color:#D97706}
+.grade-d{background:#FEE2E2;color:#991B1B;border-color:#EF4444}
+.fs-breakdown{display:flex;flex-direction:column;gap:6px;text-align:left;border-top:1px solid #333;padding-top:12px;margin-top:4px}
+.fsb-row{display:flex;align-items:center;justify-content:space-between;font-size:.8rem}
+.fsb-label{color:#aaa;font-weight:600}
+.fsb-val{font-weight:900;font-family:'Black Han Sans',sans-serif;font-size:.95rem}
+.fsb-base{color:#FFD43B}
+.fsb-minus{color:#FF4E8B}
+.fsb-total{color:#fff;font-size:1.1rem;border-top:1px dashed #444;padding-top:6px;margin-top:2px}
+
+/* ── loader ── */
+.loading-box{text-align:center;padding:40px 20px}
+.loading-icon{font-size:2.5rem;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.loading-txt{font-weight:900;font-size:.95rem;margin-top:12px}
+.loading-sub{font-size:.75rem;color:#888;margin-top:4px}
+
+/* ── err ── */
+.err-box{background:#FEE2E2;border:2.5px solid #EF4444;border-radius:10px;padding:12px;font-size:.82rem;font-weight:700;color:#991B1B;margin:10px 0}
+
+/* ── modal ── */
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+.key-modal.open{display:flex}
+.key-box{background:#fff;border:3px solid #111;border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:6px 6px 0 #111}
+.key-box h3{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:#888;margin-bottom:14px;line-height:1.6}
+.key-save{width:100%;padding:12px;background:#FF4E8B;color:#fff;border:2px solid #111;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem;margin-top:6px;box-shadow:3px 3px 0 #111}
+.key-cancel{width:100%;padding:10px;background:#f0f0f0;border:2px solid #111;border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:6px}
+
+.divider{height:3px;background:#111;border-radius:2px;margin:20px 0}
+
+/* ── 힌트 단계 ── */
+.hint-step{display:inline-block;font-size:.6rem;font-weight:900;padding:2px 7px;border-radius:50px;border:1.5px solid #111;margin-right:6px;vertical-align:middle}
+.hs-1{background:#FFF9E0;color:#7A5200}.hs-2{background:#FEF3C7;color:#92400E}.hs-3{background:#FEE2E2;color:#991B1B}
+
+/* ── 오답 카운터 ── */
+.wrong-badge{display:inline-flex;align-items:center;gap:4px;font-size:.65rem;font-weight:900;background:#FEE2E2;color:#991B1B;border:2px solid #111;border-radius:50px;padding:3px 9px;box-shadow:2px 2px 0 #111}
+.wrong-flash{animation:wrongShake .4s ease}
+@keyframes wrongShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ── 점수판 ── */
+.score-detail{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.score-chip{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:50px;border:1.5px solid #111;background:#f0f0f0}
+.score-chip.ok{background:#D1FAE5}.score-chip.warn{background:#FEF3C7}.score-chip.bad{background:#FEE2E2}
+
+/* ── 객관식 옵션 ── */
+.opt-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.opt-btn{padding:13px 16px;border:2.5px solid #111;border-radius:10px;font-size:.9rem;font-weight:700;font-family:inherit;background:#f0f0f0;text-align:left;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;box-shadow:3px 3px 0 #111}
+.opt-btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:5px 5px 0 #111;border-color:#2563EB;background:#EFF6FF}
+.opt-btn:disabled{cursor:default}
+.opt-btn.correct{background:#D1FAE5;border-color:#059669;box-shadow:3px 3px 0 #059669;transform:none}
+.opt-btn.wrong{background:#FEE2E2;border-color:#EF4444;box-shadow:3px 3px 0 #EF4444;transform:none}
+.opt-letter{width:28px;height:28px;border-radius:6px;background:#111;color:#FFD43B;font-family:'Black Han Sans',sans-serif;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opt-btn.correct .opt-letter{background:#059669;color:#fff}
+.opt-btn.wrong .opt-letter{background:#EF4444;color:#fff}
+.opt-text{flex:1;line-height:1.4}
+</style>
+</head>
+<body>
+
+<!-- topbar -->
+<div class="topbar">
+  <button class="back-btn" id="backBtn">&#8592;</button>
+  <span class="tag">&#51473;-14</span>
+  <span class="topbar-title">&#128274; 성경 방탈출 게임</span>
+  <button class="key-btn" id="keyModalBtn">&#128273; API키</button>
+</div>
+
+<!-- hero -->
+<div class="hero">
+  <div class="hero-badge">&#9875; 2일차 오전 · 팀 대항전</div>
+  <h1>성경 속 탈출 미션<br><span>3단계 클리어!</span></h1>
+  <p>성경 지식으로 단계별 문제를 풀어요<br>가장 빨리 탈출한 팀이 승리!</p>
+</div>
+
+<!-- stage bar -->
+<div class="stage-wrap">
+  <div class="stage-bar">
+    <div class="stage-dot locked" id="sd0">1</div>
+    <div class="stage-line" id="sl0"></div>
+    <div class="stage-dot locked" id="sd1">2</div>
+    <div class="stage-line" id="sl1"></div>
+    <div class="stage-dot locked" id="sd2">3</div>
+    <div class="stage-line" id="sl2"></div>
+    <div class="stage-dot locked" id="sd3">&#127942;</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- s0: 팀 선택 -->
+  <div class="section visible" id="s0">
+    <div class="card">
+      <div class="card-label">&#128101; 우리 팀 선택</div>
+      <div class="team-grid" id="teamGrid">
+        <button class="team-btn" data-team="베드로팀" data-cls="sel-peter">
+          <span class="t-icon">&#9875;</span>베드로팀
+        </button>
+        <button class="team-btn" data-team="바울팀" data-cls="sel-paul">
+          <span class="t-icon">&#10013;</span>바울팀
+        </button>
+        <button class="team-btn" data-team="에스더팀" data-cls="sel-esther">
+          <span class="t-icon">&#128081;</span>에스더팀
+        </button>
+        <button class="team-btn" data-team="다윗팀" data-cls="sel-david">
+          <span class="t-icon">&#127929;</span>다윗팀
+        </button>
+      </div>
+    </div>
+    <button class="gen-btn gen-btn-pink" id="startBtn" disabled>&#128274; 방탈출 시작!</button>
+    <div id="startErr"></div>
+  </div>
+
+  <!-- s1: stage 1 -->
+  <div class="section" id="s1">
+    <div class="mission-hdr">
+      <span class="stage-lbl">&#128274; STAGE 1 / 3</span>
+      <span class="timer-box" id="timer1">&#9200; 00:00</span>
+    </div>
+    <div class="team-active" id="teamBadge1"></div>
+    <div id="missionArea1">
+      <div class="loading-box"><div class="loading-icon">&#128274;</div><div class="loading-txt">미션 생성 중<span id="ld1">...</span></div><div class="loading-sub">AI가 성경 속 이야기를 불러오고 있어요</div></div>
+    </div>
+  </div>
+
+  <!-- s2: stage 2 -->
+  <div class="section" id="s2">
+    <div class="mission-hdr">
+      <span class="stage-lbl" style="background:#FF8C00">&#128275; STAGE 2 / 3</span>
+      <span class="timer-box" id="timer2">&#9200; 00:00</span>
+    </div>
+    <div class="team-active" id="teamBadge2"></div>
+    <div id="missionArea2">
+      <div class="loading-box"><div class="loading-icon">&#128275;</div><div class="loading-txt">다음 미션 생성 중...</div></div>
+    </div>
+  </div>
+
+  <!-- s3: stage 3 -->
+  <div class="section" id="s3">
+    <div class="mission-hdr">
+      <span class="stage-lbl" style="background:#FF4E8B">&#128272; STAGE 3 / 3 — FINAL</span>
+      <span class="timer-box" id="timer3">&#9200; 00:00</span>
+    </div>
+    <div class="team-active" id="teamBadge3"></div>
+    <div id="missionArea3">
+      <div class="loading-box"><div class="loading-icon">&#128272;</div><div class="loading-txt">파이널 미션 생성 중...</div></div>
+    </div>
+  </div>
+
+  <!-- s4: 완료 -->
+  <div class="section" id="s4">
+    <div class="card">
+      <div class="trophy-wrap">
+        <span class="trophy-icon">&#127942;</span>
+        <div class="trophy-name" id="winTeamName"></div>
+        <div class="trophy-time" id="winSub"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="card">
+      <div class="card-label">&#128202; 기록</div>
+      <div id="scoreBoard"></div>
+    </div>
+    <button class="gen-btn gen-btn-blue" id="playAgainBtn">&#8634; 다시 플레이</button>
+    <button class="ghost-btn" id="backHomeBtn">&#8592; 일정표로 돌아가기</button>
+  </div>
+
+</div>
+
+<!-- API 키 모달 -->
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>&#128273; API 키 설정</h3>
+    <p>Anthropic API 키를 입력하면<br>AI가 미션을 실시간으로 생성해요.</p>
+    <input class="inp" id="keyInput" type="password" placeholder="sk-ant-api03-...">
+    <button class="key-save" id="keySaveBtn">저장하기</button>
+    <button class="key-cancel" id="keyCancelBtn">취소</button>
+  </div>
+</div>
+
+<script>
+var CLAUDE_KEY = 'YOUR_API_KEY_HERE';
+
+var SYS = '너는 교회 수련회 성경 방탈출 게임 진행자야.\n'
+  + '중학생 팀이 성경 지식을 활용해 단계별 미션을 풀어야 탈출할 수 있어.\n'
+  + '각 스테이지마다 흥미로운 성경 기반 상황과 퀴즈를 제시해.\n'
+  + '힌트는 너무 쉽지도 너무 어렵지도 않게. 정답은 간결한 단어나 짧은 문장으로 맞힐 수 있게.\n'
+  + '답을 채점할 때 완전히 똑같지 않아도 핵심 내용이 맞으면 정답으로 인정해.\n'
+  + '항상 한국어로, 중학생 눈높이에 맞게.';
+
+var STAGE_ICONS = ['&#128274;', '&#128275;', '&#128272;'];
+var STAGE_ACCS = ['acc-blue', 'acc-amber', 'acc-red'];
+var STAGE_COLORS = ['#2563EB', '#FF8C00', '#FF4E8B'];
+
+var currentTeam = '';
+var currentTeamIcon = '';
+var missions = [null, null, null];
+var stageStartTimes = [0, 0, 0];
+var timers = [null, null, null];
+var stageRecords = [0, 0, 0];
+var wrongCounts = [0, 0, 0];
+
+/* ── helpers ── */
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmtTime(sec) {
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return (m > 0 ? m + '분 ' : '') + s + '초';
+}
+function loaderHtml(stage) {
+  return '<div class="loading-box"><div class="loading-icon">' + STAGE_ICONS[stage] + '</div>'
+    + '<div class="loading-txt">미션 생성 중...</div>'
+    + '<div class="loading-sub">AI가 성경 속 이야기를 불러오고 있어요</div></div>';
+}
+function getKey() {
+  var saved = localStorage.getItem('escape_api_key');
+  return (saved && saved !== '') ? saved : CLAUDE_KEY;
+}
+
+/* ── stage bar ── */
+function goTo(n) {
+  document.querySelectorAll('.section').forEach(function(s, i) {
+    s.classList.toggle('visible', i === n);
+  });
+  for (var i = 0; i < 4; i++) {
+    var dot = document.getElementById('sd' + i);
+    var line = document.getElementById('sl' + i);
+    if (dot) {
+      if (i < n) dot.className = 'stage-dot done';
+      else if (i === n) dot.className = 'stage-dot active';
+      else dot.className = 'stage-dot locked';
+    }
+    if (line) line.className = 'stage-line' + (i < n ? ' done' : '');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── timer ── */
+function startTimer(idx) {
+  stageStartTimes[idx] = Date.now();
+  var el = document.getElementById('timer' + (idx + 1));
+  timers[idx] = setInterval(function() {
+    var sec = Math.floor((Date.now() - stageStartTimes[idx]) / 1000);
+    var m = String(Math.floor(sec / 60)).padStart(2, '0');
+    var s = String(sec % 60).padStart(2, '0');
+    if (el) el.textContent = '\u23F0 ' + m + ':' + s;
+  }, 1000);
+}
+function stopTimer(idx) {
+  if (timers[idx]) { clearInterval(timers[idx]); timers[idx] = null; }
+  return Math.floor((Date.now() - stageStartTimes[idx]) / 1000);
+}
+
+/* ── Claude API ── */
+function callClaude(msgs) {
+  var key = getKey();
+  if (!key || key === 'YOUR_API_KEY_HERE') {
+    return Promise.reject(new Error('API 키를 설정해주세요. 오른쪽 상단 🔑 버튼을 눌러주세요.'));
+  }
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 800, system: SYS, messages: msgs })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.error) throw new Error(d.error.message);
+    return d.content[0].text;
+  });
+}
+
+/* ── load mission ── */
+function loadMission(stageIdx) {
+  var difficulty = ['쉬움', '보통', '어려움'][stageIdx];
+  var prompt = '성경 방탈출 게임 스테이지 ' + (stageIdx + 1) + '를 만들어줘. 난이도: ' + difficulty + '\n'
+    + '반드시 객관식 4지선다 형식으로 만들어줘.\n'
+    + '조건: 정답이 명확한 성경 사실 문제. 오답도 그럴듯하게.\n'
+    + 'JSON으로만 답해줘 (마크다운 없이):\n'
+    + '{"situation":"성경 속 상황 2-3문장 (현재형, 흥미롭게)","question":"퀴즈 문제 (누가/어디서/무엇을 형태로)","options":["A. 보기1","B. 보기2","C. 보기3","D. 보기4"],"answer":"A",'
+    + '"hints":["1단계 힌트: 정답과 거의 무관한 배경 지식","2단계 힌트: 정답 범위를 좁혀주는 내용","3단계 힌트: 정답을 거의 알려주는 강한 힌트"],'
+    + '"explanation":"정답 해설 1-2문장"}\n'
+    + '중요: answer는 A/B/C/D 중 하나만. 오답 3개도 실제 성경 내용에서 가져와 그럴듯하게. hints 3개는 틀릴 때마다 순서대로 공개됨.';
+
+  callClaude([{ role: 'user', content: prompt }])
+    .then(function(text) {
+      var data = JSON.parse(text.replace(/```json|```/g, '').trim());
+      missions[stageIdx] = data;
+      renderMission(stageIdx, data);
+      startTimer(stageIdx);
+    })
+    .catch(function(e) {
+      var area = document.getElementById('missionArea' + (stageIdx + 1));
+      if (area) {
+        area.innerHTML = '<div class="err-box">&#10060; 미션 생성 실패: ' + esc(e.message) + '</div>'
+          + '<button class="gen-btn gen-btn-pink" style="margin-top:8px" id="retry' + stageIdx + '">다시 시도</button>';
+        var rb = document.getElementById('retry' + stageIdx);
+        if (rb) rb.addEventListener('click', function() {
+          var a = document.getElementById('missionArea' + (stageIdx + 1));
+          if (a) a.innerHTML = loaderHtml(stageIdx);
+          loadMission(stageIdx);
+        });
+      }
+    });
+}
+
+/* ── render mission ── */
+function renderMission(stageIdx, data) {
+  var area = document.getElementById('missionArea' + (stageIdx + 1));
+  if (!area) return;
+  var acc = STAGE_ACCS[stageIdx];
+  var icon = STAGE_ICONS[stageIdx];
+
+  var letters = ['A','B','C','D'];
+  var optsHtml = '<div class="opt-grid" id="opts' + stageIdx + '">';
+  (data.options || []).forEach(function(opt, i) {
+    optsHtml += '<button class="opt-btn" data-letter="' + letters[i] + '" id="opt' + stageIdx + '_' + i + '">'
+      + '<span class="opt-letter">' + letters[i] + '</span>'
+      + '<span class="opt-text">' + esc(opt.replace(/^[A-D]\.\s*/,'')) + '</span>'
+      + '</button>';
+  });
+  optsHtml += '</div>';
+
+  var firstHint = (data.hints && data.hints[0]) ? data.hints[0] : (data.hint || '성경을 잘 생각해봐요!');
+
+  area.innerHTML =
+    '<div class="mission-card">'
+    + '<div class="mission-card-accent ' + acc + '"></div>'
+    + '<span class="mission-icon-lbl">' + icon + '</span>'
+    + '<div class="mission-cat">&#128214; 성경 상황</div>'
+    + '<div class="mission-text">' + esc(data.situation) + '</div>'
+    + '<div class="q-label">&#128221; 퀴즈</div>'
+    + '<div class="mission-q">' + esc(data.question) + '</div>'
+    + '</div>'
+    + '<div id="hintArea' + stageIdx + '">'
+    + '<div class="hint-card">'
+    + '<span class="hint-icon">&#128161;</span>'
+    + '<div class="hint-text"><span class="hint-step hs-1">힌트 1</span>' + esc(firstHint) + '</div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+    + '<span style="font-size:.7rem;font-weight:700;color:#888">&#128101; 정답을 골라봐요</span>'
+    + '<span class="wrong-badge" id="wrongBadge' + stageIdx + '">&#10060; 오답 <span id="wrongNum' + stageIdx + '">0</span>회</span>'
+    + '</div>'
+    + optsHtml
+    + '<div id="res' + stageIdx + '"></div>';
+
+  var optBtns = document.querySelectorAll('#opts' + stageIdx + ' .opt-btn');
+  optBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      pickAnswer(stageIdx, btn.getAttribute('data-letter'), data, optBtns);
+    });
+  });
+}
+
+/* extraHint — 객관식으로 변경되어 미사용 */
+function extraHint(stageIdx, data, btn) {}
+
+/* ── pick answer — 틀려도 재도전, 힌트 단계 공개 ── */
+function pickAnswer(stageIdx, chosen, data, optBtns) {
+  var correct = (data.answer || 'A').trim().charAt(0).toUpperCase();
+  var isCorrect = (chosen === correct);
+  var res = document.getElementById('res' + stageIdx);
+
+  if (isCorrect) {
+    /* 정답 */
+    optBtns.forEach(function(btn) {
+      btn.disabled = true;
+      if (btn.getAttribute('data-letter') === correct) btn.classList.add('correct');
+    });
+    var elapsed = stopTimer(stageIdx);
+    stageRecords[stageIdx] = elapsed;
+    res.innerHTML = '<div class="result-box result-ok">'
+      + '<div class="result-hdr">&#9989; 정답!</div>'
+      + '<div class="result-body">' + esc(data.explanation) + '</div>'
+      + '</div>';
+    setTimeout(function() {
+      if (stageIdx < 2) {
+        goTo(stageIdx + 2);
+        var badge = document.getElementById('teamBadge' + (stageIdx + 2));
+        if (badge) badge.textContent = currentTeamIcon + ' ' + currentTeam;
+        var nextArea = document.getElementById('missionArea' + (stageIdx + 2));
+        if (nextArea) nextArea.innerHTML = loaderHtml(stageIdx + 1);
+        loadMission(stageIdx + 1);
+      } else {
+        finishGame();
+      }
+    }, 2000);
+  } else {
+    /* 오답 — 재도전 허용 */
+    wrongCounts[stageIdx]++;
+    var wc = wrongCounts[stageIdx];
+
+    /* 오답 선택 버튼 잠깐 빨갛게, 0.6초 후 원상복귀 */
+    optBtns.forEach(function(btn) { btn.disabled = true; });
+    var wrongBtn = null;
+    optBtns.forEach(function(btn) {
+      if (btn.getAttribute('data-letter') === chosen) { btn.classList.add('wrong'); wrongBtn = btn; }
+    });
+
+    /* 오답 횟수 업데이트 */
+    var badge = document.getElementById('wrongBadge' + stageIdx);
+    var num = document.getElementById('wrongNum' + stageIdx);
+    if (num) num.textContent = wc;
+    if (badge) { badge.classList.add('wrong-flash'); setTimeout(function(){ badge.classList.remove('wrong-flash'); }, 400); }
+
+    /* 틀렸어요 메시지 */
+    res.innerHTML = '<div class="result-box result-no" style="margin-bottom:8px">'
+      + '<div class="result-hdr">&#10060; 틀렸어요! (' + wc + '번째 오답)</div>'
+      + '<div class="result-body">' + (wc < 3 ? '힌트를 확인하고 다시 도전해봐요!' : '한 번 더 집중해봐요!') + '</div>'
+      + '</div>';
+
+    /* 힌트 단계 공개 */
+    var hints = data.hints || [];
+    var hintArea = document.getElementById('hintArea' + stageIdx);
+    if (hintArea && wc <= 3 && hints[wc - 1]) {
+      var stepClass = ['hs-1','hs-2','hs-3'][wc - 1];
+      var stepLabel = (wc + 1) + '단계';
+      if (wc < 3) {
+        /* 새 힌트 추가 */
+        var newHint = document.createElement('div');
+        newHint.className = 'hint-card';
+        newHint.style.borderColor = ['#FFD43B','#FF8C00','#FF4E8B'][wc - 1];
+        newHint.innerHTML = '<span class="hint-icon">&#128161;</span>'
+          + '<div class="hint-text"><span class="hint-step ' + stepClass + '">힌트 ' + stepLabel + '</span>' + esc(hints[wc] || '') + '</div>';
+        hintArea.appendChild(newHint);
+      }
+    }
+
+    /* 0.6초 후 버튼 다시 활성화 (오답 표시 제거) */
+    setTimeout(function() {
+      optBtns.forEach(function(btn) {
+        btn.disabled = false;
+        btn.classList.remove('wrong');
+      });
+      res.innerHTML = '';
+    }, 900);
+  }
+}
+
+/* ── finish ── */
+function finishGame() {
+  var total = stageRecords[0] + stageRecords[1] + stageRecords[2];
+  var totalWrong = wrongCounts[0] + wrongCounts[1] + wrongCounts[2];
+
+  /* ── 점수 산출 공식 ──
+     기본점수: 3000점 (스테이지당 1000)
+     시간 감점: -2점 / 초
+     오답 감점: -150점 / 회
+     최저 점수:  0점
+  */
+  var BASE = 3000;
+  var timePenalty = total * 2;
+  var wrongPenalty = totalWrong * 150;
+  var finalScore = Math.max(0, BASE - timePenalty - wrongPenalty);
+
+  var grade, gradeClass, gradeMsg;
+  if (finalScore >= 2700)      { grade = 'S  성경 마스터!';  gradeClass = 'grade-s'; gradeMsg = '완벽해요! 오답도 거의 없고 정말 빠르게 탈출했어요 🏆'; }
+  else if (finalScore >= 2200) { grade = 'A  방탈출 고수';   gradeClass = 'grade-a'; gradeMsg = '훌륭해요! 성경을 정말 잘 알고 있네요 👏'; }
+  else if (finalScore >= 1600) { grade = 'B  도전자';        gradeClass = 'grade-b'; gradeMsg = '잘 했어요! 조금 더 연습하면 S등급도 노릴 수 있어요 💪'; }
+  else if (finalScore >= 900)  { grade = 'C  수련생';        gradeClass = 'grade-c'; gradeMsg = '수련회를 통해 성경을 더 깊이 알아가요 📖'; }
+  else                          { grade = 'D  더 공부해요';  gradeClass = 'grade-d'; gradeMsg = '괜찮아요! 성경을 더 읽고 다시 도전해봐요 ✝️'; }
+
+  goTo(4);
+  document.getElementById('winTeamName').textContent = currentTeamIcon + ' ' + currentTeam + ' 탈출 성공!';
+  document.getElementById('winSub').innerHTML = '';
+
+  function chipClass(w) { return w === 0 ? 'ok' : w <= 2 ? 'warn' : 'bad'; }
+  function wrongLabel(w) { return w === 0 ? '오답 없음 &#10024;' : '오답 ' + w + '회'; }
+
+  document.getElementById('scoreBoard').innerHTML =
+    /* 최종 점수 카드 */
+    '<div class="final-score-card">'
+    + '<div class="fs-label">최종 점수</div>'
+    + '<div class="fs-number">' + finalScore + '<span style="font-size:1.2rem;color:#aaa">점</span></div>'
+    + '<div class="fs-grade ' + gradeClass + '">' + grade + '</div>'
+    + '<div class="fs-breakdown">'
+    + '<div class="fsb-row"><span class="fsb-label">기본 점수</span><span class="fsb-val fsb-base">+' + BASE + '</span></div>'
+    + '<div class="fsb-row"><span class="fsb-label">시간 감점 (' + fmtTime(total) + ')</span><span class="fsb-val fsb-minus">-' + timePenalty + '</span></div>'
+    + '<div class="fsb-row"><span class="fsb-label">오답 감점 (' + totalWrong + '회 × 150)</span><span class="fsb-val fsb-minus">-' + wrongPenalty + '</span></div>'
+    + '<div class="fsb-row fsb-total"><span class="fsb-label" style="color:#fff">최종 점수</span><span class="fsb-val" style="color:#FFD43B">' + finalScore + '점</span></div>'
+    + '</div>'
+    + '</div>'
+    + '<div style="font-size:.82rem;font-weight:700;color:#555;text-align:center;margin-bottom:14px;padding:8px;background:#fff;border:2px solid #111;border-radius:8px;box-shadow:2px 2px 0 #111">'
+    + gradeMsg
+    + '</div>'
+    /* 스테이지별 기록 */
+    + '<div class="card">'
+    + '<div class="card-label">&#128202; 스테이지별 기록</div>'
+    + [0,1,2].map(function(i) {
+        var stagePt = Math.max(0, 1000 - stageRecords[i] * 2 - wrongCounts[i] * 150);
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:' + (i<2?'1.5px dashed #ddd':'none') + '">'
+          + '<div>'
+          + '<div style="font-family:\'Black Han Sans\',sans-serif;font-size:.9rem">STAGE ' + (i+1) + '</div>'
+          + '<div style="display:flex;gap:6px;margin-top:4px">'
+          + '<span class="score-chip">&#128338; ' + fmtTime(stageRecords[i]) + '</span>'
+          + '<span class="score-chip ' + chipClass(wrongCounts[i]) + '">' + wrongLabel(wrongCounts[i]) + '</span>'
+          + '</div>'
+          + '</div>'
+          + '<div style="font-family:\'Black Han Sans\',sans-serif;font-size:1.2rem;color:' + (stagePt >= 800 ? '#059669' : stagePt >= 500 ? '#D97706' : '#EF4444') + '">'
+          + stagePt + '<span style="font-size:.6rem;color:#888">점</span>'
+          + '</div>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+}
+
+/* ── reset ── */
+function resetGame() {
+  currentTeam = ''; currentTeamIcon = '';
+  missions = [null, null, null];
+  stageRecords = [0, 0, 0];
+  wrongCounts = [0, 0, 0];
+  stageStartTimes = [0, 0, 0];
+  timers.forEach(function(t, i) { if (t) { clearInterval(t); timers[i] = null; } });
+  document.querySelectorAll('.team-btn').forEach(function(b) {
+    b.className = b.className.replace(/ sel-\w+/g, '');
+  });
+  document.getElementById('startBtn').disabled = true;
+  for (var i = 0; i < 4; i++) {
+    var dot = document.getElementById('sd' + i);
+    if (dot) dot.className = 'stage-dot locked';
+    var line = document.getElementById('sl' + i);
+    if (line) line.className = 'stage-line';
+  }
+  [1,2,3].forEach(function(n) {
+    var a = document.getElementById('missionArea' + n);
+    if (a) a.innerHTML = loaderHtml(n - 1);
+  });
+  goTo(0);
+}
+
+/* ── event listeners ── */
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('backBtn').addEventListener('click', function() {
+    history.back();
+  });
+
+  document.querySelectorAll('.team-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.team-btn').forEach(function(b) {
+        b.className = b.className.replace(/ sel-\w+/g, '');
+      });
+      btn.className += ' ' + btn.getAttribute('data-cls');
+      currentTeam = btn.getAttribute('data-team');
+      currentTeamIcon = btn.querySelector('.t-icon').textContent;
+      document.getElementById('startBtn').disabled = false;
+    });
+  });
+
+  document.getElementById('startBtn').addEventListener('click', function() {
+    if (!currentTeam) return;
+    var badge1 = document.getElementById('teamBadge1');
+    if (badge1) badge1.textContent = currentTeamIcon + ' ' + currentTeam;
+    var a1 = document.getElementById('missionArea1');
+    if (a1) a1.innerHTML = loaderHtml(0);
+    goTo(1);
+    loadMission(0);
+  });
+
+  document.getElementById('playAgainBtn').addEventListener('click', resetGame);
+  document.getElementById('backHomeBtn').addEventListener('click', function() {
+    window.location.href = 'schedule.html';
+  });
+
+  /* API key modal */
+  document.getElementById('keyModalBtn').addEventListener('click', function() {
+    var saved = localStorage.getItem('escape_api_key') || '';
+    document.getElementById('keyInput').value = saved;
+    document.getElementById('keyModal').classList.add('open');
+  });
+  document.getElementById('keySaveBtn').addEventListener('click', function() {
+    var val = document.getElementById('keyInput').value.trim();
+    if (val) localStorage.setItem('escape_api_key', val);
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyCancelBtn').addEventListener('click', function() {
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
