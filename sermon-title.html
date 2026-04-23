@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내가 고르는 설교 제목</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F5F6FA;--white:#fff;--text:#1A1A2E;--sub:#5A5A72;--light:#9999AA;
+  --border:#E8E0D0;--shadow:0 2px 12px rgba(0,0,0,.07);
+  --blue:#2563EB;--blue-l:#EFF6FF;--blue-d:#1E3A8A;
+  --green:#059669;--green-l:#D1FAE5;
+  --amber:#D97706;--amber-l:#FFFBEB;
+  --red:#DC2626;
+}
+html,body{background:var(--bg);min-height:100vh}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;color:var(--text)}
+
+.topbar{background:rgba(14,30,80,.95);padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.back-link{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;font-size:1rem;flex-shrink:0}
+.topbar-title{font-size:.92rem;font-weight:700;color:white}
+.topbar-badge{margin-left:auto;font-size:.65rem;font-weight:700;background:rgba(251,191,36,.25);color:#FBBF24;padding:3px 9px;border-radius:50px;border:1px solid rgba(251,191,36,.35)}
+
+.step-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:14px 20px}
+.step-bar{display:flex;align-items:center;max-width:480px;margin:0 auto}
+.step-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .3s;background:var(--bg);color:var(--light);border:1.5px solid var(--border)}
+.step-dot.active{background:var(--blue);color:white;border-color:var(--blue)}
+.step-dot.done{background:var(--green-l);color:var(--green);border-color:var(--green)}
+.step-line{flex:1;height:2px;background:var(--border);transition:background .3s}
+.step-line.done{background:var(--green)}
+
+.wrap{max-width:480px;margin:0 auto;padding:24px 20px 60px}
+.section{display:none}
+.section.visible{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.phase-label{font-size:.68rem;font-weight:700;color:var(--blue);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.phase-title{font-size:1.15rem;font-weight:900;color:var(--text);margin-bottom:6px;line-height:1.3}
+.phase-sub{font-size:.83rem;color:var(--sub);line-height:1.65;margin-bottom:22px}
+
+input[type=text],textarea{width:100%;padding:13px 15px;border:1.5px solid var(--border);border-radius:12px;font-size:.92rem;font-family:inherit;color:var(--text);background:var(--white);outline:none;transition:.2s;-webkit-appearance:none}
+input[type=text]:focus,textarea:focus{border-color:var(--blue)}
+textarea{resize:vertical;min-height:80px;line-height:1.65}
+
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:.92rem;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s;margin-top:10px;display:block}
+.btn-primary{background:var(--blue);color:white}
+.btn-primary:hover:not(:disabled){background:#1D4ED8}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--sub);margin-top:8px}
+.btn-ghost:hover{background:var(--bg)}
+
+.theme-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-l);color:var(--blue-d);font-size:.78rem;font-weight:700;padding:5px 13px;border-radius:50px;margin-bottom:10px}
+.cards-hint{font-size:.82rem;color:var(--sub);margin-bottom:16px}
+
+.title-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:15px 17px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.title-card:hover{border-color:var(--blue);background:var(--blue-l)}
+.title-card:active{transform:scale(.99)}
+.title-card.chosen{border:2px solid var(--blue);background:var(--blue-l)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:7px}
+.card-title{font-size:.97rem;font-weight:700;color:var(--text);line-height:1.35;flex:1}
+.card-verse{font-size:.63rem;font-weight:700;color:var(--green);background:var(--green-l);padding:2px 8px;border-radius:50px;flex-shrink:0;margin-top:3px;white-space:nowrap}
+.card-desc{font-size:.79rem;color:var(--sub);line-height:1.65;margin-bottom:5px}
+.card-when{font-size:.74rem;color:var(--amber);line-height:1.5}
+
+.chosen-box{background:var(--blue-l);border:1.5px solid #BFDBFE;border-radius:14px;padding:15px 17px;margin-bottom:20px}
+.chosen-lbl{font-size:.65rem;font-weight:700;color:var(--blue);letter-spacing:.06em;margin-bottom:5px}
+.chosen-title{font-size:1.05rem;font-weight:900;color:var(--blue-d);line-height:1.3}
+
+.q-block{margin-bottom:18px}
+.q-num{display:inline-block;font-size:.65rem;font-weight:700;background:var(--bg);color:var(--light);padding:2px 9px;border-radius:50px;margin-bottom:7px;border:1px solid var(--border)}
+.q-text{font-size:.92rem;font-weight:700;color:var(--text);line-height:1.45;margin-bottom:9px}
+
+.ai-block{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.ai-lbl{font-size:.63rem;font-weight:700;color:var(--light);letter-spacing:.08em;margin-bottom:9px;text-transform:uppercase}
+.ai-text{font-size:.88rem;color:var(--text);line-height:1.85;white-space:pre-wrap}
+
+.deep-q-box{background:var(--amber-l);border:1.5px solid #FDE68A;border-radius:14px;padding:15px 17px;margin-bottom:18px}
+.deep-q-lbl{font-size:.63rem;font-weight:700;color:var(--amber);letter-spacing:.06em;margin-bottom:7px;text-transform:uppercase}
+.deep-q-text{font-size:.92rem;font-weight:700;color:#92400E;line-height:1.5}
+
+.final-box{background:var(--blue-l);border:1px solid #BFDBFE;border-radius:16px;padding:20px;margin-bottom:16px}
+.final-cross{font-size:1.6rem;margin-bottom:10px;display:block}
+.final-text{font-size:.88rem;color:var(--blue-d);line-height:1.9;white-space:pre-wrap}
+.final-restart{text-align:center;margin-top:28px}
+.final-restart button{background:none;border:none;font-size:.83rem;color:var(--sub);cursor:pointer;border-bottom:1px solid var(--border);font-family:inherit}
+
+.loader{display:flex;align-items:center;gap:5px;padding:12px 0}
+.loader span{width:7px;height:7px;border-radius:50%;background:var(--light);animation:ld .9s ease-in-out infinite}
+.loader span:nth-child(2){animation-delay:.2s}
+.loader span:nth-child(3){animation-delay:.4s}
+@keyframes ld{0%,80%,100%{opacity:.25;transform:scale(.7)}40%{opacity:1;transform:scale(1)}}
+
+.err-msg{font-size:.8rem;color:var(--red);background:#FEF2F2;border:1px solid #FECACA;border-radius:9px;padding:10px 13px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="schedule.html">&#8592;</a>
+  <span class="topbar-title">내가 고르는 설교 제목</span>
+  <span class="topbar-badge">&#51473;-15</span>
+</div>
+
+<div class="step-wrap">
+  <div class="step-bar" id="stepBar">
+    <div class="step-dot active" id="sd0">1</div>
+    <div class="step-line" id="sl0"></div>
+    <div class="step-dot" id="sd1">2</div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">3</div>
+    <div class="step-line" id="sl2"></div>
+    <div class="step-dot" id="sd3">4</div>
+    <div class="step-line" id="sl3"></div>
+    <div class="step-dot" id="sd4">5</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section visible" id="s0">
+    <div class="phase-label">Step 1 &#183; 주제 입력</div>
+    <div class="phase-title">수련회 주제가 뭐예요?</div>
+    <div class="phase-sub">주제를 입력하면 AI가 그 주제에 맞는 설교 제목 6~8개를 만들어줄게요.</div>
+    <input type="text" id="themeInput" placeholder="예) 하나님의 자녀 / 정체성 / 두려움 / 관계">
+    <button class="btn btn-primary" id="genBtn">설교 제목 생성하기 &#8594;</button>
+    <div id="genErr"></div>
+  </div>
+
+  <div class="section" id="s1">
+    <div class="phase-label">Step 2 &#183; 제목 선택</div>
+    <div class="phase-title">어떤 제목이 마음에 들어요?</div>
+    <div class="phase-sub">각 제목의 설명을 읽어보고 가장 마음에 와닿는 제목을 선택하세요.</div>
+    <span class="theme-badge" id="themeBadge"></span>
+    <p class="cards-hint">제목 카드를 눌러 선택하세요</p>
+    <div id="titleCards"></div>
+    <button class="btn btn-ghost" id="backBtn1">&#8592; 주제 다시 입력</button>
+  </div>
+
+  <div class="section" id="s2">
+    <div class="phase-label">Step 3 &#183; 나의 이야기</div>
+    <div class="phase-title">왜 이 제목을 골랐나요?</div>
+    <div class="phase-sub">솔직하게 써봐요. 정답은 없어요.</div>
+    <div class="chosen-box" id="chosenBox"></div>
+    <div class="q-block">
+      <div class="q-num">질문 1</div>
+      <div class="q-text">왜 이 제목을 선택했나요? 구체적으로 써봐요.</div>
+      <textarea id="a1" placeholder="이 제목이 나에게 와닿은 이유..."></textarea>
+    </div>
+    <div class="q-block">
+      <div class="q-num">질문 2</div>
+      <div class="q-text">이 메시지가 내 삶에서 언제 필요한가요?</div>
+      <textarea id="a2" placeholder="어떤 상황이나 감정과 연결되나요?"></textarea>
+    </div>
+    <div class="q-block">
+      <div class="q-num">질문 3</div>
+      <div class="q-text">지금 이 순간, 하나님이 나에게 뭘 말씀하시는 것 같나요?</div>
+      <textarea id="a3" placeholder="떠오르는 생각을 자유롭게..."></textarea>
+    </div>
+    <button class="btn btn-primary" id="reflectBtn">AI 응답 받기 &#8594;</button>
+    <button class="btn btn-ghost" id="backBtn2">&#8592; 제목 다시 선택</button>
+  </div>
+
+  <div class="section" id="s3">
+    <div class="phase-label">Step 4 &#183; 더 깊이</div>
+    <div class="phase-title">AI의 응답이에요</div>
+    <div class="ai-block">
+      <div class="ai-lbl">인정과 공감</div>
+      <div id="affirmText"><div class="loader"><span></span><span></span><span></span></div></div>
+    </div>
+    <div class="deep-q-box" id="deepQBox" style="display:none">
+      <div class="deep-q-lbl">더 깊은 질문</div>
+      <div class="deep-q-text" id="deepQText"></div>
+    </div>
+    <div id="deepAnswerBlock" style="display:none">
+      <div class="q-block">
+        <textarea id="a4" placeholder="솔직하게 써봐요..." rows="4"></textarea>
+      </div>
+      <button class="btn btn-primary" id="finalBtn">마무리 성찰 받기 &#8594;</button>
+    </div>
+    <button class="btn btn-ghost" id="backBtn3">&#8592; 답변 수정하기</button>
+  </div>
+
+  <div class="section" id="s4">
+    <div class="phase-label">Step 5 &#183; 마무리</div>
+    <div class="phase-title">수련회가 의미있는 시간이 되길 바라요</div>
+    <div class="final-box">
+      <span class="final-cross">&#10013;</span>
+      <div id="finalText"><div class="loader"><span></span><span></span><span></span></div></div>
+    </div>
+    <div class="final-restart">
+      <button id="restartBtn">&#8634; 처음으로 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var CLAUDE_KEY = 'YOUR_API_KEY_HERE';
+
+var SYS = [
+  'You are a Christian teaching assistant helping middle/high school students reflect on a retreat theme through sermon titles.',
+  'Your goal is NOT just to suggest titles, but to guide students to think, choose, and reflect deeply.',
+  '',
+  '[STEP 1] Generate 6-8 sermon title options: max 8 words, easy for teenagers,',
+  'mix styles (emotional/challenging/identity/hope), at least 2 with Bible verse reference.',
+  '[STEP 2] For EACH title: explain core message in 1-2 sentences, give ONE real-life situation.',
+  '[STEP 3] You will receive the student answers to 3 questions.',
+  '[STEP 4] Respond with: a short affirmation (2-3 sentences, NOT praise like 잘했어요),',
+  'then ONE deeper question (start with 만약에 or 정말로). Separate with blank line.',
+  '[STEP 5] After deep answer: warm closing reflection (3-4 sentences), connect to theme, end with short blessing.',
+  'Rules: Simple Korean only. Do NOT write a full sermon.'
+].join('\n');
+
+var theme = '';
+var selectedTitle = '';
+var history = [];
+var titlesData = [];
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function loaderHtml() {
+  return '<div class="loader"><span></span><span></span><span></span></div>';
+}
+
+function goTo(n) {
+  document.querySelectorAll('.section').forEach(function(s, i) {
+    s.classList.toggle('visible', i === n);
+  });
+  for (var i = 0; i < 5; i++) {
+    var dot = document.getElementById('sd' + i);
+    var line = document.getElementById('sl' + i);
+    if (dot) dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    if (line) line.className = 'step-line' + (i < n ? ' done' : '');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function callClaude(msgs) {
+  if (!CLAUDE_KEY || CLAUDE_KEY === 'YOUR_API_KEY_HERE') {
+    return Promise.reject(new Error('API 키가 설정되지 않았습니다.'));
+  }
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CLAUDE_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: SYS,
+      messages: msgs
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.error) throw new Error(d.error.message);
+    return d.content[0].text;
+  });
+}
+
+function generate() {
+  theme = document.getElementById('themeInput').value.trim();
+  if (!theme) {
+    document.getElementById('genErr').innerHTML = '<div class="err-msg">주제를 입력해주세요.</div>';
+    return;
+  }
+  document.getElementById('genErr').innerHTML = '';
+  var btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.textContent = '생성 중...';
+
+  var prompt = '수련회 주제: "' + theme + '"\n\n'
+    + 'STEP 1과 2를 수행해줘. JSON으로만 답해줘 (마크다운 없이):\n'
+    + '{"titles":[{"title":"제목","verse":"성경구절 또는 null","desc":"핵심 메시지 1-2문장","when":"실생활 상황 1문장"}]}';
+
+  callClaude([{ role: 'user', content: prompt }])
+    .then(function(text) {
+      var cleaned = text.replace(/```json|```/g, '').trim();
+      var data = JSON.parse(cleaned);
+      titlesData = data.titles;
+      history = [
+        { role: 'user', content: prompt },
+        { role: 'assistant', content: text }
+      ];
+      renderCards(data.titles);
+      goTo(1);
+    })
+    .catch(function(e) {
+      document.getElementById('genErr').innerHTML =
+        '<div class="err-msg">생성 실패: ' + esc(e.message) + '</div>';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = '설교 제목 생성하기 →';
+    });
+}
+
+function renderCards(titles) {
+  document.getElementById('themeBadge').textContent = theme;
+  var html = '';
+  for (var i = 0; i < titles.length; i++) {
+    var t = titles[i];
+    var v = (t.verse && t.verse !== 'null')
+      ? '<span class="card-verse">' + esc(t.verse) + '</span>' : '';
+    html += '<div class="title-card" data-idx="' + i + '">'
+      + '<div class="card-top"><div class="card-title">' + esc(t.title) + '</div>' + v + '</div>'
+      + '<div class="card-desc">' + esc(t.desc) + '</div>'
+      + '<div class="card-when">&#128161; ' + esc(t.when) + '</div>'
+      + '</div>';
+  }
+  var container = document.getElementById('titleCards');
+  container.innerHTML = html;
+  container.querySelectorAll('.title-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      selectTitle(parseInt(this.getAttribute('data-idx')), this);
+    });
+  });
+}
+
+function selectTitle(idx, el) {
+  document.querySelectorAll('.title-card').forEach(function(c) {
+    c.classList.remove('chosen');
+  });
+  el.classList.add('chosen');
+  selectedTitle = titlesData[idx].title;
+  setTimeout(function() {
+    document.getElementById('chosenBox').innerHTML =
+      '<div class="chosen-lbl">선택한 제목</div>'
+      + '<div class="chosen-title">\u201c' + esc(selectedTitle) + '\u201d</div>';
+    document.getElementById('a1').value = '';
+    document.getElementById('a2').value = '';
+    document.getElementById('a3').value = '';
+    goTo(2);
+  }, 180);
+}
+
+function reflect() {
+  var a1 = document.getElementById('a1').value.trim();
+  var a2 = document.getElementById('a2').value.trim();
+  var a3 = document.getElementById('a3').value.trim();
+  var btn = document.getElementById('reflectBtn');
+  btn.disabled = true;
+  btn.textContent = '분석 중...';
+
+  goTo(3);
+  document.getElementById('affirmText').innerHTML = loaderHtml();
+  document.getElementById('deepQBox').style.display = 'none';
+  document.getElementById('deepAnswerBlock').style.display = 'none';
+
+  var msg = '선택한 제목: "' + selectedTitle + '"\n\n'
+    + '1. 왜 이 제목을 선택했나요? -> "' + (a1 || '(빈칸)') + '"\n'
+    + '2. 이 메시지가 언제 필요한가요? -> "' + (a2 || '(빈칸)') + '"\n'
+    + '3. 하나님이 나에게 뭘 말씀하시는 것 같나요? -> "' + (a3 || '(빈칸)') + '"';
+  history.push({ role: 'user', content: msg });
+
+  callClaude(history)
+    .then(function(text) {
+      history.push({ role: 'assistant', content: text });
+      var affirm = text;
+      var deepQ = '';
+      var paras = text.split(/\n\n+/);
+      for (var i = 0; i < paras.length; i++) {
+        if (/만약에|정말로|\?$/.test(paras[i].trim())) {
+          affirm = paras.slice(0, i).join('\n\n').trim() || text;
+          deepQ = paras[i].trim();
+          break;
+        }
+      }
+      if (!deepQ) {
+        var lines = text.split('\n').filter(function(l) { return l.trim(); });
+        for (var j = 0; j < lines.length; j++) {
+          if (/만약에|정말로|\?/.test(lines[j])) {
+            affirm = lines.slice(0, j).join('\n').trim() || text;
+            deepQ = lines[j];
+            break;
+          }
+        }
+      }
+      document.getElementById('affirmText').innerHTML =
+        '<div class="ai-text">' + esc(affirm) + '</div>';
+      if (deepQ) {
+        document.getElementById('deepQText').textContent = deepQ;
+        document.getElementById('deepQBox').style.display = 'block';
+        document.getElementById('deepAnswerBlock').style.display = 'block';
+      }
+    })
+    .catch(function(e) {
+      document.getElementById('affirmText').innerHTML =
+        '<div class="err-msg">오류: ' + esc(e.message) + '</div>';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = 'AI 응답 받기 →';
+    });
+}
+
+function finalReflect() {
+  var a4 = document.getElementById('a4').value.trim();
+  var btn = document.getElementById('finalBtn');
+  btn.disabled = true;
+  btn.textContent = '마무리 중...';
+
+  goTo(4);
+  document.getElementById('finalText').innerHTML = loaderHtml();
+
+  history.push({ role: 'user', content: '더 깊은 질문에 대한 답: "' + (a4 || '(빈칸)') + '"' });
+
+  callClaude(history)
+    .then(function(text) {
+      document.getElementById('finalText').innerHTML =
+        '<div class="final-text">' + esc(text) + '</div>';
+    })
+    .catch(function(e) {
+      document.getElementById('finalText').innerHTML =
+        '<div class="err-msg">오류: ' + esc(e.message) + '</div>';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.textContent = '마무리 성찰 받기 →';
+    });
+}
+
+function restart() {
+  theme = ''; selectedTitle = ''; history = []; titlesData = [];
+  ['themeInput','a1','a2','a3','a4'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('genErr').innerHTML = '';
+  goTo(0);
+  setTimeout(function() {
+    document.getElementById('themeInput').focus();
+  }, 300);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('genBtn').addEventListener('click', generate);
+  document.getElementById('themeInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') generate();
+  });
+  document.getElementById('reflectBtn').addEventListener('click', reflect);
+  document.getElementById('finalBtn').addEventListener('click', finalReflect);
+  document.getElementById('restartBtn').addEventListener('click', restart);
+  document.getElementById('backBtn1').addEventListener('click', function() { goTo(0); });
+  document.getElementById('backBtn2').addEventListener('click', function() { goTo(1); });
+  document.getElementById('backBtn3').addEventListener('click', function() { goTo(2); });
+});
+</script>
+</body>
+</html>
