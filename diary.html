@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>하나님과 함께한 하루 일기</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#f0f0f0;font-family:'Noto Sans KR',sans-serif;color:#111}
+
+/* ── topbar ── */
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:#fff;border-bottom:3px solid #111}
+.back-btn{width:36px;height:36px;border-radius:8px;background:#f0f0f0;border:2px solid #111;font-size:1rem;cursor:pointer;font-family:inherit;font-weight:900;flex-shrink:0}
+.tag{font-size:.65rem;font-weight:900;background:#2563EB;color:white;padding:3px 8px;border-radius:4px;border:2px solid #111}
+.topbar-title{font-size:.88rem;font-weight:900;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:#f0f0f0;border:2px solid #111;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:#666}
+
+/* ── hero ── */
+.hero{background:linear-gradient(135deg,#0F172A,#1E3A8A 50%,#2563EB);padding:22px 20px 18px;text-align:center;border-bottom:3px solid #111;position:relative;overflow:hidden}
+.hero::before{content:'✏️📖🙏✝️💙🌙📝💫';position:absolute;top:5px;left:0;right:0;font-size:1rem;letter-spacing:4px;opacity:.15;white-space:nowrap}
+.hero-badge{display:inline-block;background:#fff;border:2px solid #111;border-radius:4px;font-size:.65rem;font-weight:900;padding:3px 10px;margin-bottom:8px;color:#2563EB;box-shadow:2px 2px 0 #111}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.3rem,5vw,1.8rem);color:#fff;line-height:1.2;margin-bottom:3px;text-shadow:2px 2px 0 rgba(0,0,0,.2)}
+.hero h1 span{color:#93C5FD}
+.hero p{font-size:.76rem;color:rgba(255,255,255,.8);line-height:1.6}
+
+/* ── step bar ── */
+.step-wrap{background:#fff;border-bottom:3px solid #111;padding:12px 20px}
+.step-bar{display:flex;align-items:center;max-width:480px;margin:0 auto}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0;border:2.5px solid #111;background:#f0f0f0;color:#aaa;transition:all .3s}
+.step-dot.active{background:#2563EB;color:#fff;border-color:#111;box-shadow:2px 2px 0 #111}
+.step-dot.done{background:#FFD43B;color:#111;border-color:#111}
+.step-line{flex:1;height:3px;background:#ddd;transition:background .4s}
+.step-line.done{background:#FFD43B}
+
+/* ── wrap ── */
+.wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px}
+
+/* ── section ── */
+.section{display:none}
+.section.visible{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── card ── */
+.card{background:#fff;border:3px solid #111;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:4px 4px 0 #111}
+.card-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;color:#2563EB;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-label::after{content:'';flex:1;height:2px;background:#111}
+
+/* ── date & mood ── */
+.date-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.date-display{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#111;background:#f0f0f0;border:2px solid #111;border-radius:8px;padding:8px 14px;flex:1}
+.mood-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.mood-btn{padding:7px 12px;border:2px solid #111;border-radius:8px;font-size:.85rem;cursor:pointer;font-family:inherit;background:#f0f0f0;transition:.15s;font-weight:700}
+.mood-btn:hover{transform:translate(-1px,-1px);box-shadow:2px 2px 0 #111}
+.mood-btn.sel{border-color:#2563EB;box-shadow:3px 3px 0 #111}
+.mood-btn.sel.m-joy{background:#FEF3C7;border-color:#F59E0B}
+.mood-btn.sel.m-peace{background:#D1FAE5;border-color:#059669}
+.mood-btn.sel.m-sad{background:#DBEAFE;border-color:#2563EB}
+.mood-btn.sel.m-anxious{background:#FEE2E2;border-color:#EF4444}
+.mood-btn.sel.m-thank{background:#F3E8FF;border-color:#7C3AED}
+.mood-btn.sel.m-lonely{background:#E0F2FE;border-color:#0284C7}
+
+/* ── textarea ── */
+.diary-area{width:100%;padding:14px;border:2.5px solid #111;border-radius:10px;font-size:.92rem;font-family:'Noto Sans KR',sans-serif;background:#FFFDF7;font-weight:500;line-height:1.85;resize:vertical;min-height:200px;outline:none;transition:.2s;-webkit-appearance:none}
+.diary-area:focus{border-color:#2563EB;background:#fff}
+.diary-area::placeholder{color:#bbb;font-weight:400;line-height:1.7}
+.char-count{text-align:right;font-size:.7rem;color:#aaa;margin-top:4px;font-weight:600}
+
+/* ── guide questions ── */
+.guide-card{background:#EFF6FF;border:2.5px solid #2563EB;border-radius:10px;padding:12px 14px;margin-bottom:12px;box-shadow:2px 2px 0 #2563EB}
+.guide-title{font-size:.68rem;font-weight:900;color:#2563EB;letter-spacing:.06em;margin-bottom:8px;text-transform:uppercase}
+.guide-q{font-size:.82rem;font-weight:700;color:#1E3A8A;line-height:1.65;padding:4px 0;border-bottom:1px dashed #BFDBFE}
+.guide-q:last-child{border-bottom:none;padding-bottom:0}
+.guide-q::before{content:'Q. ';color:#2563EB;font-weight:900}
+
+/* ── buttons ── */
+.gen-btn{width:100%;padding:15px;color:#fff;border:3px solid #111;border-radius:10px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:4px 4px 0 #111;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;background:#2563EB;margin-top:10px}
+.gen-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111}
+.gen-btn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #111}
+.ghost-btn{width:100%;padding:12px;border:2.5px solid #111;border-radius:10px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;background:#f0f0f0;box-shadow:3px 3px 0 #111;transition:.15s;margin-top:10px}
+.ghost-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #111}
+
+/* ── AI feedback ── */
+.fb-section{margin-bottom:16px}
+.fb-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fb-icon{font-size:1.4rem}
+.fb-title{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#111}
+.fb-card{background:#fff;border:2.5px solid #111;border-radius:12px;padding:14px 16px;box-shadow:3px 3px 0 #111;font-size:.88rem;line-height:1.85;color:#222;white-space:pre-wrap}
+.fb-card.missing{border-color:#F59E0B;box-shadow:3px 3px 0 #F59E0B;background:#FFFBEB}
+.fb-card.relationship{border-color:#7C3AED;box-shadow:3px 3px 0 #7C3AED;background:#F5F3FF}
+.fb-card.encourage{border-color:#059669;box-shadow:3px 3px 0 #059669;background:#ECFDF5}
+.fb-badge{display:inline-block;font-size:.62rem;font-weight:900;padding:2px 8px;border-radius:4px;border:2px solid #111;margin-bottom:8px}
+.badge-amber{background:#FEF3C7;color:#B45309}
+.badge-purple{background:#EDE9FE;color:#5B21B6}
+.badge-green{background:#D1FAE5;color:#065F46}
+
+/* ── score card ── */
+.score-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.score-card{background:#fff;border:2.5px solid #111;border-radius:10px;padding:10px 8px;text-align:center;box-shadow:2px 2px 0 #111}
+.score-num{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;line-height:1;margin-bottom:4px}
+.score-lbl{font-size:.62rem;font-weight:700;color:#888}
+
+/* ── loader ── */
+.loading-box{text-align:center;padding:30px 20px}
+.loading-icon{font-size:2.5rem;display:inline-block;animation:spin 1.2s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.loading-txt{font-weight:900;font-size:.95rem;margin-top:12px}
+.loading-sub{font-size:.75rem;color:#888;margin-top:4px}
+
+/* ── err ── */
+.err-box{background:#FEE2E2;border:2.5px solid #EF4444;border-radius:10px;padding:12px;font-size:.82rem;font-weight:700;color:#991B1B;margin:10px 0;box-shadow:2px 2px 0 #EF4444}
+
+/* ── modal ── */
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+.key-modal.open{display:flex}
+.key-box{background:#fff;border:3px solid #111;border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:6px 6px 0 #111}
+.key-box h3{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:#888;margin-bottom:14px;line-height:1.6}
+.inp{width:100%;padding:11px 14px;border:2.5px solid #111;border-radius:8px;font-size:.88rem;font-family:inherit;background:#f0f0f0;font-weight:600;outline:none;-webkit-appearance:none}
+.inp:focus{border-color:#2563EB;background:#fff}
+.key-save{width:100%;padding:12px;background:#2563EB;color:#fff;border:2px solid #111;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem;margin-top:8px;box-shadow:3px 3px 0 #111}
+.key-cancel{width:100%;padding:10px;background:#f0f0f0;border:2px solid #111;border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:6px}
+
+.divider{height:3px;background:#111;border-radius:2px;margin:20px 0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" id="backBtn">&#8592;</button>
+  <span class="tag">&#51473;-5</span>
+  <span class="topbar-title">&#9999;&#65039; 하나님과 함께한 하루 일기</span>
+  <button class="key-btn" id="keyModalBtn">&#128273; API키</button>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">&#128339; 1일차 저녁 · 개인 성찰</div>
+  <h1>오늘 하루를<br><span>하나님 앞에 꺼내봐요</span></h1>
+  <p>일기를 쓰면 AI가 빠진 부분을 채우고<br>하나님과의 관계를 따뜻하게 돌아봐요</p>
+</div>
+
+<div class="step-wrap">
+  <div class="step-bar">
+    <div class="step-dot active" id="sd0">1</div>
+    <div class="step-line" id="sl0"></div>
+    <div class="step-dot" id="sd1">2</div>
+    <div class="step-line" id="sl1"></div>
+    <div class="step-dot" id="sd2">&#128591;</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- STEP 1: 일기 작성 -->
+  <div class="section visible" id="s0">
+    <div class="card">
+      <div class="card-label">&#128197; 오늘 날짜</div>
+      <div class="date-row">
+        <div class="date-display" id="dateDisplay"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">&#128149; 지금 내 감정</div>
+      <div class="mood-grid">
+        <button class="mood-btn m-joy" data-mood="기쁨 &#128515;">&#128515; 기쁨</button>
+        <button class="mood-btn m-peace" data-mood="평안 &#129392;">&#129392; 평안</button>
+        <button class="mood-btn m-thank" data-mood="감사 &#128591;">&#128591; 감사</button>
+        <button class="mood-btn m-sad" data-mood="슬픔 &#128531;">&#128531; 슬픔</button>
+        <button class="mood-btn m-anxious" data-mood="불안 &#128552;">&#128552; 불안</button>
+        <button class="mood-btn m-lonely" data-mood="외로움 &#129402;">&#129402; 외로움</button>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-title">&#128221; 이런 것들을 써봐요</div>
+      <div class="guide-q">오늘 수련회에서 가장 기억에 남는 순간은?</div>
+      <div class="guide-q">언제 하나님이 가장 가깝게 느껴졌어?</div>
+      <div class="guide-q">오늘 힘들었거나 어색했던 것이 있었다면?</div>
+      <div class="guide-q">내일 하나님께 도움을 구하고 싶은 것은?</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">&#9999;&#65039; 오늘의 일기</div>
+      <textarea class="diary-area" id="diaryText" placeholder="오늘 하루를 자유롭게 써봐요. 잘 쓰지 않아도 괜찮아요. 솔직한 마음이 제일 좋아요 &#128578;
+
+예) 오늘 수련회 첫날이었는데 처음엔 너무 어색해서..."></textarea>
+      <div class="char-count" id="charCount">0자</div>
+    </div>
+
+    <button class="gen-btn" id="analyzeBtn">&#129302; AI 피드백 받기</button>
+    <div id="step1Err"></div>
+  </div>
+
+  <!-- STEP 2: AI 분석 중 / 결과 -->
+  <div class="section" id="s1">
+    <div id="loadingArea" class="loading-box">
+      <div class="loading-icon">&#9999;&#65039;</div>
+      <div class="loading-txt">일기를 읽고 있어요...</div>
+      <div class="loading-sub">하나님의 손길을 함께 찾아볼게요</div>
+    </div>
+    <div id="resultArea" style="display:none">
+      <div class="fb-section">
+        <div class="fb-header"><span class="fb-icon">&#128161;</span><span class="fb-title">빠진 부분 · 더 생각해볼 것</span></div>
+        <div class="fb-card missing">
+          <span class="fb-badge badge-amber">놓친 은혜</span><br>
+          <div id="fbMissing"></div>
+        </div>
+      </div>
+      <div class="fb-section">
+        <div class="fb-header"><span class="fb-icon">&#10013;&#65039;</span><span class="fb-title">하나님과의 관계 돌아보기</span></div>
+        <div class="fb-card relationship">
+          <span class="fb-badge badge-purple">신앙 점검</span><br>
+          <div id="fbRelationship"></div>
+        </div>
+      </div>
+      <div class="fb-section">
+        <div class="fb-header"><span class="fb-icon">&#128149;</span><span class="fb-title">따뜻한 격려</span></div>
+        <div class="fb-card encourage">
+          <span class="fb-badge badge-green">하나님의 마음</span><br>
+          <div id="fbEncourage"></div>
+        </div>
+      </div>
+      <button class="ghost-btn" id="toStep3Btn">&#128591; 기도로 마무리하기 &#8594;</button>
+      <button class="ghost-btn" id="rewriteBtn">&#8592; 일기 다시 쓰기</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: 기도 마무리 -->
+  <div class="section" id="s2">
+    <div class="card">
+      <div class="card-label">&#128591; 오늘의 기도 제목</div>
+      <textarea class="diary-area" id="prayerText" placeholder="AI 피드백을 읽고 오늘 하나님께 드리고 싶은 기도를 써봐요.
+
+감사한 것, 도움이 필요한 것, 고백하고 싶은 것 모두 괜찮아요." style="min-height:140px"></textarea>
+    </div>
+    <button class="gen-btn" id="prayerBtn">&#128591; 기도문 다듬어주기</button>
+    <div id="prayerResult" style="display:none">
+      <div class="divider"></div>
+      <div class="fb-section">
+        <div class="fb-header"><span class="fb-icon">&#128591;</span><span class="fb-title">AI가 다듬은 기도문</span></div>
+        <div class="fb-card encourage">
+          <div id="fbPrayer"></div>
+        </div>
+      </div>
+    </div>
+    <button class="ghost-btn" id="restartBtn">&#8634; 새로 작성하기</button>
+  </div>
+
+</div>
+
+<!-- API 키 모달 -->
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>&#128273; API 키 설정</h3>
+    <p>Anthropic API 키를 입력하면<br>AI 피드백이 작동해요.</p>
+    <input class="inp" id="keyInput" type="password" placeholder="sk-ant-api03-...">
+    <button class="key-save" id="keySaveBtn">저장하기</button>
+    <button class="key-cancel" id="keyCancelBtn">취소</button>
+  </div>
+</div>
+
+<script>
+var CLAUDE_KEY = 'YOUR_API_KEY_HERE';
+var selectedMood = '';
+
+var SYS = '너는 교회 수련회에 참가한 중학생의 하루 일기를 읽고 신앙적 피드백을 주는 AI야.\n'
+  + '학생이 오늘 하루를 기록한 일기를 읽고 다음 세 가지를 해줘:\n'
+  + '1. 빠진 부분: 일기에서 미처 쓰지 못한 감사, 은혜, 하나님의 손길 등 더 생각해볼 것\n'
+  + '2. 하나님과의 관계: 오늘 하루 하나님과 학생의 관계에서 발견되는 것 (가까워진 순간, 놓친 순간 등)\n'
+  + '3. 따뜻한 격려: 중학생에게 하나님의 마음으로 전하는 짧고 따뜻한 격려 (2-3문장)\n\n'
+  + '규칙: 설교하지 말고, 친한 선배처럼 자연스럽게. 중학생 눈높이로. 한국어로.';
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function getKey() {
+  return localStorage.getItem('diary_api_key') || CLAUDE_KEY;
+}
+
+function callClaude(msgs) {
+  var key = getKey();
+  if (!key || key === 'YOUR_API_KEY_HERE') {
+    return Promise.reject(new Error('API 키를 설정해주세요. 🔑 버튼을 눌러주세요.'));
+  }
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1200, system: SYS, messages: msgs })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.error) throw new Error(d.error.message);
+    return d.content[0].text;
+  });
+}
+
+function goTo(n) {
+  document.querySelectorAll('.section').forEach(function(s, i) {
+    s.classList.toggle('visible', i === n);
+  });
+  for (var i = 0; i < 3; i++) {
+    var dot = document.getElementById('sd' + i);
+    var line = document.getElementById('sl' + i);
+    if (dot) dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    if (line && i < 2) line.className = 'step-line' + (i < n ? ' done' : '');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function analyze() {
+  var diary = document.getElementById('diaryText').value.trim();
+  if (diary.length < 20) {
+    document.getElementById('step1Err').innerHTML = '<div class="err-box">일기를 조금 더 써봐요! (최소 20자)</div>';
+    return;
+  }
+  document.getElementById('step1Err').innerHTML = '';
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('analyzeBtn').textContent = '분석 중...';
+
+  goTo(1);
+  document.getElementById('loadingArea').style.display = 'block';
+  document.getElementById('resultArea').style.display = 'none';
+
+  var moodStr = selectedMood ? '\n오늘 감정: ' + selectedMood : '';
+  var prompt = '학생의 하루 일기야:' + moodStr + '\n\n"' + diary + '"\n\n'
+    + '위 일기를 읽고 아래 형식으로만 답해줘:\n'
+    + '[MISSING] 빠진 부분/더 생각해볼 것 (2-3문장)\n'
+    + '[RELATIONSHIP] 하나님과의 관계 돌아보기 (2-3문장)\n'
+    + '[ENCOURAGE] 따뜻한 격려 (2-3문장)';
+
+  callClaude([{ role: 'user', content: prompt }])
+    .then(function(text) {
+      function extract(tag) {
+        var m = text.match(new RegExp('\\[' + tag + '\\]([\\s\\S]*?)(?=\\[|$)'));
+        return m ? m[1].trim() : '';
+      }
+      document.getElementById('fbMissing').textContent = extract('MISSING');
+      document.getElementById('fbRelationship').textContent = extract('RELATIONSHIP');
+      document.getElementById('fbEncourage').textContent = extract('ENCOURAGE');
+      document.getElementById('loadingArea').style.display = 'none';
+      document.getElementById('resultArea').style.display = 'block';
+    })
+    .catch(function(e) {
+      document.getElementById('loadingArea').innerHTML = '<div class="err-box">오류: ' + esc(e.message) + '</div>'
+        + '<button class="gen-btn" id="retryBtn">다시 시도</button>';
+      document.getElementById('retryBtn').addEventListener('click', function() {
+        goTo(0);
+        document.getElementById('analyzeBtn').disabled = false;
+        document.getElementById('analyzeBtn').innerHTML = '&#129302; AI 피드백 받기';
+      });
+    });
+}
+
+function refinePrayer() {
+  var prayer = document.getElementById('prayerText').value.trim();
+  if (!prayer) { document.getElementById('prayerText').focus(); return; }
+
+  var btn = document.getElementById('prayerBtn');
+  btn.disabled = true; btn.textContent = '다듬는 중...';
+
+  var prompt = '중학생이 쓴 기도 내용: "' + prayer + '"\n\n'
+    + '이 내용을 바탕으로 하나님께 직접 말하는 기도문으로 다듬어줘.\n'
+    + '솔직하고 자연스럽게. 너무 형식적이지 않게. 4-5문장으로.';
+
+  callClaude([{ role: 'user', content: prompt }])
+    .then(function(text) {
+      document.getElementById('fbPrayer').textContent = text;
+      document.getElementById('prayerResult').style.display = 'block';
+      btn.disabled = false; btn.textContent = '✝️ 기도문 다듬어주기';
+    })
+    .catch(function(e) {
+      btn.disabled = false; btn.textContent = '✝️ 기도문 다듬어주기';
+    });
+}
+
+function restart() {
+  document.getElementById('diaryText').value = '';
+  document.getElementById('prayerText').value = '';
+  document.getElementById('prayerResult').style.display = 'none';
+  document.getElementById('charCount').textContent = '0자';
+  selectedMood = '';
+  document.querySelectorAll('.mood-btn').forEach(function(b) { b.classList.remove('sel'); });
+  document.getElementById('analyzeBtn').disabled = false;
+  document.getElementById('analyzeBtn').innerHTML = '&#129302; AI 피드백 받기';
+  goTo(0);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // 날짜 표시
+  var now = new Date();
+  var days = ['일','월','화','수','목','금','토'];
+  document.getElementById('dateDisplay').textContent =
+    now.getFullYear() + '년 ' + (now.getMonth()+1) + '월 ' + now.getDate() + '일 (' + days[now.getDay()] + ')';
+
+  // 뒤로 가기
+  document.getElementById('backBtn').addEventListener('click', function() { history.back(); });
+
+  // 감정 선택
+  document.querySelectorAll('.mood-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.mood-btn').forEach(function(b) { b.classList.remove('sel'); });
+      btn.classList.add('sel');
+      selectedMood = btn.getAttribute('data-mood');
+    });
+  });
+
+  // 글자 수
+  document.getElementById('diaryText').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length + '자';
+  });
+
+  // AI 피드백
+  document.getElementById('analyzeBtn').addEventListener('click', analyze);
+
+  // 결과 → 기도
+  document.getElementById('toStep3Btn').addEventListener('click', function() { goTo(2); });
+  document.getElementById('rewriteBtn').addEventListener('click', function() {
+    goTo(0);
+    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('analyzeBtn').innerHTML = '&#129302; AI 피드백 받기';
+  });
+
+  // 기도문 다듬기
+  document.getElementById('prayerBtn').addEventListener('click', refinePrayer);
+
+  // 다시 작성
+  document.getElementById('restartBtn').addEventListener('click', restart);
+
+  // API 키 모달
+  document.getElementById('keyModalBtn').addEventListener('click', function() {
+    document.getElementById('keyInput').value = localStorage.getItem('diary_api_key') || '';
+    document.getElementById('keyModal').classList.add('open');
+  });
+  document.getElementById('keySaveBtn').addEventListener('click', function() {
+    var val = document.getElementById('keyInput').value.trim();
+    if (val) localStorage.setItem('diary_api_key', val);
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyCancelBtn').addEventListener('click', function() {
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
