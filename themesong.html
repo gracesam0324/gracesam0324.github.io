@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>테마송 공모전</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0E0E0E;
+  --s1:#161616;
+  --s2:#1E1E1E;
+  --s3:#272727;
+  --gold:#E8C547;
+  --gold-dim:rgba(232,197,71,.12);
+  --gold-border:rgba(232,197,71,.22);
+  --white:#F4F4F4;
+  --mid:#999;
+  --dim:#555;
+  --border:rgba(255,255,255,.07);
+  --red:#E05555;
+}
+html,body{min-height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--white)}
+
+/* ─── 탑바 ─── */
+.bar{height:52px;display:flex;align-items:center;padding:0 18px;gap:12px;position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(14,14,14,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.back{width:34px;height:34px;border-radius:9px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--white);font-size:.9rem;flex-shrink:0;transition:.15s}
+.back:hover{background:var(--s3)}
+.bar-mid{flex:1;text-align:center}
+.bar-title{font-size:.88rem;font-weight:700;color:var(--white)}
+.bar-sub{font-size:.62rem;color:var(--mid);margin-top:1px}
+.admin-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0}
+
+/* 프로그레스 */
+.pgtrack{position:fixed;top:52px;left:0;right:0;height:2px;background:rgba(255,255,255,.05);z-index:199}
+.pgfill{height:100%;background:var(--gold);transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* ─── 슬라이드 시스템 ─── */
+.wrap{padding-top:54px;overflow:hidden}
+.deck{display:flex;transition:transform .42s cubic-bezier(.4,0,.2,1)}
+.screen{min-width:100vw;min-height:calc(100vh - 54px);display:flex;flex-direction:column}
+.inner{max-width:480px;margin:0 auto;padding:32px 20px 88px;flex:1;display:flex;flex-direction:column;width:100%}
+
+/* ─── 타이포 ─── */
+.eyebrow{font-size:.68rem;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.headline{font-family:'Black Han Sans',sans-serif;font-size:1.75rem;line-height:1.2;color:var(--white);margin-bottom:10px}
+.headline em{color:var(--gold);font-style:normal}
+.body-text{font-size:.83rem;color:var(--mid);line-height:1.85;margin-bottom:28px}
+
+/* ─── 폼 ─── */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.07em;color:var(--dim);text-transform:uppercase;margin-bottom:7px}
+.field input,.field textarea,.field select{
+  width:100%;padding:14px 16px;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:11px;font-size:.9rem;
+  font-family:'Noto Sans KR',sans-serif;color:var(--white);
+  outline:none;transition:.18s;-webkit-appearance:none
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold-border);background:var(--s2)}
+.field select option{background:#1E1E1E}
+.field textarea{resize:none;line-height:1.75;min-height:160px}
+.counter{text-align:right;font-size:.65rem;color:var(--dim);margin-top:5px}
+
+/* 팀 선택 칩 */
+.team-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.tchip{padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:var(--s1);font-size:.8rem;font-weight:500;color:var(--mid);cursor:pointer;transition:.15s;font-family:'Noto Sans KR',sans-serif}
+.tchip:hover{border-color:rgba(232,197,71,.35);color:var(--gold)}
+.tchip.on{background:var(--gold-dim);border-color:var(--gold-border);color:var(--gold)}
+
+/* ─── 버튼 ─── */
+.btn{width:100%;padding:15px;border-radius:11px;font-size:.93rem;font-weight:700;font-family:'Noto Sans KR',sans-serif;border:none;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:auto}
+.btn-primary{background:var(--gold);color:#0E0E0E}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;filter:none}
+.btn-ghost{background:var(--s2);border:1px solid var(--border);color:var(--mid)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.15);color:var(--white)}
+.btn-ghost:disabled{opacity:.35;cursor:not-allowed}
+.btn-back{width:100%;padding:13px;border-radius:11px;background:none;border:none;font-size:.8rem;color:var(--dim);cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:10px;transition:.15s}
+.btn-back:hover{color:var(--mid)}
+
+/* ─── AI 블록 ─── */
+.ai-block{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.ai-block-head{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(232,197,71,.6);flex-shrink:0}
+.ai-block-title{font-size:.8rem;font-weight:700;color:var(--white)}
+.ai-block-desc{font-size:.77rem;color:var(--mid);line-height:1.7;margin-bottom:14px}
+.ai-out{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.out-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.lyrics-out{background:var(--s2);border-radius:9px;padding:14px 15px;font-size:.82rem;line-height:1.85;color:var(--white);white-space:pre-wrap;max-height:180px;overflow-y:auto}
+.lyrics-out::-webkit-scrollbar{width:3px}
+.lyrics-out::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+.suno-out{background:var(--s2);border-radius:9px;padding:14px 15px;font-size:.77rem;line-height:1.75;color:var(--mid);margin-top:10px;position:relative}
+.copy-chip{position:absolute;top:10px;right:10px;padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:var(--s3);color:var(--mid);font-size:.62rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.copy-chip:hover{color:var(--white);border-color:rgba(255,255,255,.15)}
+.copy-chip.ok{color:var(--gold);border-color:var(--gold-border)}
+.use-ai-btn{display:flex;align-items:center;gap:5px;margin-top:12px;padding:9px 14px;border-radius:8px;border:1px solid var(--border);background:none;color:var(--mid);font-size:.75rem;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.use-ai-btn:hover{border-color:rgba(255,255,255,.15);color:var(--white)}
+
+/* 로딩 스피너 */
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(14,14,14,.3);border-top-color:#0E0E0E;border-radius:50%;animation:sp .6s linear infinite;flex-shrink:0}
+.spin-gold{border:2px solid rgba(232,197,71,.2);border-top-color:var(--gold)}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ─── 확인 카드 ─── */
+.confirm-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.confirm-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+.confirm-row:last-child{border-bottom:none;padding-bottom:0}
+.confirm-key{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--dim);text-transform:uppercase;padding-top:1px}
+.confirm-val{font-size:.85rem;color:var(--white);text-align:right;max-width:65%;line-height:1.6}
+.confirm-lyrics{background:var(--s2);border-radius:9px;padding:13px;font-size:.8rem;line-height:1.8;color:var(--white);white-space:pre-wrap;max-height:120px;overflow:hidden;position:relative;margin-top:14px}
+.confirm-lyrics::after{content:'';position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,var(--s2))}
+
+/* ─── 투표 카드 ─── */
+.vote-list{display:flex;flex-direction:column;gap:10px}
+.vcard{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:.15s}
+.vcard.top{border-color:var(--gold-border)}
+.vcard-head{padding:16px 16px 12px;display:flex;align-items:flex-start;gap:11px}
+.rank-num{width:28px;height:28px;border-radius:7px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900;color:var(--dim);flex-shrink:0;font-family:'Black Han Sans',sans-serif;margin-top:1px}
+.rank-num.g{background:var(--gold-dim);color:var(--gold)}
+.vcard-info{flex:1}
+.vcard-name{font-size:.92rem;font-weight:700;color:var(--white);margin-bottom:3px}
+.vcard-meta{font-size:.7rem;color:var(--dim)}
+.vcard-lyrics-preview{padding:0 16px 10px;font-size:.78rem;line-height:1.75;color:var(--mid);white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.vcard-foot{padding:10px 16px 14px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border)}
+.bar-wrap{flex:1;height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.vbar{height:100%;background:var(--gold);border-radius:2px;transition:width 1s cubic-bezier(.4,0,.2,1);width:0%}
+.vcnt{font-size:.72rem;color:var(--dim);font-weight:600;min-width:28px;text-align:right}
+.hbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--s2);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s}
+.hbtn:hover{border-color:rgba(224,85,85,.4);background:rgba(224,85,85,.08)}
+.hbtn.on{border-color:rgba(224,85,85,.5);background:rgba(224,85,85,.12);animation:hpop .35s ease}
+.hbtn.gray{opacity:.3;cursor:not-allowed}
+@keyframes hpop{0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* ─── 위너 ─── */
+.winner-wrap{background:var(--s1);border:1px solid var(--gold-border);border-radius:18px;padding:28px 22px;margin-bottom:16px;text-align:center}
+.winner-icon{font-size:2.2rem;margin-bottom:12px;display:block}
+.winner-eyebrow{font-size:.68rem;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.winner-name{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:var(--white);margin-bottom:4px}
+.winner-by{font-size:.78rem;color:var(--dim);margin-bottom:18px}
+.winner-lyrics{background:var(--s2);border-radius:10px;padding:16px;font-size:.82rem;line-height:1.85;color:var(--mid);white-space:pre-wrap;text-align:left;max-height:200px;overflow-y:auto}
+
+/* suno 안내 */
+.guide-box{background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:18px;margin-bottom:14px}
+.guide-step{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)}
+.guide-step:last-child{border-bottom:none;padding-bottom:0}
+.guide-n{width:22px;height:22px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold-border);color:var(--gold);font-size:.7rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.guide-txt{font-size:.8rem;line-height:1.7;color:var(--mid)}
+.guide-txt a{color:var(--gold);text-decoration:none}
+
+/* ─── 관리자 ─── */
+.adm-section{margin-bottom:24px}
+.adm-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.phase-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pbtn{padding:10px 16px;border-radius:9px;border:1px solid var(--border);background:var(--s1);font-size:.78rem;font-weight:700;color:var(--mid);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.pbtn:hover{border-color:rgba(255,255,255,.15);color:var(--white)}
+.pbtn.cur-submit{border-color:var(--gold-border);color:var(--gold);background:var(--gold-dim)}
+.pbtn.cur-vote{border-color:rgba(80,180,255,.3);color:#50B4FF;background:rgba(80,180,255,.08)}
+.pbtn.cur-result{border-color:rgba(80,220,140,.3);color:#50DC8C;background:rgba(80,220,140,.08)}
+.dbtn{padding:10px 16px;border-radius:9px;border:1px solid rgba(224,85,85,.25);background:transparent;font-size:.78rem;font-weight:700;color:var(--red);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.dbtn:hover{background:rgba(224,85,85,.1)}
+.adm-list{display:flex;flex-direction:column;gap:8px}
+.adm-row{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--border);border-radius:10px}
+.adm-info{flex:1;min-width:0}
+.adm-name{font-size:.83rem;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-meta{font-size:.68rem;color:var(--dim);margin-top:2px}
+.adm-del{width:26px;height:26px;border-radius:7px;background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.2);cursor:pointer;font-size:.75rem;color:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ─── 빈 상태 / 완료 ─── */
+.empty{text-align:center;padding:56px 20px;color:var(--dim)}
+.empty span{font-size:2rem;display:block;margin-bottom:12px}
+.empty p{font-size:.82rem;line-height:1.7}
+.done-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
+.done-icon{font-size:2.5rem;margin-bottom:16px}
+.done-title{font-family:'Black Han Sans',sans-serif;font-size:1.3rem;color:var(--white);margin-bottom:8px}
+.done-desc{font-size:.82rem;color:var(--mid);line-height:1.8;margin-bottom:28px}
+
+/* ─── 토스트 ─── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--s2);border:1px solid var(--border);border-radius:50px;padding:11px 20px;font-size:.8rem;color:var(--white);z-index:999;transition:all .3s cubic-bezier(.34,1.56,.64,1);opacity:0;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* 위상 배지 */
+.phase-badge{display:inline-block;padding:3px 9px;border-radius:4px;font-size:.62rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.ph-s{background:rgba(232,197,71,.1);color:var(--gold)}
+.ph-v{background:rgba(80,180,255,.1);color:#50B4FF}
+.ph-r{background:rgba(80,220,140,.1);color:#50DC8C}
+
+/* 단계 표시 */
+.step-dots{display:flex;align-items:center;gap:6px;margin-bottom:28px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--s3);transition:.3s}
+.sdot.on{background:var(--gold);width:18px;border-radius:3px}
+.sdot.done{background:var(--gold-border)}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a class="back" href="javascript:void(0)" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</a>
+  <div class="bar-mid">
+    <div class="bar-title">테마송 공모전</div>
+    <div class="bar-sub" id="barSub">가사를 쓰고 AI가 다듬어줘요</div>
+  </div>
+  <div id="adminDot" style="display:none"><div class="admin-dot"></div></div>
+</div>
+<div class="pgtrack"><div class="pgfill" id="pg" style="width:0%"></div></div>
+
+<div class="wrap">
+<div class="deck" id="deck">
+
+<!-- ══ S0: 홈 ══ -->
+<div class="screen" id="s0">
+<div class="inner">
+  <div class="eyebrow">전-12 · 2026 수련회</div>
+  <h1 class="headline">우리가 만드는<br><em>테마송</em></h1>
+  <p class="body-text">직접 가사를 쓰고 AI가 다듬어드려요.<br>투표로 선정된 곡이 수련회 테마송이 됩니다.</p>
+
+  <div style="display:flex;gap:10px;margin-bottom:32px">
+    <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:1.6rem;color:var(--white)" id="h-cnt">0</div>
+      <div style="font-size:.68rem;color:var(--dim);margin-top:3px">출품작</div>
+    </div>
+    <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:1.6rem;color:var(--white)" id="h-votes">0</div>
+      <div style="font-size:.68rem;color:var(--dim);margin-top:3px">총 투표수</div>
+    </div>
+    <div style="flex:1;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+      <div id="h-phase-badge"></div>
+      <div style="font-size:.68rem;color:var(--dim);margin-top:5px">현재 단계</div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="homeCta" onclick="homeCtaClick()">가사 제출하기 →</button>
+  <button class="btn btn-ghost" style="margin-top:8px" onclick="homeSecondClick()" id="homeSecond">제출된 가사 보기</button>
+</div>
+</div>
+
+<!-- ══ S1: 내 정보 ══ -->
+<div class="screen" id="s1">
+<div class="inner">
+  <div class="eyebrow">STEP 1 · 내 정보</div>
+  <h1 class="headline">누가 쓴<br>가사인가요?</h1>
+  <div class="step-dots"><div class="sdot on"></div><div class="sdot"></div><div class="sdot"></div><div class="sdot"></div></div>
+
+  <div class="field">
+    <label>이름</label>
+    <input type="text" id="f-name" placeholder="홍길동" maxlength="10">
+  </div>
+  <div class="field">
+    <label>우리 조</label>
+    <div class="team-chips">
+      <button class="tchip" onclick="pickTeam(this)">베드로 조</button>
+      <button class="tchip" onclick="pickTeam(this)">바울 조</button>
+      <button class="tchip" onclick="pickTeam(this)">에스더 조</button>
+      <button class="tchip" onclick="pickTeam(this)">다윗 조</button>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:auto" onclick="toStep(2)">다음 →</button>
+  <button class="btn-back" onclick="go(0)">← 처음으로</button>
+</div>
+</div>
+
+<!-- ══ S2: 가사 작성 ══ -->
+<div class="screen" id="s2">
+<div class="inner">
+  <div class="eyebrow">STEP 2 · 가사 쓰기</div>
+  <h1 class="headline">자유롭게<br><em>써주세요</em></h1>
+  <div class="step-dots"><div class="sdot done"></div><div class="sdot on"></div><div class="sdot"></div><div class="sdot"></div></div>
+
+  <div class="field">
+    <label>가사 제목 <span style="text-transform:none;font-weight:400;opacity:.5">(선택)</span></label>
+    <input type="text" id="f-title" placeholder="예: 하나님과 함께" maxlength="30">
+  </div>
+  <div class="field">
+    <label>가사 내용</label>
+    <textarea id="f-lyrics" placeholder="수련회 주제, 하나님의 은혜, 친구들과의 이야기…&#10;자유롭게 써주세요. 몇 줄이어도 괜찮아요 🎵" oninput="cntUp()" maxlength="500"></textarea>
+    <div class="counter"><span id="cnt">0</span> / 500</div>
+  </div>
+
+  <button class="btn btn-primary" onclick="toStep(3)">AI가 다듬어줄게요 →</button>
+  <button class="btn-back" onclick="go(1)">← 내 정보</button>
+</div>
+</div>
+
+<!-- ══ S3: AI 다듬기 ══ -->
+<div class="screen" id="s3">
+<div class="inner">
+  <div class="eyebrow">STEP 3 · AI 다듬기</div>
+  <h1 class="headline">AI가<br><em>도와드려요</em></h1>
+  <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot on"></div><div class="sdot"></div></div>
+
+  <div class="ai-block">
+    <div class="ai-block-head">
+      <div class="ai-dot"></div>
+      <div class="ai-block-title">AI 가사 다듬기</div>
+    </div>
+    <div class="ai-block-desc">버튼 하나로 가사를 더 노래답게 다듬고,<br>Suno AI에 바로 붙여넣을 프롬프트도 만들어줘요.</div>
+    <button class="btn btn-ghost" id="aiBtn" onclick="runAI()" style="width:auto;padding:11px 18px;margin-top:0">
+      ✦ AI로 다듬기
+    </button>
+    <div class="ai-out" id="aiOut">
+      <div class="out-label">AI가 다듬은 가사</div>
+      <div class="lyrics-out" id="aiLyrics"></div>
+      <button class="use-ai-btn" onclick="applyAI()">↓ 이 가사로 제출하기</button>
+      <div style="margin-top:14px">
+        <div class="out-label">Suno AI 프롬프트</div>
+        <div class="suno-out">
+          <button class="copy-chip" id="copyChip" onclick="copySuno()">복사</button>
+          <div id="sunoTxt" style="padding-right:44px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="go(4)">제출 내용 확인 →</button>
+  <button class="btn-back" onclick="go(2)">← 가사 수정</button>
+</div>
+</div>
+
+<!-- ══ S4: 확인 + 제출 ══ -->
+<div class="screen" id="s4">
+<div class="inner">
+  <div class="eyebrow">STEP 4 · 최종 확인</div>
+  <h1 class="headline">이렇게<br>제출할까요?</h1>
+  <div class="step-dots"><div class="sdot done"></div><div class="sdot done"></div><div class="sdot done"></div><div class="sdot on"></div></div>
+
+  <div class="confirm-card" id="confirmCard"></div>
+
+  <button class="btn btn-primary" id="submitBtn" onclick="doSubmit()">🎵 제출 완료</button>
+  <button class="btn-back" onclick="go(3)">← 이전으로</button>
+</div>
+</div>
+
+<!-- ══ S5: 제출 완료 ══ -->
+<div class="screen" id="s5">
+<div class="inner">
+  <div class="done-wrap">
+    <div class="done-icon">🎉</div>
+    <div class="done-title">제출 완료!</div>
+    <div class="done-desc">가사가 성공적으로 제출됐어요.<br>투표가 시작되면 꼭 참여해주세요 🗳️</div>
+    <button class="btn btn-primary" style="margin-top:0;width:100%;max-width:240px" onclick="go(6)">제출된 가사 보러가기 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ S6: 투표 ══ -->
+<div class="screen" id="s6">
+<div class="inner">
+  <div class="eyebrow">투표하기</div>
+  <h1 class="headline">마음에 드는<br><em>가사</em>를 골라요</h1>
+  <p class="body-text" id="vote-desc" style="margin-bottom:20px">1인 1표 · 하트를 눌러 투표해요</p>
+  <div class="vote-list" id="voteList"></div>
+</div>
+</div>
+
+<!-- ══ S7: 결과 ══ -->
+<div class="screen" id="s7">
+<div class="inner">
+  <div class="eyebrow">결과 발표</div>
+  <div id="resultContent"></div>
+</div>
+</div>
+
+<!-- ══ S8: 관리자 ══ -->
+<div class="screen" id="s8">
+<div class="inner">
+  <div class="eyebrow">관리자 패널</div>
+  <h1 class="headline" style="font-size:1.3rem;margin-bottom:24px">공모전 관리</h1>
+
+  <div class="adm-section">
+    <div class="adm-title">단계 변경</div>
+    <div class="phase-row">
+      <button class="pbtn" id="pb-s" onclick="setPhase('submit')">접수 중</button>
+      <button class="pbtn" id="pb-v" onclick="setPhase('vote')">투표 중</button>
+      <button class="pbtn" id="pb-r" onclick="setPhase('result')">결과 발표</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="dbtn" onclick="resetVotes()">투표 초기화</button>
+      <button class="dbtn" onclick="clearAll()">전체 삭제</button>
+    </div>
+  </div>
+
+  <div class="adm-section">
+    <div class="adm-title">제출된 가사 <span id="admCnt" style="text-transform:none;font-weight:400"></span></div>
+    <div class="adm-list" id="admList"></div>
+  </div>
+</div>
+</div>
+
+</div><!-- /deck -->
+</div><!-- /wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY = 'vbs_themesong3';
+const IS_ADMIN = new URLSearchParams(location.search).get('mode') === 'admin';
+let cur = 0;
+// 임시 입력값
+let tmp = {name:'', team:'', title:'', lyrics:'', aiLyrics:'', sunoPrompt:''};
+
+/* ── 데이터 ── */
+function D(){ try{return JSON.parse(localStorage.getItem(KEY))||base()}catch(e){return base()} }
+function base(){return {phase:'submit', submissions:[], myVote:null, mySubmit:false}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+
+/* ── 슬라이드 ── */
+const PG = [0, 25, 50, 62, 75, 100, 100, 100, 100];
+function go(n){
+  cur = n;
+  document.getElementById('deck').style.transform = `translateX(-${n*100}vw)`;
+  document.getElementById('pg').style.width = (PG[n]||0) + '%';
+  window.scrollTo(0,0);
+}
+
+/* ── 홈 초기화 ── */
+function initHome(){
+  const d = D();
+  const subs = d.submissions||[];
+  const tot = subs.reduce((a,b)=>a+(b.votes||0),0);
+  document.getElementById('h-cnt').textContent = subs.length;
+  document.getElementById('h-votes').textContent = tot;
+
+  const phMap = {submit:['접수 중','ph-s'], vote:['투표 중','ph-v'], result:['결과','ph-r']};
+  const [ptxt, pcls] = phMap[d.phase]||phMap.submit;
+  document.getElementById('h-phase-badge').innerHTML = `<span class="phase-badge ${pcls}">${ptxt}</span>`;
+
+  // CTA 분기
+  const cta = document.getElementById('homeCta');
+  const sec = document.getElementById('homeSecond');
+  if(d.phase==='result'){
+    cta.textContent = '결과 보기 →'; cta.onclick = ()=>go(7);
+    sec.textContent = '제출된 가사 보기'; sec.onclick = ()=>go(6);
+  } else if(d.phase==='vote'){
+    cta.textContent = '투표하러 가기 →'; cta.onclick = ()=>go(6);
+    sec.textContent = '가사 제출하기'; sec.onclick = ()=>go(1);
+  } else {
+    cta.textContent = '가사 제출하기 →'; cta.onclick = ()=>go(1);
+    sec.textContent = '제출된 가사 보기'; sec.onclick = ()=>go(6);
+  }
+
+  if(IS_ADMIN){
+    document.getElementById('adminDot').style.display='';
+    renderAdmin();
+  }
+  document.getElementById('barSub').textContent =
+    {submit:'가사를 쓰고 AI가 다듬어줘요', vote:'투표가 진행 중이에요 🗳️', result:'테마송이 선정됐어요 🏆'}[d.phase]||'';
+}
+
+function homeCtaClick(){ document.getElementById('homeCta').onclick() }
+function homeSecondClick(){ document.getElementById('homeSecond').onclick() }
+
+/* ── STEP 이동 유효성 ── */
+function toStep(n){
+  if(n===2){
+    tmp.name = document.getElementById('f-name').value.trim();
+    tmp.team = document.querySelector('.tchip.on')?.textContent||'';
+    if(!tmp.name){toast('✍️ 이름을 입력해주세요');return}
+    if(!tmp.team){toast('우리 조를 선택해주세요');return}
+  }
+  if(n===3){
+    tmp.title = document.getElementById('f-title').value.trim();
+    tmp.lyrics = document.getElementById('f-lyrics').value.trim();
+    if(tmp.lyrics.length<10){toast('📝 가사를 좀 더 써주세요');return}
+    document.getElementById('aiOut').style.display='none';
+    document.getElementById('aiBtn').innerHTML='✦ AI로 다듬기';
+    document.getElementById('aiBtn').disabled=false;
+  }
+  go(n);
+}
+
+function pickTeam(btn){
+  document.querySelectorAll('.tchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function cntUp(){
+  const n = document.getElementById('f-lyrics').value.length;
+  document.getElementById('cnt').textContent = n;
+}
+
+/* ── AI 다듬기 ── */
+async function runAI(){
+  const btn = document.getElementById('aiBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin spin-gold"></div> 분석 중…';
+
+  tmp.lyrics = document.getElementById('f-lyrics').value.trim();
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key':(localStorage.getItem('retreat_api_key')||''),'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:800,
+        messages:[{role:'user',content:`중등부 여름수련회 테마송 가사를 다듬어줘.
+
+원본:
+${tmp.lyrics}
+
+JSON만 응답 (코드블록 없이):
+{"refined":"다듬은 가사 (원본 의도 살리며 운율 있게, 절/후렴 구분, 중학생 눈높이)","suno":"Suno AI 프롬프트 (영어, 장르·분위기·악기 포함, 50자 내외)"}`}]
+      })
+    });
+    const data = await res.json();
+    const j = JSON.parse(data.content.find(b=>b.type==='text').text.replace(/```json|```/g,'').trim());
+    tmp.aiLyrics = j.refined;
+    tmp.sunoPrompt = j.suno;
+    document.getElementById('aiLyrics').textContent = j.refined;
+    document.getElementById('sunoTxt').textContent = j.suno;
+    document.getElementById('copyChip').dataset.txt = j.suno;
+    document.getElementById('aiOut').style.display='block';
+    btn.innerHTML='✓ 완료';
+    toast('✨ AI가 가사를 다듬었어요');
+  }catch(e){
+    toast('⚠️ 오류가 발생했어요. 다시 시도해주세요.');
+    btn.innerHTML='✦ AI로 다듬기';
+    btn.disabled=false;
+  }
+}
+
+function applyAI(){
+  if(!tmp.aiLyrics){toast('먼저 AI 다듬기를 실행해주세요');return}
+  document.getElementById('f-lyrics').value = tmp.aiLyrics;
+  tmp.lyrics = tmp.aiLyrics;
+  cntUp();
+  toast('✅ AI 가사를 적용했어요');
+}
+
+function copySuno(){
+  const txt = document.getElementById('copyChip').dataset.txt||document.getElementById('sunoTxt').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const c = document.getElementById('copyChip');
+    c.textContent='✓'; c.classList.add('ok');
+    setTimeout(()=>{c.textContent='복사';c.classList.remove('ok')},2000);
+  });
+}
+
+/* ── 확인 카드 ── */
+function go4wrap(){
+  tmp.title = document.getElementById('f-title').value.trim()||tmp.name+'의 가사';
+  tmp.lyrics = document.getElementById('f-lyrics').value.trim();
+  const final = tmp.aiLyrics || tmp.lyrics;
+  document.getElementById('confirmCard').innerHTML = `
+    <div class="confirm-row"><div class="confirm-key">이름</div><div class="confirm-val">${esc(tmp.name)}</div></div>
+    <div class="confirm-row"><div class="confirm-key">조</div><div class="confirm-val">${esc(tmp.team)}</div></div>
+    <div class="confirm-row"><div class="confirm-key">제목</div><div class="confirm-val">${esc(tmp.title)}</div></div>
+    <div class="confirm-row"><div class="confirm-key">AI 다듬기</div><div class="confirm-val">${tmp.aiLyrics?'✅ 적용됨':'건너뜀'}</div></div>
+    <div class="confirm-lyrics">${esc(final)}</div>`;
+}
+
+/* ── 제출 ── */
+function doSubmit(){
+  const d = D();
+  const final = tmp.aiLyrics || tmp.lyrics;
+  d.submissions.push({id:Date.now().toString(36), name:tmp.name, team:tmp.team, title:tmp.title||tmp.name+'의 가사', lyrics:final, votes:0, ts:Date.now()});
+  d.mySubmit = true;
+  save(d);
+  go(5);
+  initHome();
+}
+
+/* ── 투표 ── */
+function renderVote(){
+  const d = D();
+  const subs = [...(d.submissions||[])].sort((a,b)=>(b.votes||0)-(a.votes||0));
+  const desc = document.getElementById('vote-desc');
+  if(d.phase==='submit') desc.textContent='아직 접수 중이에요 — 투표는 접수 마감 후 시작돼요';
+  else if(d.phase==='result') desc.textContent='투표가 종료됐어요. 결과를 확인해보세요 🏆';
+  else desc.textContent='1인 1표 · 하트를 눌러 투표해요';
+
+  const max = Math.max(...subs.map(s=>s.votes||0),1);
+  const el = document.getElementById('voteList');
+  if(!subs.length){
+    el.innerHTML=`<div class="empty"><span>🎵</span><p>아직 제출된 가사가 없어요</p></div>`;return;
+  }
+  el.innerHTML = subs.map((s,i)=>{
+    const myV = d.myVote===s.id;
+    const otherV = !!(d.myVote&&d.myVote!==s.id);
+    const canVote = d.phase==='vote' && !d.myVote;
+    const isTop = i===0&&(s.votes||0)>0;
+    return `<div class="vcard ${isTop?'top':''}">
+      <div class="vcard-head">
+        <div class="rank-num ${i===0?'g':''}">${i+1}</div>
+        <div class="vcard-info">
+          <div class="vcard-name">🎵 ${esc(s.title)}</div>
+          <div class="vcard-meta">${esc(s.name)} · ${esc(s.team)}</div>
+        </div>
+      </div>
+      <div class="vcard-lyrics-preview">${esc(s.lyrics)}</div>
+      <div class="vcard-foot">
+        <div class="bar-wrap"><div class="vbar" id="vb-${s.id}" style="width:0%"></div></div>
+        <div class="vcnt">${s.votes||0}</div>
+        <button class="hbtn ${myV?'on':''} ${otherV?'gray':''}"
+          onclick="doVote('${s.id}')"
+          ${(!canVote&&!myV)||IS_ADMIN&&d.phase==='vote'?'':otherV?'disabled':''}
+        >${myV?'❤️':'🤍'}</button>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{subs.forEach(s=>{const b=document.getElementById('vb-'+s.id);if(b)b.style.width=Math.round(((s.votes||0)/max)*100)+'%'})},80);
+}
+
+function doVote(id){
+  const d = D();
+  if(d.phase!=='vote'&&!IS_ADMIN){toast('⏳ 아직 투표 기간이 아니에요');return}
+  if(d.myVote===id){toast('이미 이 가사에 투표했어요 ❤️');return}
+  if(d.myVote){toast('이미 다른 가사에 투표했어요');return}
+  const s = d.submissions.find(x=>x.id===id);
+  if(!s)return;
+  s.votes=(s.votes||0)+1; d.myVote=id; save(d);
+  renderVote(); initHome(); toast('❤️ 투표 완료!');
+}
+
+/* ── 결과 ── */
+function renderResult(){
+  const d = D();
+  const el = document.getElementById('resultContent');
+  if(d.phase!=='result'){
+    el.innerHTML=`<div class="empty"><span>🔒</span><p>투표 종료 후 공개돼요</p></div>`;return;
+  }
+  const subs=[...(d.submissions||[])].sort((a,b)=>(b.votes||0)-(a.votes||0));
+  if(!subs.length){el.innerHTML=`<div class="empty"><span>📭</span><p>제출된 가사가 없어요</p></div>`;return}
+  const w=subs[0];
+  el.innerHTML=`
+    <div class="winner-wrap">
+      <span class="winner-icon">🏆</span>
+      <div class="winner-eyebrow">최종 선정 테마송</div>
+      <div class="winner-name">${esc(w.title)}</div>
+      <div class="winner-by">${esc(w.name)} · ${esc(w.team)} · ${w.votes||0}표</div>
+      <div class="winner-lyrics">${esc(w.lyrics)}</div>
+    </div>
+    <div class="guide-box" style="margin-bottom:20px">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-bottom:10px">이제 Suno AI로 만들어요</div>
+      <div class="guide-step"><div class="guide-n">1</div><div class="guide-txt"><a href="https://suno.com" target="_blank">suno.com</a> 또는 <a href="https://udio.com" target="_blank">udio.com</a>에 접속해요</div></div>
+      <div class="guide-step"><div class="guide-n">2</div><div class="guide-txt">위 가사를 붙여넣고 분위기를 설정해요</div></div>
+      <div class="guide-step"><div class="guide-n">3</div><div class="guide-txt">완성된 테마송을 수련회에서 다 함께 불러요 🎶</div></div>
+    </div>
+    <div style="font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-bottom:12px">전체 순위</div>
+    <div class="vote-list">
+      ${subs.map((s,i)=>`
+        <div class="vcard ${i===0?'top':''}">
+          <div class="vcard-head">
+            <div class="rank-num ${i===0?'g':''}">${i+1}</div>
+            <div class="vcard-info">
+              <div class="vcard-name">🎵 ${esc(s.title)}</div>
+              <div class="vcard-meta">${esc(s.name)} · ${esc(s.team)} · ${s.votes||0}표</div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ── 관리자 ── */
+function renderAdmin(){
+  const d=D();
+  const phm={submit:'cur-submit',vote:'cur-vote',result:'cur-result'};
+  ['s','v','r'].forEach((x,i)=>{
+    const ph=['submit','vote','result'][i];
+    const b=document.getElementById('pb-'+x);
+    b.className='pbtn'+(d.phase===ph?' '+phm[ph]:'');
+  });
+  const subs=d.submissions||[];
+  document.getElementById('admCnt').textContent=`(${subs.length}개)`;
+  document.getElementById('admList').innerHTML=!subs.length
+    ?'<div style="font-size:.8rem;color:var(--dim);padding:8px 0">아직 제출된 가사가 없어요</div>'
+    :subs.map(s=>`<div class="adm-row">
+      <div class="adm-info"><div class="adm-name">${esc(s.title)}</div><div class="adm-meta">${esc(s.name)} · ${esc(s.team)} · ${s.votes||0}표</div></div>
+      <button class="adm-del" onclick="admDel('${s.id}')">✕</button>
+    </div>`).join('');
+}
+
+function setPhase(p){
+  const d=D(); d.phase=p; save(d);
+  renderAdmin(); initHome(); renderVote(); renderResult();
+  toast({submit:'📝 접수 중으로 변경',vote:'🗳️ 투표 중으로 변경',result:'🏆 결과 발표로 변경'}[p]);
+}
+function resetVotes(){if(!confirm('투표를 초기화할까요?'))return;const d=D();d.submissions.forEach(s=>s.votes=0);d.myVote=null;save(d);renderAdmin();renderVote();initHome();toast('투표 초기화 완료')}
+function clearAll(){if(!confirm('전체 삭제할까요?'))return;localStorage.removeItem(KEY);renderAdmin();initHome();renderVote();renderResult();toast('삭제 완료')}
+function admDel(id){const d=D();d.submissions=d.submissions.filter(s=>s.id!==id);save(d);renderAdmin();initHome();renderVote();renderResult();toast('삭제 완료')}
+
+/* ── 유틸 ── */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+let tt;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600)}
+
+/* ── 스크린 전환 override ── */
+const _go = go;
+window.go = function(n){
+  if(n===4) go4wrap();
+  if(n===6) renderVote();
+  if(n===7) renderResult();
+  if(n===8) renderAdmin();
+  _go(n);
+};
+
+/* ── 시작 ── */
+if(IS_ADMIN){ go(8); }
+else { initHome(); }
+
+  function getApiKey(){
+    var k = localStorage.getItem('retreat_api_key') || '';
+    if(!k){ alert('API 키를 먼저 설정해주세요.\n우측 상단 🔑 버튼을 눌러 입력해주세요.'); }
+    return k;
+  }
+</script>
+</body>
+</html>
