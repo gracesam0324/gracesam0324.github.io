@@ -8,10 +8,10 @@
 /* ─── 리셋 & 기본 ─── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0A0806;--sf1:#141008;--sf2:#1C160E;--sf3:#241C12;
-  --bd1:#2E2418;--bd2:#3E3222;--bd3:#524430;
+  --bg:#1E1608;--sf1:#2A2010;--sf2:#312818;--sf3:#3A3020;
+  --bd1:#4A3C28;--bd2:#5C4C34;--bd3:#705E44;
   --gold:#C9922A;--gold2:#E8B84B;--gold3:#FDD87A;--gold4:#FFF5C8;
-  --cream:#F5ECD7;--cream2:#DEC9A0;--dim:#7A6A50;--dim2:#5A4A32;
+  --cream:#FFF8EC;--cream2:#F0D898;--dim:#A89070;--dim2:#8A7055;
   --t1:#3B82F6;--t2:#EC4899;--t3:#F59E0B;--t4:#10B981;
   --green:#22C55E;--red:#EF4444;
 }
@@ -24,8 +24,8 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 
 /* ─── 공통 헤더 ─── */
 .topbar{
-  background:rgba(10,8,6,.95);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--bd2);
+  background:rgba(30,22,12,.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bd3);
   padding:0 16px;height:52px;display:flex;align-items:center;gap:10px;
   flex-shrink:0;z-index:10
 }
@@ -54,7 +54,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 .scroll-body::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
 
 /* ─── 섹션 레이블 ─── */
-.sec{font-size:.62rem;font-weight:700;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sec{font-size:.65rem;font-weight:700;letter-spacing:.1em;color:var(--cream2);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .sec::after{content:'';flex:1;height:1px;background:var(--bd2)}
 
 /* ─── 카드 ─── */
@@ -94,15 +94,22 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 .s1-hero p{font-size:.8rem;color:var(--dim);line-height:1.7}
 .s1-body{padding:6px 16px 40px}
 
-/* 팀 입력 */
-.team-row{display:flex;align-items:center;gap:9px;margin-bottom:9px}
-.t-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
-.t-input{
-  flex:1;padding:10px 13px;border:1.5px solid var(--bd2);border-radius:10px;
-  background:var(--sf1);font-size:.85rem;font-family:inherit;color:var(--cream);outline:none;transition:.2s
+/* 팀 선택 */
+#team-rows{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-sel-btn{
+  padding:13px 12px;border-radius:13px;border:2px solid var(--bd2);background:var(--sf1);
+  cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:9px;
+  transition:.18s;width:100%
 }
-.t-input:focus{border-color:var(--gold);background:var(--sf3)}
-.t-input::placeholder{color:var(--dim2)}
+.team-sel-btn.on{box-shadow:0 2px 14px rgba(0,0,0,.3)}
+.team-sel-btn:active{transform:scale(.97)}
+.ts-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;transition:.18s}
+.ts-name{font-size:.92rem;font-weight:800;flex:1;text-align:left;transition:.18s}
+.ts-check{
+  width:20px;height:20px;border-radius:50%;color:white;font-size:.7rem;font-weight:900;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0
+}
+.ts-empty{width:20px;height:20px;flex-shrink:0}
 
 /* 세그먼트 컨트롤 */
 .seg{display:flex;background:var(--sf1);border:1px solid var(--bd2);border-radius:9px;padding:3px;gap:3px}
@@ -112,7 +119,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 }
 .seg-o.on{background:var(--gold);color:#1A0E04;font-weight:800}
 .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.s-lbl{font-size:.82rem;color:var(--cream2)}
+.s-lbl{font-size:.84rem;color:var(--cream);font-weight:600}
 .s-lbl small{display:block;font-size:.68rem;color:var(--dim);margin-top:1px}
 
 /* ═══════════════════════════════════
@@ -127,7 +134,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
   display:flex;align-items:center;gap:8px;cursor:default
 }
 .sc-color{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.sc-name{font-size:.8rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-name{font-size:.82rem;font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sc-pts{font-size:1rem;font-weight:900;flex-shrink:0}
 .sc-btns{display:flex;gap:3px;flex-shrink:0}
 .sc-adj{
@@ -145,9 +152,9 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 .sb.used{opacity:.3;pointer-events:none}
 .sb-ic{font-size:1rem;flex-shrink:0;width:20px;text-align:center}
 .sb-info{flex:1}
-.sb-name{font-size:.84rem;font-weight:700;color:var(--cream2)}
+.sb-name{font-size:.86rem;font-weight:700;color:var(--cream)}
 .sb.on .sb-name{color:var(--gold3)}
-.sb-verse{font-size:.66rem;color:var(--dim);margin-top:1px}
+.sb-verse{font-size:.68rem;color:var(--dim);margin-top:1px;font-weight:500}
 .sb-tag{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:50px;flex-shrink:0}
 .t-ot{background:rgba(139,90,30,.2);color:#D4A44C}
 .t-nt{background:rgba(30,74,138,.2);color:#7BAEF0}
@@ -162,7 +169,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 .loading-icon{font-size:4rem;display:block;margin:0 auto 20px;animation:pulse 1.5s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
 .loading-title{font-size:1.1rem;font-weight:800;color:var(--gold3);margin-bottom:8px}
-.loading-sub{font-size:.82rem;color:var(--dim);line-height:1.7;margin-bottom:24px}
+.loading-sub{font-size:.84rem;color:var(--cream2);line-height:1.7;margin-bottom:24px}
 .loading-bar{height:4px;background:var(--bd2);border-radius:2px;overflow:hidden}
 .loading-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold3));border-radius:2px;animation:fill 3s ease-in-out forwards}
 @keyframes fill{0%{width:0%}60%{width:75%}100%{width:92%}}
@@ -215,7 +222,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
   display:flex;align-items:center;gap:7px
 }
 .ms-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.ms-name{font-size:.78rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-name{font-size:.8rem;font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ms-pts{font-size:.92rem;font-weight:900}
 /* 컨트롤 버튼들 */
 .ctrl-row{display:flex;gap:6px;margin-bottom:6px}
@@ -223,16 +230,16 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
 .hint-area{margin-bottom:7px}
 .hint-btn{
   width:100%;padding:10px 14px;border-radius:11px;
-  border:1.5px dashed rgba(201,146,42,.4);background:rgba(201,146,42,.06);
-  cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;
-  color:var(--gold2);display:flex;align-items:center;gap:8px;transition:.2s
+  border:1.5px dashed rgba(201,146,42,.5);background:rgba(201,146,42,.1);
+  cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:700;
+  color:var(--gold3);display:flex;align-items:center;gap:8px;transition:.2s
 }
 .hint-btn:hover{background:rgba(201,146,42,.12);border-color:var(--gold)}
 .hint-btn:disabled{opacity:.35;cursor:default}
 .hint-cards{display:flex;flex-direction:column;gap:5px;margin-top:7px}
 .hint-card{
-  padding:9px 13px;border-radius:10px;border:1px solid rgba(201,146,42,.25);
-  background:rgba(201,146,42,.08);font-size:.82rem;color:var(--cream2);
+  padding:10px 14px;border-radius:10px;border:1px solid rgba(201,146,42,.3);
+  background:rgba(201,146,42,.12);font-size:.84rem;color:var(--cream);font-weight:500;
   animation:hintPop .3s cubic-bezier(.34,1.56,.64,1)
 }
 @keyframes hintPop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
@@ -321,9 +328,9 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
   </div>
   <div class="scroll-body">
     <div class="s1-body">
-      <div class="sec">👥 팀 이름 설정</div>
+      <div class="sec">👥 참가 팀 선택</div>
       <div class="card" style="margin-bottom:16px">
-        <div style="font-size:.77rem;color:var(--dim);margin-bottom:13px;line-height:1.65">수련회에서 정한 팀 이름을 입력해주세요<br><span style="font-size:.69rem;color:var(--dim2)">비워두면 기본 이름으로 진행돼요</span></div>
+        <div style="font-size:.82rem;color:var(--cream2);margin-bottom:14px;font-weight:600">게임에 참가할 팀을 선택하세요 <span style="font-weight:400;color:var(--dim)">(2~4팀)</span></div>
         <div id="team-rows"></div>
       </div>
 
@@ -369,7 +376,7 @@ body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sa
       <div class="score-grid" id="score-grid"></div>
       <div class="div"></div>
       <div class="sec">📖 성경 장면 선택</div>
-      <div style="font-size:.77rem;color:var(--dim);margin-bottom:10px;line-height:1.6">이번 라운드에 보여줄 성경 장면을 선택하세요</div>
+      <div style="font-size:.77rem;color:var(--cream2);margin-bottom:10px;line-height:1.6">이번 라운드에 보여줄 성경 장면을 선택하세요</div>
       <div class="scene-list" id="scene-list"></div>
       <button class="btn-gold" id="go-btn" onclick="goPlay()" disabled>🎨 AI 이미지 생성하기!</button>
     </div>
@@ -523,20 +530,52 @@ function setSeg(btn,type,val){
   else{totalRounds=val}
 }
 
-/* ── 팀 입력 초기화 ── */
+/* ── 팀 선택 초기화 ── */
+const TEAM_PRESETS = [
+  {name:'베드로팀', color:'#3B82F6'},
+  {name:'바울팀', color:'#EC4899'},
+  {name:'에스더팀', color:'#F59E0B'},
+  {name:'다윗팀', color:'#10B981'},
+];
+let selectedTeams = [0,1,2,3]; // 기본 전체 선택
+
 (function(){
-  document.getElementById('team-rows').innerHTML=['1팀','2팀','3팀','4팀'].map((d,i)=>`
-    <div class="team-row">
-      <div class="t-dot" style="background:${TEAM_COLORS[i]}"></div>
-      <input class="t-input" id="ti${i}" placeholder="${d}" maxlength="10">
-    </div>`).join('');
+  renderTeamSelect();
 })();
+
+function renderTeamSelect(){
+  document.getElementById('team-rows').innerHTML = TEAM_PRESETS.map((t,i)=>{
+    const on = selectedTeams.includes(i);
+    return `<button class="team-sel-btn${on?' on':''}" style="border-color:${on?t.color+'99':''};background:${on?t.color+'18':''}" onclick="toggleTeam(${i})">
+      <div class="ts-dot" style="background:${t.color};opacity:${on?1:.35}"></div>
+      <div class="ts-name" style="color:${on?t.color:'var(--dim)'}">${t.name}</div>
+      ${on?`<div class="ts-check" style="background:${t.color}">✓</div>`:'<div class="ts-empty"></div>'}
+    </button>`;
+  }).join('');
+  // 유효성 체크
+  const ok = selectedTeams.length >= 2;
+  document.querySelector('.btn-gold').disabled = !ok;
+  const warn = document.getElementById('team-warn');
+  if(warn) warn.style.display = ok ? 'none' : 'block';
+}
+
+function toggleTeam(i){
+  if(selectedTeams.includes(i)){
+    if(selectedTeams.length <= 2) return; // 최소 2팀
+    selectedTeams = selectedTeams.filter(x=>x!==i);
+  } else {
+    selectedTeams.push(i);
+    selectedTeams.sort();
+  }
+  renderTeamSelect();
+}
 
 /* ── 게임 시작 ── */
 function startGame(){
-  teams = TEAM_COLORS.map((c,i)=>({
-    name:document.getElementById('ti'+i).value.trim()||['1팀','2팀','3팀','4팀'][i],
-    color:c, score:0
+  teams = selectedTeams.map(i=>({
+    name: TEAM_PRESETS[i].name,
+    color: TEAM_PRESETS[i].color,
+    score: 0
   }));
   curRound=1; usedIds=[]; selectedScene=null; timerSec=maxSec;
   renderHub(); show('s2');
