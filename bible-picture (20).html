@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성경 그림 맞추기</title>
+<style>
+/* ─── 리셋 & 기본 ─── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0A0806;--sf1:#141008;--sf2:#1C160E;--sf3:#241C12;
+  --bd1:#2E2418;--bd2:#3E3222;--bd3:#524430;
+  --gold:#C9922A;--gold2:#E8B84B;--gold3:#FDD87A;--gold4:#FFF5C8;
+  --cream:#F5ECD7;--cream2:#DEC9A0;--dim:#7A6A50;--dim2:#5A4A32;
+  --t1:#3B82F6;--t2:#EC4899;--t3:#F59E0B;--t4:#10B981;
+  --green:#22C55E;--red:#EF4444;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--cream)}
+
+/* ─── 스크린 전환 ─── */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* ─── 공통 헤더 ─── */
+.topbar{
+  background:rgba(10,8,6,.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--bd2);
+  padding:0 16px;height:52px;display:flex;align-items:center;gap:10px;
+  flex-shrink:0;z-index:10
+}
+.tb-back{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(201,146,42,.1);border:1px solid rgba(201,146,42,.2);
+  color:var(--gold2);font-size:1rem;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-family:inherit;flex-shrink:0
+}
+.tb-title{font-size:.9rem;font-weight:700;color:var(--cream);flex:1;letter-spacing:-.01em}
+.tb-badge{
+  font-size:.65rem;font-weight:700;padding:4px 11px;border-radius:50px;
+  background:rgba(201,146,42,.12);border:1px solid rgba(201,146,42,.28);color:var(--gold2)
+}
+.tb-step{
+  display:flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;color:var(--dim)
+}
+.step-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--bd3);transition:.3s
+}
+.step-dot.on{background:var(--gold2);box-shadow:0 0 6px var(--gold)}
+
+/* ─── 스크롤 가능한 바디 ─── */
+.scroll-body{flex:1;overflow-y:auto;overscroll-behavior:contain}
+.scroll-body::-webkit-scrollbar{width:3px}
+.scroll-body::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+/* ─── 섹션 레이블 ─── */
+.sec{font-size:.62rem;font-weight:700;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bd2)}
+
+/* ─── 카드 ─── */
+.card{background:var(--sf2);border:1px solid var(--bd2);border-radius:16px;padding:16px}
+.div{height:1px;background:var(--bd2);margin:16px 0}
+
+/* ─── 버튼 기본 ─── */
+.btn-gold{
+  width:100%;padding:15px;border-radius:13px;border:none;cursor:pointer;font-family:inherit;
+  font-size:.95rem;font-weight:900;letter-spacing:.04em;color:#1A0E04;
+  background:linear-gradient(135deg,#7A4A10,var(--gold2),#7A4A10);background-size:200%;
+  box-shadow:0 4px 20px rgba(201,146,42,.3);transition:.3s
+}
+.btn-gold:hover{background-position:100%;transform:translateY(-1px);box-shadow:0 6px 28px rgba(201,146,42,.45)}
+.btn-gold:disabled{opacity:.35;cursor:default;transform:none;box-shadow:none}
+.btn-outline{
+  flex:1;padding:11px 8px;border-radius:11px;border:1.5px solid var(--bd2);background:var(--sf1);
+  cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--cream2);
+  display:flex;align-items:center;justify-content:center;gap:5px;transition:.15s
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold2)}
+
+/* ═══════════════════════════════════
+   스크린 1: 설정
+═══════════════════════════════════ */
+#s1{background:var(--bg)}
+.s1-hero{
+  padding:36px 20px 28px;text-align:center;position:relative;flex-shrink:0;
+  background:linear-gradient(180deg,rgba(201,146,42,.1) 0%,transparent 100%)
+}
+.s1-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:280px;height:200px;background:radial-gradient(ellipse,rgba(201,146,42,.2),transparent 70%);pointer-events:none}
+.s1-ic{font-size:2.8rem;display:block;margin-bottom:10px;animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.s1-tag{display:inline-block;padding:5px 15px;border-radius:50px;background:rgba(201,146,42,.12);border:1px solid rgba(201,146,42,.3);font-size:.7rem;font-weight:700;color:var(--gold2);letter-spacing:.07em;margin-bottom:12px}
+.s1-hero h1{font-size:1.6rem;font-weight:900;color:var(--cream);line-height:1.25;margin-bottom:8px}
+.s1-hero h1 em{color:var(--gold3);font-style:normal}
+.s1-hero p{font-size:.8rem;color:var(--dim);line-height:1.7}
+.s1-body{padding:6px 16px 40px}
+
+/* 팀 입력 */
+.team-row{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.t-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.t-input{
+  flex:1;padding:10px 13px;border:1.5px solid var(--bd2);border-radius:10px;
+  background:var(--sf1);font-size:.85rem;font-family:inherit;color:var(--cream);outline:none;transition:.2s
+}
+.t-input:focus{border-color:var(--gold);background:var(--sf3)}
+.t-input::placeholder{color:var(--dim2)}
+
+/* 세그먼트 컨트롤 */
+.seg{display:flex;background:var(--sf1);border:1px solid var(--bd2);border-radius:9px;padding:3px;gap:3px}
+.seg-o{
+  flex:1;padding:6px 4px;border-radius:6px;border:none;background:transparent;cursor:pointer;
+  font-family:inherit;font-size:.76rem;font-weight:600;color:var(--dim);transition:.15s;white-space:nowrap
+}
+.seg-o.on{background:var(--gold);color:#1A0E04;font-weight:800}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.s-lbl{font-size:.82rem;color:var(--cream2)}
+.s-lbl small{display:block;font-size:.68rem;color:var(--dim);margin-top:1px}
+
+/* ═══════════════════════════════════
+   스크린 2: 허브 (장면 선택)
+═══════════════════════════════════ */
+#s2{background:var(--bg)}
+.hub-body{padding:14px 14px 30px}
+/* 점수바 */
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.score-chip{
+  padding:10px 11px;border-radius:12px;border:1.5px solid;
+  display:flex;align-items:center;gap:8px;cursor:default
+}
+.sc-color{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sc-name{font-size:.8rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc-pts{font-size:1rem;font-weight:900;flex-shrink:0}
+.sc-btns{display:flex;gap:3px;flex-shrink:0}
+.sc-adj{
+  width:25px;height:25px;border-radius:6px;border:1px solid;background:transparent;
+  cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center
+}
+/* 장면 목록 */
+.scene-list{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.sb{
+  padding:11px 12px;border-radius:11px;border:1.5px solid var(--bd1);background:var(--sf1);
+  cursor:pointer;font-family:inherit;text-align:left;display:flex;align-items:center;gap:9px;width:100%;transition:.15s
+}
+.sb:hover{border-color:var(--gold);background:rgba(201,146,42,.05)}
+.sb.on{border-color:var(--gold2);background:rgba(201,146,42,.1)}
+.sb.used{opacity:.3;pointer-events:none}
+.sb-ic{font-size:1rem;flex-shrink:0;width:20px;text-align:center}
+.sb-info{flex:1}
+.sb-name{font-size:.84rem;font-weight:700;color:var(--cream2)}
+.sb.on .sb-name{color:var(--gold3)}
+.sb-verse{font-size:.66rem;color:var(--dim);margin-top:1px}
+.sb-tag{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:50px;flex-shrink:0}
+.t-ot{background:rgba(139,90,30,.2);color:#D4A44C}
+.t-nt{background:rgba(30,74,138,.2);color:#7BAEF0}
+.t-mir{background:rgba(30,122,74,.2);color:#5ECB8A}
+.sb-used-badge{font-size:.62rem;color:var(--dim);flex-shrink:0}
+
+/* ═══════════════════════════════════
+   스크린 3: 이미지 로딩
+═══════════════════════════════════ */
+#s3{background:var(--bg);align-items:center;justify-content:center}
+.loading-box{text-align:center;padding:30px 24px;max-width:340px}
+.loading-icon{font-size:4rem;display:block;margin:0 auto 20px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
+.loading-title{font-size:1.1rem;font-weight:800;color:var(--gold3);margin-bottom:8px}
+.loading-sub{font-size:.82rem;color:var(--dim);line-height:1.7;margin-bottom:24px}
+.loading-bar{height:4px;background:var(--bd2);border-radius:2px;overflow:hidden}
+.loading-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold3));border-radius:2px;animation:fill 3s ease-in-out forwards}
+@keyframes fill{0%{width:0%}60%{width:75%}100%{width:92%}}
+
+/* ═══════════════════════════════════
+   스크린 4: 그림 보기 (플레이)
+═══════════════════════════════════ */
+#s4{background:var(--bg)}
+.play-bar{
+  background:rgba(10,8,6,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--bd2);
+  padding:0 14px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0
+}
+.play-back{
+  width:34px;height:34px;border-radius:9px;background:rgba(201,146,42,.1);border:1px solid rgba(201,146,42,.2);
+  color:var(--gold2);font-size:.95rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit
+}
+.play-title{font-size:.88rem;font-weight:700;color:var(--cream);flex:1}
+.timer-pill{
+  padding:6px 14px;border-radius:50px;border:1.5px solid var(--bd2);background:var(--sf2);
+  font-size:1rem;font-weight:900;color:var(--gold2);min-width:68px;text-align:center;
+  transition:.3s;flex-shrink:0
+}
+.timer-pill.run{border-color:var(--gold2);color:var(--gold3);background:rgba(201,146,42,.1)}
+.timer-pill.urg{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.1);animation:blinkT .5s ease-in-out infinite alternate}
+@keyframes blinkT{from{opacity:.7}to{opacity:1}}
+.play-body{padding:12px 13px 28px}
+
+/* 이미지 프레임 */
+.img-frame{
+  position:relative;border-radius:16px;border:2px solid var(--bd2);background:var(--sf1);
+  overflow:hidden;margin-bottom:11px;aspect-ratio:4/3
+}
+.ai-img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .5s}
+.img-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,8,6,.85);flex-direction:column;gap:10px
+}
+.img-overlay .ov-ic{font-size:2.5rem;animation:spin 2s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.img-overlay p{font-size:.82rem;color:var(--dim);text-align:center;line-height:1.6;padding:0 20px}
+.img-hint{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(10,8,6,.82));
+  padding:18px 12px 9px;font-size:.66rem;color:var(--dim);text-align:center
+}
+/* 미니 점수 */
+.mini-scores{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:11px}
+.ms-chip{
+  padding:8px 10px;border-radius:10px;border:1px solid;
+  display:flex;align-items:center;gap:7px
+}
+.ms-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ms-name{font-size:.78rem;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-pts{font-size:.92rem;font-weight:900}
+/* 컨트롤 버튼들 */
+.ctrl-row{display:flex;gap:6px;margin-bottom:6px}
+/* 힌트 */
+.hint-area{margin-bottom:7px}
+.hint-btn{
+  width:100%;padding:10px 14px;border-radius:11px;
+  border:1.5px dashed rgba(201,146,42,.4);background:rgba(201,146,42,.06);
+  cursor:pointer;font-family:inherit;font-size:.82rem;font-weight:700;
+  color:var(--gold2);display:flex;align-items:center;gap:8px;transition:.2s
+}
+.hint-btn:hover{background:rgba(201,146,42,.12);border-color:var(--gold)}
+.hint-btn:disabled{opacity:.35;cursor:default}
+.hint-cards{display:flex;flex-direction:column;gap:5px;margin-top:7px}
+.hint-card{
+  padding:9px 13px;border-radius:10px;border:1px solid rgba(201,146,42,.25);
+  background:rgba(201,146,42,.08);font-size:.82rem;color:var(--cream2);
+  animation:hintPop .3s cubic-bezier(.34,1.56,.64,1)
+}
+@keyframes hintPop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.ctrl-reveal{
+  width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;
+  font-size:.92rem;font-weight:900;color:#0A1E06;letter-spacing:.03em;
+  background:linear-gradient(135deg,#0F2E0A,#22C55E,#0F2E0A);background-size:200%;
+  box-shadow:0 3px 14px rgba(34,197,94,.28);transition:.3s
+}
+.ctrl-reveal:hover{background-position:100%;box-shadow:0 5px 20px rgba(34,197,94,.44)}
+
+/* ═══════════════════════════════════
+   스크린 5: 정답 공개
+═══════════════════════════════════ */
+#s5{background:var(--bg);align-items:center;justify-content:center;padding:20px}
+.ans-modal{
+  width:100%;max-width:400px;background:var(--sf2);border:2px solid var(--gold);
+  border-radius:22px;padding:28px 18px;text-align:center;
+  box-shadow:0 0 60px rgba(201,146,42,.22);
+  animation:popUp .4s cubic-bezier(.34,1.56,.64,1)
+}
+@keyframes popUp{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+.ans-icon{font-size:3.2rem;display:block;margin-bottom:10px}
+.ans-lbl{font-size:.65rem;font-weight:700;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:7px}
+.ans-name{font-size:1.35rem;font-weight:900;color:var(--gold3);margin-bottom:4px;line-height:1.3}
+.ans-verse{font-size:.78rem;color:var(--dim);margin-bottom:18px}
+.point-lbl{font-size:.75rem;font-weight:700;color:var(--cream2);margin-bottom:9px}
+.point-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
+.pt-btn{
+  padding:12px 8px;border-radius:12px;border:1.5px solid var(--bd2);background:var(--sf3);
+  cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--cream2);
+  transition:.2s;line-height:1.55
+}
+.pt-btn.scored{
+  background:rgba(34,197,94,.12);border-color:#22C55E;color:#4ADE80
+}
+.ans-next{
+  width:100%;padding:13px;border-radius:12px;border:none;cursor:pointer;font-family:inherit;
+  font-size:.92rem;font-weight:900;color:#1A0E04;
+  background:linear-gradient(135deg,var(--gold),var(--gold2))
+}
+
+/* ═══════════════════════════════════
+   스크린 6: 최종 결과
+═══════════════════════════════════ */
+#s6{
+  background:radial-gradient(ellipse at 50% 0%,rgba(201,146,42,.18),transparent 60%),var(--bg);
+  align-items:center;justify-content:center;padding:20px
+}
+.result-wrap{width:100%;max-width:400px;text-align:center}
+.res-trophy{font-size:4.5rem;display:block;margin-bottom:8px;animation:bounce 1.2s ease-in-out infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.res-title{font-size:1.5rem;font-weight:900;color:var(--gold3);margin-bottom:4px}
+.res-sub{font-size:.8rem;color:var(--dim);margin-bottom:22px}
+.res-list{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.res-row{
+  display:flex;align-items:center;gap:11px;padding:14px 15px;border-radius:14px;border:1.5px solid;
+  animation:slideIn .4s ease both
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+.res-rank{font-size:1.6rem;flex-shrink:0;width:34px;text-align:center}
+.res-info{flex:1;text-align:left}
+.res-name{font-size:.95rem;font-weight:800;margin-bottom:4px}
+.res-bar-wrap{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.res-bar{height:100%;border-radius:3px;transition:width 1s ease .2s}
+.res-pts{font-size:1.3rem;font-weight:900}
+.res-again{
+  width:100%;padding:14px;border-radius:13px;border:none;cursor:pointer;font-family:inherit;
+  font-size:.95rem;font-weight:900;color:#1A0E04;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  box-shadow:0 4px 20px rgba(201,146,42,.3)
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     스크린 1: 팀 설정
+════════════════════════════════ -->
+<div class="screen active" id="s1">
+  <div class="s1-hero">
+    <span class="s1-ic">🖼️</span>
+    <div class="s1-tag">AI 성경 이미지 · 팀 경쟁 게임</div>
+    <h1>성경 그림<br><em>맞추기</em></h1>
+    <p>AI가 그린 성경 장면을 보고<br>어떤 이야기인지 맞히는 게임이에요!</p>
+  </div>
+  <div class="scroll-body">
+    <div class="s1-body">
+      <div class="sec">👥 팀 이름 설정</div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="font-size:.77rem;color:var(--dim);margin-bottom:13px;line-height:1.65">수련회에서 정한 팀 이름을 입력해주세요<br><span style="font-size:.69rem;color:var(--dim2)">비워두면 기본 이름으로 진행돼요</span></div>
+        <div id="team-rows"></div>
+      </div>
+
+      <div class="sec">⚙️ 게임 설정</div>
+      <div class="card" style="margin-bottom:18px">
+        <div class="setting-row">
+          <div class="s-lbl">타이머 <small>그림 맞히기 제한 시간</small></div>
+          <div class="seg" id="seg-time">
+            <button class="seg-o" onclick="setSeg(this,'time',20)">20초</button>
+            <button class="seg-o on" onclick="setSeg(this,'time',30)">30초</button>
+            <button class="seg-o" onclick="setSeg(this,'time',45)">45초</button>
+          </div>
+        </div>
+        <div class="div" style="margin:12px 0"></div>
+        <div class="setting-row">
+          <div class="s-lbl">라운드 수 <small>총 게임 라운드</small></div>
+          <div class="seg" id="seg-rounds">
+            <button class="seg-o" onclick="setSeg(this,'rounds',5)">5R</button>
+            <button class="seg-o on" onclick="setSeg(this,'rounds',8)">8R</button>
+            <button class="seg-o" onclick="setSeg(this,'rounds',10)">10R</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-gold" onclick="startGame()">✝ 게임 시작하기!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     스크린 2: 허브 (장면 선택)
+════════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="topbar">
+    <button class="tb-back" onclick="confirmBack()">←</button>
+    <div class="tb-title">✝ 성경 그림 맞추기</div>
+    <div id="step-dots" class="tb-step"></div>
+    <div class="tb-badge" id="hub-round-badge">1/8R</div>
+  </div>
+  <div class="scroll-body">
+    <div class="hub-body">
+      <div class="sec">🏆 팀 점수</div>
+      <div class="score-grid" id="score-grid"></div>
+      <div class="div"></div>
+      <div class="sec">📖 성경 장면 선택</div>
+      <div style="font-size:.77rem;color:var(--dim);margin-bottom:10px;line-height:1.6">이번 라운드에 보여줄 성경 장면을 선택하세요</div>
+      <div class="scene-list" id="scene-list"></div>
+      <button class="btn-gold" id="go-btn" onclick="goPlay()" disabled>🎨 AI 이미지 생성하기!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     스크린 3: AI 이미지 생성 중
+════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="loading-box">
+    <span class="loading-icon" id="loading-icon">🎨</span>
+    <div class="loading-title">AI가 그림을 그리는 중...</div>
+    <div class="loading-sub" id="loading-sub">성경 장면을 아름다운 그림으로<br>표현하고 있어요. 잠깐만 기다려주세요!</div>
+    <div class="loading-bar"><div class="loading-fill" id="loading-fill"></div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     스크린 4: 그림 보기 (플레이)
+════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="play-bar">
+    <button class="play-back" onclick="goHub()">←</button>
+    <div class="play-title" id="play-title">그림 맞추기</div>
+    <div class="timer-pill" id="timer-disp">30초</div>
+  </div>
+  <div class="scroll-body">
+    <div class="play-body">
+      <!-- 이미지 -->
+      <div class="img-frame">
+        <img id="ai-img" class="ai-img" src="" alt="성경 그림" style="opacity:0" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <div class="img-overlay" id="img-overlay">
+          <span class="ov-ic">🎨</span>
+          <p>이미지를 불러오는 중이에요…</p>
+        </div>
+        <div class="img-hint" id="img-hint" style="display:none">🤫 어떤 성경 이야기일까요?</div>
+      </div>
+      <!-- 미니 점수 -->
+      <div class="mini-scores" id="mini-scores"></div>
+      <!-- 컨트롤 -->
+      <!-- 힌트 -->
+      <div class="hint-area">
+        <button class="hint-btn" id="hint-btn" onclick="showHint()">
+          💡 힌트 보기 <span id="hint-count" style="margin-left:auto;font-size:.72rem;color:var(--dim)">(1/3)</span>
+        </button>
+        <div class="hint-cards" id="hint-cards"></div>
+      </div>
+      <div class="ctrl-row">
+        <button class="btn-outline" onclick="startTimer()">⏱ 타이머</button>
+        <button class="btn-outline" onclick="stopTimer()">⏹ 정지</button>
+        <button class="btn-outline" onclick="resetTimer()" style="color:#FC8C8C;border-color:rgba(239,68,68,.3)">↺ 리셋</button>
+      </div>
+      <button class="ctrl-reveal" onclick="goAnswer()">📢 정답 공개하기!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     스크린 5: 정답 공개
+════════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="ans-modal" id="ans-modal">
+    <span class="ans-icon">✝️</span>
+    <div class="ans-lbl">정답 공개!</div>
+    <div class="ans-name" id="ans-name">제목</div>
+    <div class="ans-verse" id="ans-verse">성경 구절</div>
+    <div class="point-lbl">맞힌 팀에게 +1점 주세요!</div>
+    <div class="point-grid" id="point-grid"></div>
+    <button class="ans-next" id="ans-next" onclick="nextRound()">다음 라운드 →</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     스크린 6: 최종 결과
+════════════════════════════════ -->
+<div class="screen" id="s6">
+  <div class="result-wrap">
+    <span class="res-trophy">🏆</span>
+    <div class="res-title">게임 종료!</div>
+    <div class="res-sub" id="res-sub">수고했어요 다들~</div>
+    <div class="res-list" id="res-list"></div>
+    <button class="res-again" onclick="restartAll()">🔄 다시 시작</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════
+   데이터
+══════════════════════════════════ */
+const SCENES = [
+  {id:'creation', ko:'천지창조 — 아담의 창조', verse:'창세기 1:27', cat:'ot', icon:'🌅',
+   hints:['🙌 두 손이 서로를 향해 뻗고 있어요','✨ 손가락 사이에서 신비로운 빛이 나와요','📖 하나님이 사람을 만드신 순간이에요'],
+   prompt:'Michelangelo Sistine Chapel Creation of Adam style painting, two hands reaching toward each other with divine golden light emanating between fingertips, dramatic chiaroscuro, dark heavenly background with angels, classical Renaissance fresco painting, highly detailed, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'noah', ko:'노아의 방주', verse:'창세기 7:7', cat:'ot', icon:'🕊️',
+   hints:['🌊 온 땅이 물로 가득 차 있어요','🚢 거대한 나무 배 한 척이 떠 있어요','🌈 하늘에 무지개와 비둘기가 보여요'],
+   prompt:'Noah Ark biblical scene classical painting, massive wooden ark floating on flooded stormy waters, animals entering two by two, dark dramatic clouds, rainbow in sky, dove with olive branch, old master oil painting style, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'moses', ko:'모세와 홍해', verse:'출애굽기 14:21', cat:'mir', icon:'🌊',
+   hints:['🌊 바다가 두 쪽으로 쫙 갈라져 있어요','🚶 사람들이 마른 땅 위를 걷고 있어요','🪄 지팡이를 든 노인이 앞에 서 있어요'],
+   prompt:'Moses parting the Red Sea epic biblical painting, Moses holding staff up, two towering walls of blue water on each side, Israelites walking on dry sandy path between walls, dramatic divine light beam from sky, classical religious oil painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'david', ko:'다윗과 골리앗', verse:'사무엘상 17:50', cat:'ot', icon:'⚔️',
+   hints:['⚔️ 덩치 차이가 엄청난 두 사람이 대결 중이에요','🪨 작은 쪽이 돌팔매를 들고 있어요','🛡️ 큰 쪽은 완전 무장한 거인 전사예요'],
+   prompt:'David and Goliath biblical painting, small young shepherd boy David with sling facing giant armored warrior Goliath, dramatic battlefield, heroic composition, classical oil painting style, Caravaggio chiaroscuro lighting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'daniel', ko:'사자굴의 다니엘', verse:'다니엘 6:22', cat:'ot', icon:'🦁',
+   hints:['🦁 사자들이 한 사람을 둘러싸고 있어요','🕯️ 어두운 동굴 안 장면이에요','🙏 사람이 무릎 꿇고 기도하는데 사자가 얌전해요'],
+   prompt:'Daniel in the lions den biblical painting, peaceful man kneeling in prayer in dark stone cave surrounded by three calm lions, divine golden light beam from above, angel shown as glowing light silhouette from behind, no close-up faces, dramatic Renaissance religious painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'nativity', ko:'예수님의 탄생', verse:'누가복음 2:7', cat:'nt', icon:'⭐',
+   hints:['⭐ 하늘에 유독 밝게 빛나는 별이 있어요','🐄 마구간처럼 보이는 공간이에요','👶 구유에 아기가 누워 있어요'],
+   prompt:'Nativity scene birth of Jesus biblical painting, baby Jesus in manger with radiant golden light, Mary and Joseph kneeling, shepherds watching, brilliant Star of Bethlehem, angels shown as glowing figures from behind in the sky, no distorted faces, classical oil painting style, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'loaves', ko:'오병이어 — 오천 명을 먹이심', verse:'마가복음 6:41', cat:'mir', icon:'🐟',
+   hints:['🍞 빵 5개와 물고기 2마리가 보여요','👥 언덕에 엄청 많은 사람들이 있어요','✨ 예수님이 음식을 들고 감사 기도해요'],
+   prompt:'Jesus feeding five thousand biblical miracle painting, Jesus blessing five loaves bread and two fish with golden divine light, large crowd of people on hillside, disciples distributing food, classical religious painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'walking', ko:'물 위를 걸으신 예수님', verse:'마태복음 14:29', cat:'mir', icon:'🌊',
+   hints:['🌊 폭풍이 치는 바다 위에 누군가 서 있어요','⛵ 멀리 배와 제자들이 보여요','🙆 물에 빠지며 손을 뻗는 사람이 있어요'],
+   prompt:'Jesus walking on water during storm biblical painting, Jesus in white robes walking calmly on dark stormy sea waves at night, Peter reaching out hand sinking, disciples in boat watching, moonlight, Rembrandt style dramatic lighting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'prodigal', ko:'탕자의 귀환', verse:'누가복음 15:20', cat:'nt', icon:'🏃',
+   hints:['🌅 아름다운 노을 배경이에요','🤗 두 사람이 서로를 꼭 껴안고 있어요','👴 한 명은 나이 든 아버지처럼 보여요'],
+   prompt:'Prodigal son return biblical painting Rembrandt style, father embracing returning ragged son with overwhelming love, warm golden sunset light, older brother watching from side, emotional reunion, dramatic classical oil painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'lastsupper', ko:'최후의 만찬', verse:'마태복음 26:26', cat:'nt', icon:'🍷',
+   hints:['🍽️ 긴 식탁에 여러 명이 나란히 앉아 있어요','🍷 빵과 포도주 잔이 탁자 위에 있어요','1️⃣3️⃣ 중앙 인물 포함 총 13명이에요'],
+   prompt:'Last Supper painting Leonardo da Vinci style, Jesus and twelve disciples seated at long table, bread and wine cups, dramatic arched windows with light behind, disciples reacting with various emotions, detailed classical painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'resurrection', ko:'부활하신 예수님', verse:'마태복음 28:6', cat:'mir', icon:'✨',
+   hints:['🪨 커다란 돌이 굴러져 무덤이 열려 있어요','✨ 무덤에서 눈부신 빛이 뿜어져 나와요','👼 흰 옷을 입은 천사가 무덤 곁에 있어요'],
+   prompt:'Resurrection of Jesus Christ biblical painting, empty open tomb with overwhelming white divine light, large rolled stone, glowing angelic figures shown from behind or as silhouettes, woman kneeling in awe at dawn, no distorted faces, dramatic classical religious oil painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'magi', ko:'동방박사의 방문', verse:'마태복음 2:11', cat:'nt', icon:'👑',
+   hints:['🐪 낙타를 타고 먼 동방에서 온 사람들이에요','⭐ 별을 따라 긴 여행을 했어요','🎁 황금·유향·몰약 세 가지 선물을 드려요'],
+   prompt:'Three Wise Men Magi visiting baby Jesus biblical painting, three kings in rich robes presenting gifts gold frankincense myrrh, camels in background, star of Bethlehem shining above, Mary holding baby Jesus, classical Renaissance religious oil painting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+  {id:'leprosy', ko:'나병 환자를 고치신 예수님', verse:'누가복음 17:14', cat:'mir', icon:'🙌',
+   hints:['🤕 피부가 심하게 아픈 사람들이 예수님께 나아와요','🙏 멀찍이 서서 큰 소리로 예수님을 불러요','✨ 예수님이 말씀하시자 피부가 깨끗해져요'],
+   prompt:'Jesus healing ten lepers biblical miracle painting, group of sick suffering people with skin disease reaching out toward Jesus, Jesus gesturing with divine healing light, classical religious oil painting, Rembrandt style dramatic lighting, no close-up faces, figures shown from distance or mid-shot, angels depicted from behind, no frontal portraits'},
+];
+
+const TEAM_COLORS = ['#3B82F6','#EC4899','#F59E0B','#10B981'];
+const RANK_ICONS = ['🥇','🥈','🥉','4️⃣'];
+
+let teams = [];
+let timerSec = 30, maxSec = 30, totalRounds = 8;
+let curRound = 1, selectedScene = null;
+let usedIds = [];
+let timerInt = null;
+let hintIdx = 0;
+
+/* ── 화면 전환 ── */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ── 세그먼트 ── */
+function setSeg(btn,type,val){
+  btn.closest('.seg').querySelectorAll('.seg-o').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(type==='time'){maxSec=val;timerSec=val}
+  else{totalRounds=val}
+}
+
+/* ── 팀 입력 초기화 ── */
+(function(){
+  document.getElementById('team-rows').innerHTML=['1팀','2팀','3팀','4팀'].map((d,i)=>`
+    <div class="team-row">
+      <div class="t-dot" style="background:${TEAM_COLORS[i]}"></div>
+      <input class="t-input" id="ti${i}" placeholder="${d}" maxlength="10">
+    </div>`).join('');
+})();
+
+/* ── 게임 시작 ── */
+function startGame(){
+  teams = TEAM_COLORS.map((c,i)=>({
+    name:document.getElementById('ti'+i).value.trim()||['1팀','2팀','3팀','4팀'][i],
+    color:c, score:0
+  }));
+  curRound=1; usedIds=[]; selectedScene=null; timerSec=maxSec;
+  renderHub(); show('s2');
+}
+
+/* ── 허브 렌더 ── */
+function renderHub(){
+  // 스텝 도트
+  document.getElementById('step-dots').innerHTML=Array.from({length:totalRounds},(_, i)=>`<div class="step-dot${i<curRound-1?' on':''}"></div>`).join('');
+  document.getElementById('hub-round-badge').textContent=`${curRound}/${totalRounds}R`;
+  // 점수
+  document.getElementById('score-grid').innerHTML=teams.map((t,i)=>`
+    <div class="score-chip" style="border-color:${t.color}44;background:${t.color}0E">
+      <div class="sc-color" style="background:${t.color}"></div>
+      <div class="sc-name" style="color:${t.color}">${t.name}</div>
+      <div class="sc-pts" style="color:${t.color}">${t.score}점</div>
+      <div class="sc-btns">
+        <div class="sc-adj" style="border-color:${t.color}44;color:${t.color}" onclick="adj(${i},-1)">−</div>
+        <div class="sc-adj" style="border-color:${t.color}44;color:${t.color}" onclick="adj(${i},1)">+</div>
+      </div>
+    </div>`).join('');
+  // 장면 목록
+  document.getElementById('scene-list').innerHTML=SCENES.map((s,i)=>{
+    const used=usedIds.includes(s.id);
+    const on=selectedScene&&selectedScene.id===s.id;
+    return`<button class="sb${on?' on':''}${used?' used':''}" onclick="pickScene(${i})">
+      <div class="sb-ic">${s.icon}</div>
+      <div class="sb-info">
+        <div class="sb-name">${s.ko}</div>
+        <div class="sb-verse">${s.verse}</div>
+      </div>
+      <div class="sb-tag ${s.cat==='ot'?'t-ot':s.cat==='nt'?'t-nt':'t-mir'}">${s.cat==='ot'?'구약':s.cat==='nt'?'신약':'기적'}</div>
+      ${used?'<div class="sb-used-badge">✓</div>':''}
+    </button>`;
+  }).join('');
+  document.getElementById('go-btn').disabled=!selectedScene;
+}
+
+function adj(i,v){teams[i].score=Math.max(0,teams[i].score+v);renderHub();renderMiniScores()}
+function pickScene(i){selectedScene=SCENES[i];renderHub()}
+
+/* ── 플레이로 이동 (로딩 → 플레이) ── */
+function goPlay(){
+  if(!selectedScene)return;
+  stopTimer(); timerSec=maxSec; updateTimerUI();
+  // 로딩 화면 먼저
+  show('s3');
+  // 이미지 프리로드
+  const img=document.getElementById('ai-img');
+  img.style.opacity='0';
+  document.getElementById('img-overlay').style.display='flex';
+  document.getElementById('img-hint').style.display='none';
+  const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(selectedScene.prompt + ', no text, no letters, no words')}&width=512&height=384&nologo=true&enhance=true&seed=${Math.floor(Math.random()*9999)}`;
+  img.onload=()=>{
+    img.style.opacity='1';
+    document.getElementById('img-overlay').style.display='none';
+    document.getElementById('img-hint').style.display='block';
+    show('s4');
+    // 3초 후 타이머 자동 시작
+    setTimeout(startTimer,10000);
+  };
+  img.onerror=()=>{
+    // 실패 시 플레이 화면으로 이동 (오버레이 표시 유지)
+    document.getElementById('img-overlay').innerHTML='<span style="font-size:2rem">⚠️</span><p>이미지 로드 실패<br>인터넷 연결을 확인해주세요<br><span style="font-size:.7rem;color:var(--dim2)">타이머는 수동으로 시작해주세요</span></p>';
+    show('s4');
+  };
+  img.src=url;
+  hintIdx=0;
+  document.getElementById('hint-cards').innerHTML='';
+  document.getElementById('hint-btn').disabled=false;
+  document.getElementById('hint-count').textContent='(1/3)';
+  document.getElementById('play-title').textContent=`라운드 ${curRound}`;
+  renderMiniScores();
+}
+
+
+/* ── 힌트 ── */
+function showHint(){
+  if(!selectedScene||hintIdx>=selectedScene.hints.length)return;
+  const card=document.createElement('div');
+  card.className='hint-card';
+  card.textContent=selectedScene.hints[hintIdx];
+  document.getElementById('hint-cards').appendChild(card);
+  hintIdx++;
+  const btn=document.getElementById('hint-btn');
+  const cnt=document.getElementById('hint-count');
+  if(hintIdx>=selectedScene.hints.length){
+    btn.disabled=true;
+    cnt.textContent='(힌트 소진)';
+  } else {
+    cnt.textContent=`(${hintIdx+1}/${selectedScene.hints.length})`;
+  }
+}
+
+/* ── 미니 점수 ── */
+function renderMiniScores(){
+  document.getElementById('mini-scores').innerHTML=teams.map(t=>`
+    <div class="ms-chip" style="border-color:${t.color}44;background:${t.color}0E">
+      <div class="ms-dot" style="background:${t.color}"></div>
+      <div class="ms-name" style="color:${t.color}">${t.name}</div>
+      <div class="ms-pts" style="color:${t.color}">${t.score}점</div>
+    </div>`).join('');
+}
+
+/* ── 타이머 ── */
+function updateTimerUI(){
+  const el=document.getElementById('timer-disp');
+  el.textContent=timerSec+'초';
+  el.className='timer-pill';
+  if(timerInt)el.classList.add('run');
+  if(timerSec<=10&&timerInt)el.classList.add('urg');
+}
+function startTimer(){
+  if(timerInt)return;
+  timerInt=setInterval(()=>{
+    if(timerSec>0){timerSec--;updateTimerUI()}
+    else{stopTimer()}
+  },1000);
+  updateTimerUI();
+}
+function stopTimer(){clearInterval(timerInt);timerInt=null;updateTimerUI()}
+function resetTimer(){stopTimer();timerSec=maxSec;updateTimerUI()}
+
+/* ── 정답 공개 ── */
+function goAnswer(){
+  stopTimer();
+  const s=selectedScene;
+  document.getElementById('ans-name').textContent=s.ko;
+  document.getElementById('ans-verse').textContent=s.verse;
+  const isLast=curRound>=totalRounds;
+  document.getElementById('ans-next').textContent=isLast?'🏆 최종 결과 보기!':`다음 라운드 (${curRound+1}/${totalRounds}) →`;
+  document.getElementById('point-grid').innerHTML=teams.map((t,i)=>`
+    <button class="pt-btn" style="border-color:${t.color}44" onclick="givePoint(${i},this)">
+      <span style="color:${t.color};font-weight:800">${t.name}</span><br>+1점
+    </button>`).join('');
+  show('s5');
+}
+function givePoint(i,btn){
+  if(btn.classList.contains('scored'))return;
+  teams[i].score++;
+  btn.classList.add('scored');
+  btn.innerHTML=`<span style="color:${teams[i].color};font-weight:800">${teams[i].name}</span><br>✅ +1점`;
+}
+
+/* ── 다음 라운드 ── */
+function nextRound(){
+  if(selectedScene)usedIds.push(selectedScene.id);
+  if(curRound>=totalRounds){showResult();return}
+  curRound++;
+  selectedScene=null;
+  timerSec=maxSec;
+  renderHub();
+  show('s2');
+}
+
+/* ── 최종 결과 ── */
+function showResult(){
+  const sorted=[...teams].sort((a,b)=>b.score-a.score);
+  const max=sorted[0].score||1;
+  const winner=sorted[0].name;
+  document.getElementById('res-sub').textContent=`${winner} 팀 우승! 🎉 모두 수고했어요`;
+  document.getElementById('res-list').innerHTML=sorted.map((t,i)=>`
+    <div class="res-row" style="border-color:${t.color}55;background:${t.color}10;animation-delay:${i*.1}s">
+      <div class="res-rank">${RANK_ICONS[i]}</div>
+      <div class="res-info">
+        <div class="res-name" style="color:${t.color}">${t.name}</div>
+        <div class="res-bar-wrap"><div class="res-bar" style="width:0%;background:${t.color}" data-w="${Math.round(t.score/max*100)}"></div></div>
+      </div>
+      <div class="res-pts" style="color:${t.color}">${t.score}점</div>
+    </div>`).join('');
+  show('s6');
+  // 바 애니메이션
+  setTimeout(()=>document.querySelectorAll('.res-bar').forEach(b=>b.style.width=b.dataset.w+'%'),100);
+}
+
+/* ── 유틸 ── */
+function confirmBack(){if(confirm('처음 설정 화면으로 돌아갈까요?\n(진행 점수는 초기화돼요)'))show('s1')}
+function goHub(){stopTimer();show('s2')}
+function restartAll(){show('s1')}
+</script>
+</body>
+</html>
