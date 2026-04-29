@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2주 릴레이 묵상 챌린지</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060810;--sf1:#0C0F18;--sf2:#121820;--sf3:#181F2A;
+  --bd1:#1E2838;--bd2:#263040;--bd3:#2E3C52;
+  --blue:#3B82F6;--blue2:#60A5FA;--blue3:#93C5FD;--blue4:#DBEAFE;
+  --gold:#C9922A;--gold2:#E8B84B;--gold3:#FDD87A;
+  --cream:#EFF6FF;--cream2:#BFDBFE;--dim:#6B7E9A;--dim2:#3D4E62;
+  --green:#34D399;--pink:#F472B6;--purple:#A78BFA;
+}
+html,body{min-height:100%;overflow-y:auto}
+body{font-family:-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--cream)}
+
+/* 배경 그라디언트 */
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 15% 15%,rgba(59,130,246,.12),transparent 50%),
+             radial-gradient(ellipse at 85% 85%,rgba(201,146,42,.1),transparent 50%),
+             radial-gradient(ellipse at 50% 50%,rgba(167,139,250,.06),transparent 60%);
+  pointer-events:none;z-index:0}
+
+/* 별 */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;border-radius:50%;background:white;animation:tw var(--d,3s) ease-in-out infinite var(--dl,0s)}
+@keyframes tw{0%,100%{opacity:var(--lo,.05)}50%{opacity:var(--hi,.6)}}
+
+/* 화면 시스템 */
+.screen{position:relative;display:none;flex-direction:column;min-height:100vh}
+.screen.active{display:flex;animation:sIn .32s ease}
+@keyframes sIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* 공통 탑바 */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(6,8,16,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd1);padding:0 16px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.tb-back{width:34px;height:34px;border-radius:9px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.22);color:var(--blue3);font-size:.95rem;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;flex-shrink:0}
+.tb-title{font-size:.88rem;font-weight:700;color:var(--cream);flex:1}
+.tb-badge{font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:50px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--blue3);flex-shrink:0}
+
+/* 스크롤 바디 */
+.sb{}
+.sb::-webkit-scrollbar{width:3px}
+.sb::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.inner{max-width:540px;margin:0 auto;padding:20px 16px 60px}
+
+/* 섹션 레이블 */
+.slbl{font-size:.62rem;font-weight:700;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.slbl::after{content:'';flex:1;height:1px;background:var(--bd2)}
+
+/* 카드 */
+.card{background:var(--sf2);border:1px solid var(--bd1);border-radius:16px;padding:16px;margin-bottom:12px}
+
+/* 버튼 */
+.btn-main{width:100%;padding:15px;border-radius:13px;border:none;cursor:pointer;font-family:inherit;font-size:.93rem;font-weight:900;color:#06080F;letter-spacing:.03em;background:linear-gradient(135deg,#1E3A8A,var(--blue2),#1E3A8A);background-size:200%;box-shadow:0 4px 20px rgba(59,130,246,.3);transition:.3s}
+.btn-main:hover:not(:disabled){background-position:100%;transform:translateY(-1px)}
+.btn-main:disabled{opacity:.3;cursor:default;transform:none;box-shadow:none}
+.btn-ghost{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--bd2);background:transparent;cursor:pointer;font-family:inherit;font-size:.84rem;font-weight:700;color:var(--dim);transition:.15s;margin-top:8px}
+.btn-ghost:hover{border-color:var(--blue2);color:var(--blue3)}
+
+/* ═══════════ 스크린 1: 홈 ═══════════ */
+#s1 .hero{padding:28px 20px 20px;text-align:center;position:relative;flex-shrink:0}
+#s1 .hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:260px;height:200px;background:radial-gradient(ellipse,rgba(59,130,246,.18),transparent 65%);pointer-events:none}
+.hero-ic{font-size:3rem;display:block;margin-bottom:12px;animation:float 5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.hero-tag{display:inline-block;padding:4px 14px;border-radius:50px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.26);font-size:.68rem;font-weight:700;color:var(--blue3);letter-spacing:.07em;margin-bottom:11px}
+#s1 h1{font-family:'Nanum Myeongjo',serif;font-size:1.5rem;font-weight:800;line-height:1.3;margin-bottom:7px}
+#s1 h1 em{color:var(--gold3);font-style:normal}
+#s1 .sub{font-size:.8rem;color:var(--dim);line-height:1.75}
+
+/* 진행률 */
+.prog-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:13px}
+.prog-circle{position:relative;width:56px;height:56px;flex-shrink:0}
+.prog-circle svg{transform:rotate(-90deg)}
+.prog-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;color:var(--blue3)}
+.prog-info{flex:1}
+.prog-title{font-size:.88rem;font-weight:700;color:var(--cream);margin-bottom:3px}
+.prog-sub{font-size:.72rem;color:var(--dim);line-height:1.5}
+.prog-streak{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:50px;background:rgba(252,211,77,.1);border:1px solid rgba(252,211,77,.22);font-size:.68rem;font-weight:700;color:#FCD34D;margin-top:5px}
+
+/* 14일 캘린더 그리드 */
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:14px}
+.day-cell{aspect-ratio:1;border-radius:11px;border:1.5px solid var(--bd1);background:var(--sf1);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:.18s;position:relative;overflow:hidden}
+.day-cell:hover{border-color:var(--blue2);background:rgba(59,130,246,.07)}
+.day-cell.done{background:rgba(59,130,246,.14);border-color:var(--blue2)}
+.day-cell.today{border-color:var(--gold2);background:rgba(201,146,42,.1);box-shadow:0 0 12px rgba(201,146,42,.2)}
+.day-cell.locked{opacity:.38;cursor:default;pointer-events:none}
+.day-cell.future{cursor:pointer}
+.day-num{font-size:.72rem;font-weight:700;color:var(--dim)}
+.day-cell.done .day-num{color:var(--blue3)}
+.day-cell.today .day-num{color:var(--gold3)}
+.day-check{font-size:.85rem;margin-top:1px}
+.day-label{font-size:.52rem;color:var(--dim);margin-top:1px}
+.day-cell.today .day-label{color:var(--gold2);font-weight:700}
+
+/* ═══════════ 스크린 2: 오늘의 묵상 ═══════════ */
+.day-topinfo{padding:14px 16px 10px;border-bottom:1px solid var(--bd1);flex-shrink:0;background:rgba(6,8,16,.7)}
+.dti-row{display:flex;align-items:center;justify-content:space-between}
+.dti-day{font-size:.75rem;font-weight:700;color:var(--blue3)}
+.dti-theme{font-size:.7rem;color:var(--dim);margin-top:2px}
+.done-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:50px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);font-size:.65rem;font-weight:700;color:var(--green)}
+
+/* 말씀 카드 */
+.verse-card{background:linear-gradient(150deg,rgba(59,130,246,.1),rgba(201,146,42,.06));border:1px solid rgba(59,130,246,.2);border-left:3px solid var(--blue2);border-radius:16px;padding:18px;margin-bottom:12px}
+.vc-ref{font-size:.68rem;font-weight:700;color:var(--blue3);letter-spacing:.07em;margin-bottom:8px;text-transform:uppercase}
+.vc-text{font-family:'Nanum Myeongjo',serif;font-size:1.05rem;color:var(--cream);line-height:1.9;font-weight:700}
+.vc-sub{font-size:.75rem;color:var(--dim);margin-top:8px;line-height:1.6;font-style:italic}
+
+/* AI 묵상 질문 */
+.q-loading{text-align:center;padding:28px 16px;display:none}
+.q-spin{font-size:2rem;display:block;margin-bottom:10px;animation:spin 2s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.q-loading p{font-size:.8rem;color:var(--dim);line-height:1.7}
+.q-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.q-item{background:var(--sf2);border:1.5px solid var(--bd2);border-radius:13px;padding:13px 14px;cursor:pointer;transition:.18s;display:flex;align-items:flex-start;gap:10px}
+.q-item:hover{border-color:var(--blue2);background:rgba(59,130,246,.06)}
+.q-item.picked{border-color:var(--blue2);background:rgba(59,130,246,.1)}
+.q-num{width:24px;height:24px;border-radius:7px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.25);font-size:.7rem;font-weight:900;color:var(--blue3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.q-item.picked .q-num{background:var(--blue2);color:#06080F;border-color:var(--blue2)}
+.q-text{font-size:.85rem;color:var(--cream2);line-height:1.65}
+
+/* ═══════════ 스크린 3: 묵상 작성 ═══════════ */
+.sel-q-box{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-left:3px solid var(--blue2);border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.sqb-lbl{font-size:.63rem;font-weight:700;color:var(--blue3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.sqb-text{font-size:.86rem;color:var(--cream2);line-height:1.65}
+.write-box{background:var(--sf2);border:1.5px solid var(--bd1);border-radius:16px;padding:15px;margin-bottom:12px;transition:.2s}
+.write-box:focus-within{border-color:var(--blue2);background:var(--sf3)}
+.write-box textarea{width:100%;min-height:150px;resize:none;background:transparent;border:none;outline:none;font-family:inherit;font-size:.88rem;color:var(--cream);line-height:1.85}
+.write-box textarea::placeholder{color:var(--dim2)}
+.wbox-foot{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--bd1)}
+.wbox-tip{font-size:.67rem;color:var(--dim)}
+.wbox-ct{font-size:.67rem;color:var(--dim)}
+
+/* AI 피드백 */
+.feedback-card{background:linear-gradient(150deg,var(--sf2),var(--sf3));border:1.5px solid var(--bd2);border-radius:16px;padding:18px;margin-bottom:12px;display:none;animation:fadeU .4s ease}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fb-header{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+.fb-ic{width:36px;height:36px;border-radius:11px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.fb-title{font-size:.8rem;font-weight:700;color:var(--blue3)}
+.fb-sub{font-size:.66rem;color:var(--dim);margin-top:1px}
+.fb-verse{background:rgba(201,146,42,.08);border:1px solid rgba(201,146,42,.18);border-radius:11px;padding:11px 13px;margin-bottom:12px}
+.fb-vref{font-size:.65rem;font-weight:700;color:var(--gold2);margin-bottom:4px}
+.fb-vtext{font-family:'Nanum Myeongjo',serif;font-size:.88rem;color:var(--gold3);line-height:1.75;font-style:italic}
+.fb-text{font-size:.86rem;color:var(--cream2);line-height:1.88;white-space:pre-wrap}
+.fb-encourage{background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);border-radius:11px;padding:11px 13px;margin-top:12px}
+.fb-enc-lbl{font-size:.62rem;font-weight:700;color:var(--green);letter-spacing:.08em;margin-bottom:4px}
+.fb-enc-text{font-size:.83rem;color:#A7F3D0;line-height:1.7}
+
+/* ═══════════ 스크린 4: 완료 ═══════════ */
+#s4{align-items:center;justify-content:center;padding:24px}
+.done-wrap{width:100%;max-width:380px;text-align:center}
+.done-ic{font-size:4.5rem;display:block;margin-bottom:14px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.done-title{font-family:'Nanum Myeongjo',serif;font-size:1.5rem;font-weight:800;color:var(--cream);margin-bottom:5px}
+.done-sub{font-size:.82rem;color:var(--dim);line-height:1.75;margin-bottom:22px}
+.done-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:16px;padding:16px;margin-bottom:16px;text-align:left}
+.done-streak{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.streak-dot{width:22px;height:22px;border-radius:6px;background:var(--bd1);display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:.3s}
+.streak-dot.lit{background:var(--blue2)}
+.streak-dot.today-lit{background:var(--gold2);box-shadow:0 0 10px rgba(232,184,75,.5)}
+
+/* 에러 */
+.err-box{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-radius:12px;padding:12px 14px;display:none;margin-bottom:10px}
+.err-text{font-size:.8rem;color:#FCA5A5}
+
+/* 로딩 inline */
+.inline-load{text-align:center;padding:18px;display:none}
+.il-spin{font-size:1.5rem;animation:spin 1.8s linear infinite}
+
+/* ═══ 키 설정 ═══ */
+#s0{align-items:center;justify-content:center;padding:24px}
+.key-wrap{width:100%;max-width:380px;text-align:center}
+.key-ic{font-size:3.5rem;display:block;margin-bottom:16px;animation:float 4s ease-in-out infinite}
+.key-title{font-family:'Nanum Myeongjo',serif;font-size:1.4rem;font-weight:800;color:var(--cream);margin-bottom:6px}
+.key-sub{font-size:.8rem;color:var(--dim);line-height:1.75;margin-bottom:24px}
+.key-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:16px;padding:18px;text-align:left;margin-bottom:14px}
+.key-label{font-size:.68rem;font-weight:700;color:var(--blue3);letter-spacing:.08em;margin-bottom:8px}
+.key-input{width:100%;padding:11px 13px;border:1.5px solid var(--bd2);border-radius:10px;background:var(--sf1);font-size:.84rem;font-family:inherit;color:var(--cream);outline:none;transition:.2s;margin-bottom:8px;letter-spacing:.04em}
+.key-input:focus{border-color:var(--blue2)}
+.key-input::placeholder{color:var(--dim2);letter-spacing:0}
+.key-hint{font-size:.7rem;color:var(--dim);line-height:1.6}
+.key-hint a{color:var(--blue3);text-decoration:none}
+.key-err{font-size:.75rem;color:#F87171;margin-top:6px;display:none}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+
+<!-- ══ S0: API 키 설정 ══ -->
+<div class="screen" id="s0">
+  <div class="key-wrap">
+    <span class="key-ic">🔑</span>
+    <div class="key-title">처음 한 번만<br>설정해요</div>
+    <div class="key-sub">Anthropic API 키를 입력하면<br>AI 묵상 질문과 피드백이 활성화돼요</div>
+    <div class="key-card">
+      <div class="key-label">🔑 API KEY</div>
+      <input class="key-input" id="keyInput" type="password" placeholder="sk-ant-api03-..." oninput="document.getElementById('keyErr').style.display='none'">
+      <div class="key-hint">콘솔에서 발급한 키를 붙여넣기 해주세요<br>한 번 저장하면 다시 입력 안 해도 돼요 ✓</div>
+      <div class="key-err" id="keyErr">키를 입력해주세요</div>
+    </div>
+    <button class="btn-main" onclick="saveKeyAndStart()">저장하고 시작하기 →</button>
+  </div>
+</div>
+
+<!-- ══ S1: 홈 (캘린더) ══ -->
+<div class="screen active" id="s1">
+  <div class="topbar">
+    <a class="tb-back" href="javascript:void(0)" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</a>
+    <div class="tb-title">📖 2주 릴레이 묵상 챌린지</div>
+    <div class="tb-badge">전-9</div>
+  </div>
+  <div class="hero">
+    <span class="hero-ic">📖</span>
+    <div class="hero-tag">수련회 D-14 ~ D-1 · 14일 챌린지</div>
+    <h1>매일 말씀으로<br><em>마음을 준비해요</em></h1>
+    <p class="sub">하루 한 구절, AI가 묵상 질문을 드려요<br>14일 동안 함께 릴레이로 이어가요 ✝</p>
+  </div>
+  <div class="sb">
+    <div class="inner">
+      <!-- 진행률 -->
+      <div class="theme-today-card" id="themeTodayCard" onclick="openToday()" style="cursor:pointer;background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(201,146,42,.08));border:1.5px solid rgba(59,130,246,.3);border-radius:16px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden">
+    <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;color:var(--blue3);text-transform:uppercase;margin-bottom:7px" id="todayDayLabel">오늘의 주제</div>
+    <div style="font-size:.98rem;font-weight:800;color:var(--cream);line-height:1.5;margin-bottom:10px" id="todayThemeText">—</div>
+    <div style="font-size:.72rem;color:var(--dim)" id="todayRefLabel">—</div>
+    <div style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:1.4rem;opacity:.4">→</div>
+  </div>
+  <div class="prog-card" id="progCard">
+        <div class="prog-circle">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#1E2838" stroke-width="5"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#60A5FA" stroke-width="5"
+              stroke-dasharray="138.2" stroke-dashoffset="138.2" stroke-linecap="round"
+              id="progCircle"/>
+          </svg>
+          <div class="prog-num" id="progNum">0/14</div>
+        </div>
+        <div class="prog-info">
+          <div class="prog-title">오늘의 묵상을 시작해요!</div>
+          <div class="prog-sub" id="progSub">아직 묵상을 시작하지 않았어요</div>
+          <div class="prog-streak" id="progStreak">🔥 0일 연속</div>
+        </div>
+      </div>
+
+      <div class="slbl">📅 14일 챌린지 달력</div>
+      <div class="day-grid" id="dayGrid"></div>
+
+      <button class="btn-main" id="todayBtn" onclick="openToday()">오늘의 묵상 시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S2: 오늘의 묵상 (말씀 + AI 질문) ══ -->
+<div class="screen" id="s2">
+  <div class="topbar">
+    <button class="tb-back" onclick="go('s1')">←</button>
+    <div class="tb-title" id="s2Title">Day 1 묵상</div>
+    <div class="tb-badge" id="s2Badge">D-14</div>
+  </div>
+  <div class="day-topinfo">
+    <div class="dti-row">
+      <div>
+        <div class="dti-day" id="dtiDay">오늘의 말씀</div>
+        <div class="dti-theme" id="dtiTheme"></div>
+      </div>
+      <div class="done-badge" id="dtiBadge" style="display:none">✅ 완료</div>
+    </div>
+  </div>
+  <div class="sb">
+    <div class="inner">
+      <!-- 말씀 -->
+      <div class="verse-card">
+        <div class="vc-ref" id="vcRef"></div>
+        <div class="vc-text" id="vcText"></div>
+        <div class="vc-sub" id="vcSub"></div>
+      </div>
+
+      <!-- AI 질문 -->
+      <div class="slbl">💭 AI 묵상 질문</div>
+      <div class="q-loading" id="qLoading">
+        <span class="q-spin">✝</span>
+        <p>오늘의 말씀으로<br>묵상 질문을 만들고 있어요…</p>
+      </div>
+      <div class="err-box" id="s2Err"><div class="err-text" id="s2ErrTxt"></div></div>
+      <div class="q-list" id="qList"></div>
+
+      <div id="s2Action" style="display:none">
+        <button class="btn-main" id="goWriteBtn" onclick="goWrite()" disabled>
+          질문 선택 후 묵상 쓰기 →
+        </button>
+        <button class="btn-ghost" onclick="refreshQuestions()">↺ 질문 다시 받기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S3: 묵상 쓰기 + AI 피드백 ══ -->
+<div class="screen" id="s3">
+  <div class="topbar">
+    <button class="tb-back" onclick="go('s2')">←</button>
+    <div class="tb-title">묵상 작성하기</div>
+  </div>
+  <div class="sb">
+    <div class="inner">
+      <div style="height:4px"></div>
+      <!-- 선택한 질문 -->
+      <div class="sel-q-box">
+        <div class="sqb-lbl">오늘의 묵상 질문</div>
+        <div class="sqb-text" id="selQText"></div>
+      </div>
+      <!-- 작성 -->
+      <div class="write-box">
+        <textarea id="myReflection" placeholder="오늘 말씀을 읽고 떠오른 생각을 적어보세요.&#10;한 줄이어도 괜찮아요. AI가 함께 묵상을 완성해줄게요 ✝" maxlength="600" oninput="onReflType()"></textarea>
+        <div class="wbox-foot">
+          <div class="wbox-tip">🔒 내 기기에만 저장돼요</div>
+          <div class="wbox-ct"><span id="reflCt">0</span>/600</div>
+        </div>
+      </div>
+      <!-- AI 피드백 -->
+      <div class="inline-load" id="fbLoading">
+        <span class="il-spin">✝</span>
+        <div style="font-size:.78rem;color:var(--dim);margin-top:8px">말씀으로 격려를 드릴게요…</div>
+      </div>
+      <div class="err-box" id="s3Err"><div class="err-text" id="s3ErrTxt"></div></div>
+      <div class="feedback-card" id="fbCard">
+        <div class="fb-header">
+          <div class="fb-ic">✝</div>
+          <div>
+            <div class="fb-title">AI 묵상 정리</div>
+            <div class="fb-sub">네 묵상을 읽고 함께 더 깊이 생각해봤어요</div>
+          </div>
+        </div>
+        <div class="fb-verse">
+          <div class="fb-vref" id="fbVRef"></div>
+          <div class="fb-vtext" id="fbVText"></div>
+        </div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;color:var(--blue3);text-transform:uppercase;margin-bottom:6px">✍ 내 묵상 정리</div>
+        <div class="fb-text" id="fbText"></div>
+        <div class="fb-encourage">
+          <div class="fb-enc-lbl">🌱 한 걸음 더 — 추가 묵상</div>
+          <div class="fb-enc-text" id="fbEnc"></div>
+        </div>
+      </div>
+      <div id="s3Btns">
+        <button class="btn-main" id="getFbBtn" onclick="getFeedback()" disabled>✝ AI가 묵상 완성해주기</button>
+        <button class="btn-ghost" id="saveBtn" onclick="saveDone()" style="display:none">✅ 오늘 묵상 완료하기!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ S4: 완료 ══ -->
+<div class="screen" id="s4">
+  <div class="done-wrap">
+    <span class="done-ic">🌟</span>
+    <div class="done-title" id="doneTitle">오늘도 잘 하셨어요!</div>
+    <div class="done-sub" id="doneSub">말씀으로 하루를 준비했어요<br>내일도 이 자리에서 만나요 ✝</div>
+    <div class="done-card">
+      <div style="font-size:.7rem;font-weight:700;color:var(--dim);margin-bottom:10px;letter-spacing:.07em">14일 진행 현황</div>
+      <div class="done-streak" id="doneStreak"></div>
+    </div>
+    <button class="btn-main" onclick="go('s1')">📅 달력으로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+/* ── 별 ── */
+(function(){const s=document.getElementById('stars');for(let i=0;i<45;i++){const e=document.createElement('div');e.className='star';const z=Math.random()*2+.5;e.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*6}s;--dl:-${Math.random()*6}s;--lo:${.03+Math.random()*.07};--hi:${.3+Math.random()*.5}`;s.appendChild(e);}})();
+
+function getKey(){ return localStorage.getItem('concern_api_key') || ''; }
+
+/* ── 14일 말씀 데이터 ── */
+const DAYS = [
+  {day:1, ref:'예레미야 29:11', text:'"너희를 향한 나의 생각을 내가 아나니 재앙이 아니라 평안이요 너희 미래에 소망을 주려 하는 생각이라"',
+   theme:'하나님은 내 미래를 위한 좋은 계획을 갖고 계세요', sub:'수련회를 앞두고, 하나님이 내 미래를 향해 품으신 좋은 계획을 신뢰해요'},
+  {day:2, ref:'시편 46:10', text:'"이르시기를 너희는 가만히 있어 내가 하나님 됨을 알지어다"',
+   theme:'잠깐 멈추면 하나님의 목소리가 들려요', sub:'바쁜 일상을 잠깐 멈추고, 하나님의 음성에 귀를 기울이는 연습'},
+  {day:3, ref:'이사야 40:31', text:'"오직 여호와를 앙망하는 자는 새 힘을 얻으리니 독수리가 날개치며 올라감 같을 것이요"',
+   theme:'지쳤을 때 하나님께 기대면 새 힘을 얻어요', sub:'지쳐있을 때 힘의 원천이 어디인지 생각해봐요'},
+  {day:4, ref:'빌립보서 4:6-7', text:'"아무 것도 염려하지 말고 다만 모든 일에 기도와 간구로 너희 구할 것을 감사함으로 하나님께 아뢰라"',
+   theme:'걱정하는 대신 하나님께 말하면 마음이 평안해져요', sub:'걱정을 기도로 바꾸는 연습을 해봐요'},
+  {day:5, ref:'로마서 8:28', text:'"우리가 알거니와 하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라"',
+   theme:'이해 안 되는 상황도 결국 좋은 방향으로 흘러가요', sub:'이해되지 않는 상황도 하나님 손 안에 있음을 믿어봐요'},
+  {day:6, ref:'잠언 3:5-6', text:'"너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라 너는 범사에 그를 인정하라 그리하면 네 길을 지도하시리라"',
+   theme:'내 생각보다 하나님을 먼저 믿을 때 길이 열려요', sub:'내 생각보다 하나님을 먼저 구하는 하루'},
+  {day:7, ref:'마태복음 6:33', text:'"그런즉 너희는 먼저 그의 나라와 그의 의를 구하라 그리하면 이 모든 것을 너희에게 더하시리라"',
+   theme:'가장 중요한 것을 먼저 두면 나머지도 따라와요', sub:'오늘 내 하루의 우선순위를 점검해봐요'},
+  {day:8, ref:'요한복음 15:5', text:'"나는 포도나무요 너희는 가지라 그가 내 안에, 내가 그 안에 거하면 사람이 열매를 많이 맺나니"',
+   theme:'하나님과 연결되어 있을 때 내 삶에 열매가 맺혀요', sub:'하나님과의 연결이 모든 것의 출발임을 기억해요'},
+  {day:9, ref:'시편 23:1-3', text:'"여호와는 나의 목자시니 내게 부족함이 없으리로다 그가 나를 푸른 풀밭에 누이시며 쉴 만한 물 가로 인도하시는도다"',
+   theme:'하나님은 나를 한 명 한 명 세심하게 챙겨주세요', sub:'하나님이 나를 얼마나 세심하게 돌보시는지 느껴봐요'},
+  {day:10, ref:'고린도전서 13:4-5', text:'"사랑은 오래 참고 사랑은 온유하며 시기하지 아니하며 사랑은 자랑하지 아니하며 교만하지 아니하며"',
+   theme:'진짜 사랑은 참고 기다리고 상대방을 높여줘요', sub:'주변 사람들을 향한 사랑을 새롭게 생각해봐요'},
+  {day:11, ref:'갈라디아서 5:22-23', text:'"오직 성령의 열매는 사랑과 희락과 화평과 오래 참음과 자비와 양선과 충성과 온유와 절제니"',
+   theme:'하나님과 함께할수록 내 성격과 태도가 달라져요', sub:'내 삶에서 자라고 있는 열매는 무엇인지 생각해봐요'},
+  {day:12, ref:'에베소서 4:32', text:'"서로 친절하게 하며 불쌍히 여기며 서로 용서하기를 하나님이 그리스도 안에서 너희를 용서하심과 같이 하라"',
+   theme:'내가 용서받았기 때문에 나도 용서할 수 있어요', sub:'용서하기 어려운 사람을 위해 기도해봐요'},
+  {day:13, ref:'디모데후서 1:7', text:'"하나님이 우리에게 주신 것은 두려워하는 마음이 아니요 오직 능력과 사랑과 절제하는 마음이니"',
+   theme:'두려움은 하나님이 주신 게 아니에요, 담대해도 돼요', sub:'수련회를 앞두고 두려움보다 기대를 선택해봐요'},
+  {day:14, ref:'요한복음 3:16', text:'"하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다 멸망하지 않고 영생을 얻게 하려 하심이라"',
+   theme:'하나님이 나를 이토록 사랑하신다는 것, 그게 전부예요', sub:'수련회 출발 전날, 복음의 핵심을 다시 마음에 새겨요'},
+];
+
+/* ── 상태 ── */
+let curDay = null, selQ = null, curQs = [];
+const STORAGE_KEY = 'relay_devotion_v1';
+
+function getData(){return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}
+function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
+
+/* ── 화면 전환 ── */
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+/* ── 홈 렌더 ── */
+function renderHome(){
+  const data = getData();
+  const done = Object.keys(data).filter(k=>data[k]?.done).length;
+  // 연속 스트릭
+  let streak=0;
+  for(let i=done;i>=1;i--){if(data[i]?.done)streak++;else break;}
+
+  // 진행 원형
+  const pct = done/14;
+  const circ = 138.2;
+  document.getElementById('progCircle').style.strokeDashoffset = circ*(1-pct);
+  document.getElementById('progNum').textContent = `${done}/14`;
+  document.getElementById('progSub').textContent = done===0?'아직 묵상을 시작하지 않았어요':done===14?'14일 챌린지 완주! 🎉':`${done}일 완료 · ${14-done}일 남았어요`;
+  document.getElementById('progStreak').textContent = `🔥 ${streak}일 연속`;
+
+  // 그리드
+  const grid = document.getElementById('dayGrid');
+  grid.innerHTML = '';
+  DAYS.forEach((d,i)=>{
+    const n = i+1;
+    const isDone = !!data[n]?.done;
+    const isToday = n === getTodayDay();
+    const isFuture = n > getTodayDay();
+    const cell = document.createElement('div');
+    cell.className = 'day-cell' + (isDone?' done':'') + (isToday?' today':'') + (isFuture&&!isDone?' future locked':'');
+    const themeSnippet = (isDone||isToday) ? '' : '';
+    cell.innerHTML = `<div class="day-num">D-${15-n}</div><div class="day-check">${isDone?'✅':isToday?'📖':'•'}</div>`;
+    cell.onclick = () => openDay(n);
+    grid.appendChild(cell);
+  });
+
+  document.getElementById('todayBtn').textContent = data[getTodayDay()]?.done ? `✅ Day ${getTodayDay()} 완료 — 내일 또 만나요!` : `오늘 묵상 시작하기 →`;
+  document.getElementById('todayBtn').disabled = false;
+
+  // 오늘의 주제 카드
+  const td = getTodayDay();
+  const todayData = DAYS[td-1];
+  document.getElementById('todayDayLabel').textContent = `Day ${td} · D-${15-td} · 오늘의 핵심 주제`;
+  document.getElementById('todayThemeText').textContent = todayData.theme;
+  document.getElementById('todayRefLabel').textContent = `📖 ${todayData.ref}`;
+}
+
+function getTodayDay(){
+  // localStorage에 시작일 저장해서 실제 날짜 계산 (없으면 Day 1 기본)
+  const data = getData();
+  if(!data._startDate){
+    const d = {...data, _startDate: new Date().toDateString()};
+    saveData(d);
+    return 1;
+  }
+  const start = new Date(data._startDate);
+  const today = new Date();
+  const diff = Math.floor((today-start)/(1000*60*60*24))+1;
+  return Math.min(Math.max(diff,1),14);
+}
+
+function openToday(){openDay(getTodayDay())}
+
+function openDay(n){
+  curDay = n;
+  const d = DAYS[n-1];
+  const data = getData();
+  const isDone = !!data[n]?.done;
+
+  document.getElementById('s2Title').textContent = `Day ${n} 묵상`;
+  document.getElementById('s2Badge').textContent = `D-${15-n}`;
+  document.getElementById('dtiDay').textContent = `Day ${n} · ${d.ref}`;
+  document.getElementById('dtiTheme').textContent = `✝ 오늘의 주제: ${d.theme}`;
+  document.getElementById('dtiBadge').style.display = isDone ? 'flex' : 'none';
+  document.getElementById('vcRef').textContent = d.ref;
+  document.getElementById('vcText').textContent = d.text;
+  document.getElementById('vcSub').textContent = d.sub;
+
+  // 질문 초기화
+  curQs = [];
+  selQ = null;
+  document.getElementById('qList').innerHTML = '';
+  document.getElementById('s2Err').style.display = 'none';
+  document.getElementById('s2Action').style.display = 'none';
+  document.getElementById('goWriteBtn').disabled = true;
+
+  // 저장된 질문 있으면 재사용
+  if(data[n]?.questions){
+    curQs = data[n].questions;
+    renderQs();
+  } else {
+    loadQuestions();
+  }
+  go('s2');
+}
+
+
+/* ── 안전한 JSON 추출 ── */
+function extractJSON(text){
+  let s = text.trim();
+  // 코드블록 제거
+  s = s.replace(/```json/gi,'').replace(/```/g,'').trim();
+  // { } 사이만 추출
+  const start = s.indexOf('{');
+  const end   = s.lastIndexOf('}');
+  if(start !== -1 && end !== -1) s = s.slice(start, end+1);
+  // 제어문자 제거
+  s = s.replace(/[\u0000-\u001F\u007F]/g, m => m === '\n' || m === '\t' ? m : ' ');
+  return JSON.parse(s);
+}
+
+/* 기본 질문 (API 실패 시 대체) */
+const DEFAULT_QS = [
+  ['이 말씀에서 가장 마음에 남는 단어가 뭐야?', '"평안"과 "소망" 중 지금 나한테 더 필요한 건 뭔 것 같아?', '오늘 하루 이 말씀을 한 번 떠올린다면 언제 떠올릴 것 같아?'],
+  ['"가만히 있어"라는 말이 너한테 어떻게 들려?', '이 구절을 읽었을 때 어떤 장면이나 상황이 떠올라?', '오늘 잠깐 멈추고 조용히 있을 수 있는 시간이 언제일 것 같아?'],
+  ['"새 힘을 얻는다"는 게 어떤 느낌일 것 같아?', '독수리가 날개치며 올라가는 장면을 보면 어떤 생각이 들어?', '지금 내게 새 힘이 필요한 부분이 있다면 어디야?'],
+  ['이 말씀에서 "염려"와 "기도"가 대비되는 게 보여? 어떻게 달라?', '"감사함으로"라는 표현이 왜 들어갔을 것 같아?', '오늘 기도로 바꿔보고 싶은 생각이 있어?'],
+  ['"합력하여 선을 이룬다"는 말이 어떻게 느껴져?', '이 말씀을 쓴 바울은 어떤 상황에서 이걸 썼을 것 같아?', '지금 내 삶에서 이 말씀을 붙잡고 싶은 부분이 있어?'],
+  ['"네 명철을 의지하지 말라"는 말이 어떻게 들려?', '이 말씀에서 하나님이 원하시는 게 뭔 것 같아?', '오늘 하루 한 가지 결정에서 이 말씀대로 해본다면?'],
+  ['"먼저"라는 단어에 집중해봐. 어떤 의미인 것 같아?', '예수님이 이 말씀을 하신 이유가 뭘 것 같아?', '내 하루에서 "먼저" 해야 할 것과 나중에 해도 될 것을 나눠본다면?'],
+  ['"가지"는 포도나무 없이 살 수 있을까? 왜 이런 비유를 쓰셨을 것 같아?', '이 말씀에서 "거한다"는 게 어떤 의미인 것 같아?', '오늘 하루 하나님 안에 거한다는 게 구체적으로 어떤 모습일까?'],
+  ['"부족함이 없다"는 말이 어떻게 느껴져?', '목자가 양을 돌보는 장면을 상상하면 어떤 그림이 그려져?', '지금 나를 돌봐주고 계시는 하나님의 모습을 한 문장으로 표현해볼까?'],
+  ['"오래 참고", "온유하며"—이 중 나한테 제일 어려운 게 뭐야?', '사랑을 이렇게 자세히 설명하는 이유가 뭘 것 같아?', '오늘 주변 한 명한테 이 말씀대로 대해본다면 어떻게 할 수 있을까?'],
+  ['성령의 열매 중에 지금 내 안에서 자라고 있다고 느껴지는 게 있어?', '"열매"라는 표현이 왜 쓰였을 것 같아? 씨앗이나 꽃이 아니라?', '이 열매들 중 오늘 하루 한 가지만 써본다면 어떤 걸 써볼 수 있을까?'],
+  ['"용서하기를 하나님이 하심과 같이"—이 말이 어떻게 느껴져?', '이 말씀에서 친절과 용서가 같이 나오는 이유가 뭘 것 같아?', '오늘 이 말씀을 읽고 마음에 떠오르는 사람이 있어?'],
+  ['"두려워하는 마음"이 아니라고 하셨는데, 그럼 뭘 주셨대?', '능력, 사랑, 절제 — 이 세 가지가 왜 함께 나왔을 것 같아?', '수련회를 앞두고 이 말씀이 어떻게 다가와?'],
+  ['"이처럼 사랑하사"에서 "이처럼"이 어느 정도를 말하는 것 같아?', '하나님이 독생자를 주셨다는 게 어떻게 느껴져?', '이 말씀을 읽고 나서 하나님께 하고 싶은 말이 있어?'],
+];
+
+/* ── AI 묵상 질문 생성 ── */
+async function loadQuestions(){
+  const d = DAYS[curDay-1];
+  document.getElementById('qLoading').style.display = 'block';
+  document.getElementById('s2Action').style.display = 'none';
+
+  const sys = `중학교 1~3학년을 위한 성경 묵상 질문 3개를 만들어주세요.
+JSON으로만 응답: {"questions":["질문1","질문2","질문3"]}
+
+목적: 아이들이 오늘 말씀을 읽고 자기 생각을 자유롭게 쓸 수 있도록 돕는 질문
+
+조건:
+- 말씀 내용에서 직접 출발하는 질문 (고민 상담 아님)
+- "이 말씀에서 어떤 단어가 마음에 걸려?", "이 구절을 읽었을 때 어떤 장면이 떠올라?" 처럼 말씀 자체에 집중
+- 정답이 없고 자기 생각을 쓰면 되는 열린 질문
+- 쉬운 말로, 35자 이내
+- 질문 3개가 각각 다른 방향: 1)말씀 이해 2)개인 연결 3)오늘 하루 적용`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:sys,
+        messages:[{role:'user',content:`[Day ${curDay} · 주제: ${d.theme}]\n구절: ${d.text}\n참조: ${d.ref}`}]})
+    });
+    const data = await res.json();
+    curQs = extractJSON(data.content[0].text).questions;
+    // 저장
+    const stored = getData();
+    stored[curDay] = {...(stored[curDay]||{}), questions:curQs};
+    saveData(stored);
+    document.getElementById('qLoading').style.display = 'none';
+    renderQs();
+  } catch(e){
+    console.warn('API 오류, 기본 질문 사용:', e.message);
+    curQs = DEFAULT_QS[(curDay-1) % DEFAULT_QS.length];
+    const stored2 = getData();
+    stored2[curDay] = {...(stored2[curDay]||{}), questions:curQs};
+    saveData(stored2);
+    document.getElementById('qLoading').style.display = 'none';
+    renderQs();
+  }
+}
+
+function refreshQuestions(){
+  const stored = getData();
+  if(stored[curDay]) {delete stored[curDay].questions; saveData(stored);}
+  loadQuestions();
+}
+
+function renderQs(){
+  document.getElementById('qList').innerHTML = curQs.map((q,i)=>`
+    <div class="q-item" onclick="pickQ(${i},this)">
+      <div class="q-num">${i+1}</div>
+      <div class="q-text">${q}</div>
+    </div>`).join('');
+  document.getElementById('s2Action').style.display = 'block';
+}
+
+function pickQ(i, el){
+  document.querySelectorAll('#qList .q-item').forEach(e=>e.classList.remove('picked'));
+  el.classList.add('picked');
+  selQ = curQs[i];
+  document.getElementById('goWriteBtn').disabled = false;
+}
+
+/* ── 묵상 작성 ── */
+function goWrite(){
+  const data = getData();
+  const saved = data[curDay]?.reflection || '';
+  document.getElementById('selQText').textContent = selQ;
+  document.getElementById('myReflection').value = saved;
+  document.getElementById('reflCt').textContent = saved.length;
+  document.getElementById('getFbBtn').disabled = saved.length < 10;
+  document.getElementById('getFbBtn').style.display = 'block';
+  document.getElementById('saveBtn').style.display = 'none';
+  document.getElementById('fbCard').style.display = 'none';
+  document.getElementById('s3Err').style.display = 'none';
+  document.getElementById('fbLoading').style.display = 'none';
+  go('s3');
+}
+
+function onReflType(){
+  const v = document.getElementById('myReflection').value;
+  document.getElementById('reflCt').textContent = v.length;
+  document.getElementById('getFbBtn').disabled = v.trim().length < 10;
+}
+
+/* ── AI 피드백 ── */
+async function getFeedback(){
+  const reflection = document.getElementById('myReflection').value.trim();
+  if(reflection.length < 10) return;
+
+  // 반성 저장
+  const stored = getData();
+  stored[curDay] = {...(stored[curDay]||{}), reflection};
+  saveData(stored);
+
+  document.getElementById('getFbBtn').style.display = 'none';
+  document.getElementById('fbLoading').style.display = 'block';
+  document.getElementById('s3Err').style.display = 'none';
+  document.getElementById('fbCard').style.display = 'none';
+
+  const d = DAYS[curDay-1];
+  const sys = `당신은 중학생 성경 묵상 도우미예요. 아이가 쓴 짧은 묵상을 읽고, 두 가지를 해주세요.
+
+반드시 아래 JSON 형식만 출력하세요. 설명이나 다른 텍스트 절대 금지:
+{
+  "verseRef": "오늘 말씀 또는 연결되는 성경 구절 참조",
+  "verseText": "구절 원문 (한국어)",
+  "summary": "아이가 쓴 묵상의 핵심을 1-2문장으로 깔끔하게 정리. 아이 입장에서 '~라고 느꼈군요' 형태 아니라, '오늘 나는 ~를 깨달았다' 처럼 아이 본인의 묵상으로 정리해줄 것. 100자 이내.",
+  "deeper": "아이가 미처 생각 못 했을 묵상 포인트 1-2가지를 추가로 제시. 같은 말씀에서 더 깊이 볼 수 있는 내용. 어렵지 않게, 중학생이 이해할 수 있는 언어로. 150자 이내."
+}
+
+규칙: 상담이나 조언 금지 / 말씀 중심으로 / 아이 묵상을 존중하면서 더 풍성하게`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:500,system:sys,
+        messages:[{role:'user',content:`[Day ${curDay} · ${d.ref} · 주제: ${d.theme}]\n질문: ${selQ}\n묵상: ${reflection}`}]})
+    });
+    const data = await res.json();
+    const json = extractJSON(data.content[0].text);
+
+    document.getElementById('fbVRef').textContent = json.verseRef;
+    document.getElementById('fbVText').textContent = json.verseText;
+    document.getElementById('fbText').textContent = json.summary;
+    document.getElementById('fbEnc').textContent = json.deeper;
+    document.getElementById('fbLoading').style.display = 'none';
+    document.getElementById('fbCard').style.display = 'block';
+    document.getElementById('saveBtn').style.display = 'block';
+  } catch(e){
+    // 파싱 실패 시 기본 피드백으로 대체
+    const d2 = DAYS[curDay-1];
+    document.getElementById('fbVRef').textContent = d2.ref;
+    document.getElementById('fbVText').textContent = d2.text;
+    document.getElementById('fbText').textContent = '오늘 말씀 앞에 앉아 내 생각을 적어봤어요. 짧더라도 이렇게 말씀과 함께하는 시간이 쌓이면, 하나님의 마음을 점점 더 알아가게 돼요.';
+    document.getElementById('fbEnc').textContent = '이 말씀이 오늘 하루 머릿속에 떠오르는 순간이 있다면, 그 순간에도 하나님이 말씀하고 계신 거예요. 계속 귀 기울여봐요 ✝';
+    document.getElementById('fbLoading').style.display = 'none';
+    document.getElementById('fbCard').style.display = 'block';
+    document.getElementById('saveBtn').style.display = 'block';
+  }
+}
+
+/* ── 완료 ── */
+function saveDone(){
+  const stored = getData();
+  stored[curDay] = {...(stored[curDay]||{}), done:true, doneAt:new Date().toISOString()};
+  saveData(stored);
+
+  // 완료 화면
+  const done = Object.keys(stored).filter(k=>stored[k]?.done).length;
+  document.getElementById('doneTitle').textContent = `Day ${curDay} 묵상 완료! 🌟`;
+  document.getElementById('doneSub').textContent = done===14?'14일 챌린지를 모두 완주했어요! 수련회를 말씀으로 준비했네요 ✝':`${done}일째 말씀으로 하루를 준비했어요\n내일도 이 자리에서 만나요 ✝`;
+
+  // 스트릭 도트
+  const streak = document.getElementById('doneStreak');
+  streak.innerHTML = DAYS.map((_,i)=>{
+    const n=i+1;
+    const isDone=!!stored[n]?.done;
+    const isToday=n===curDay;
+    return`<div class="streak-dot${isDone&&!isToday?' lit':''}${isToday?' today-lit':''}">${isDone?'✓':'·'}</div>`;
+  }).join('');
+  go('s4');
+  renderHome();
+}
+
+/* ── 초기화 ── */
+function saveKeyAndStart(){
+  const v = document.getElementById('keyInput').value.trim();
+  if(!v){ document.getElementById('keyErr').style.display='block'; return; }
+  localStorage.setItem('concern_api_key', v);
+  // reassign
+  window.API_KEY_VAL = v;
+  renderHome();
+  go('s1');
+}
+
+if(getKey()){
+  renderHome();
+  go('s1');
+} else {
+  go('s0');
+}
+</script>
+</body>
+</html>
