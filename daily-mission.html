@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>하루 한 가지 신앙 실천 미션</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F0FDF4;--card:#FFFFFF;--card2:#F0FDF4;
+  --green:#16A34A;--green2:#22C55E;--green3:#86EFAC;--green4:#DCFCE7;
+  --ink:#14532D;--ink2:#166534;--sub:#6B7280;
+  --gold:#F59E0B;--border:#BBF7D0;
+}
+html,body{min-height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--ink);overflow-x:hidden}
+
+/* ── 탑바 ── */
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(240,253,244,.95);backdrop-filter:blur(12px);border-bottom:1.5px solid var(--border)}
+.back-btn{width:34px;height:34px;border-radius:9px;background:var(--green4);border:1.5px solid var(--border);color:var(--green);font-size:1rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0}
+.tag{font-size:.65rem;font-weight:900;background:var(--green);color:white;padding:3px 8px;border-radius:4px}
+.topbar-title{font-size:.88rem;font-weight:800;color:var(--ink);flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:var(--green4);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--sub)}
+
+/* ── 히어로 ── */
+.hero{background:linear-gradient(135deg,var(--green) 0%,#15803D 60%,#166534 100%);padding:24px 20px 20px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='rgba(255,255,255,0.08)'/%3E%3C/svg%3E")}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:white;font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:10px;letter-spacing:.06em}
+.hero h1{font-size:clamp(1.3rem,4.5vw,1.8rem);font-weight:900;color:white;line-height:1.3;margin-bottom:4px}
+.hero h1 em{color:var(--green3);font-style:normal}
+.hero p{font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.65}
+
+/* ── 스트릭 바 ── */
+.streak-bar{background:white;border-bottom:1.5px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:580px;margin:0 auto;width:100%}
+.streak-item{text-align:center}
+.streak-num{font-size:1.4rem;font-weight:900;color:var(--green);line-height:1}
+.streak-label{font-size:.65rem;color:var(--sub);margin-top:2px;font-weight:600}
+.streak-divider{width:1px;height:32px;background:var(--border)}
+.progress-mini{flex:1;display:flex;flex-direction:column;gap:4px}
+.progress-mini-label{font-size:.65rem;color:var(--sub);font-weight:600}
+.progress-mini-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-mini-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:3px;transition:width .6s ease}
+
+/* ── 본문 ── */
+.wrap{max-width:580px;margin:0 auto;padding:16px 16px 80px}
+
+/* ── 오늘의 미션 카드 ── */
+.today-card{background:white;border:2px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 16px rgba(22,163,74,.08)}
+.today-header{background:linear-gradient(135deg,var(--green4),#D1FAE5);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1.5px solid var(--border)}
+.today-day{font-size:.7rem;font-weight:800;background:var(--green);color:white;padding:3px 10px;border-radius:20px}
+.today-cat{font-size:.7rem;font-weight:700;color:var(--green);flex:1}
+.today-date{font-size:.65rem;color:var(--sub)}
+.today-body{padding:20px 18px}
+.today-mission{font-size:1.05rem;font-weight:700;color:var(--ink);line-height:1.7;margin-bottom:12px;word-break:keep-all}
+.today-mission.loading{color:var(--sub);font-size:.88rem;font-weight:400}
+.today-reason{font-size:.78rem;color:var(--sub);line-height:1.65;padding:10px 12px;background:var(--green4);border-radius:8px;border-left:3px solid var(--green3)}
+.today-verse{font-size:.72rem;font-weight:700;color:var(--green);margin-top:10px}
+
+/* ── 완료 섹션 ── */
+.complete-section{padding:16px 18px;border-top:1.5px dashed var(--border);background:var(--card2)}
+.reflect-label{font-size:.75rem;font-weight:700;color:var(--ink2);margin-bottom:8px}
+.reflect-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:.85rem;font-family:inherit;background:white;color:var(--ink);resize:none;min-height:70px;line-height:1.6}
+.reflect-input:focus{outline:none;border-color:var(--green)}
+.complete-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--green2),var(--green));color:white;border:none;border-radius:10px;font-size:.92rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:10px;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.complete-btn:hover{opacity:.9;transform:translateY(-1px)}
+.complete-btn:disabled{background:#D1D5DB;cursor:not-allowed;transform:none}
+.done-badge{display:flex;align-items:center;gap:10px;padding:12px;background:var(--green4);border-radius:10px;margin-top:10px}
+.done-badge-icon{font-size:1.5rem}
+.done-badge-text{font-size:.82rem;font-weight:700;color:var(--green)}
+.done-badge-sub{font-size:.7rem;color:var(--sub)}
+
+/* ── 섹션 라벨 ── */
+.sec-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--green);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── 30일 달력 ── */
+.calendar{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:20px}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;border:1.5px solid var(--border);background:white;color:var(--sub);cursor:default;transition:.2s;position:relative}
+.cal-day.done{background:var(--green);border-color:var(--green);color:white}
+.cal-day.done::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.cal-day.today{border-color:var(--green);color:var(--green);font-weight:900;box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+.cal-day.future{opacity:.35}
+.cal-day.done .cal-num{display:none}
+.cal-num{font-size:.65rem}
+
+/* ── 카테고리 선택 ── */
+/* ── 이전 미션 기록 ── */
+.history-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.history-item{background:white;border:1.5px solid var(--border);border-radius:12px;padding:14px;display:flex;gap:12px}
+.hi-day-badge{width:36px;height:36px;border-radius:8px;background:var(--green4);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;color:var(--green);flex-shrink:0}
+.hi-content{flex:1;min-width:0}
+.hi-mission{font-size:.83rem;font-weight:700;color:var(--ink);margin-bottom:4px;line-height:1.5}
+.hi-reflect{font-size:.75rem;color:var(--sub);line-height:1.5;font-style:italic}
+.hi-cat{font-size:.65rem;font-weight:700;background:var(--green4);color:var(--green);padding:2px 8px;border-radius:10px;margin-bottom:4px;display:inline-block}
+.hi-check{font-size:1.2rem;flex-shrink:0}
+
+/* ── 새 미션 받기 ── */
+.new-mission-btn{width:100%;padding:13px;background:white;border:2px dashed var(--border);border-radius:12px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;color:var(--green);transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px}
+.new-mission-btn:hover{border-color:var(--green);background:var(--green4)}
+
+/* ── 로딩 ── */
+.spin{display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* 모달 */
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}
+.key-modal.open{display:flex}
+.key-box{background:white;border:2px solid var(--border);border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.key-box h3{font-weight:900;margin-bottom:6px;color:var(--ink)}
+.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:14px;line-height:1.6}
+.key-inp{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;margin-bottom:10px}
+.key-save{width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</button>
+  <span class="tag">후-7</span>
+  <span class="topbar-title">✅ 하루 한 가지 신앙 실천 미션</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">🌱 D+7~D+30 · 수련회 이후 30일 챌린지</div>
+  <h1>오늘 하루,<br><em>작은 믿음</em>을 실천해요</h1>
+  <p>AI가 매일 나에게 맞는 신앙 실천 미션을 드려요<br>30일 동안 하루 한 가지씩 꾸준히 해봐요</p>
+</div>
+
+<!-- 스트릭 -->
+<div style="background:white;border-bottom:1.5px solid var(--border)">
+  <div class="streak-bar">
+    <div class="streak-item">
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-label">연속 일수</div>
+    </div>
+    <div class="streak-divider"></div>
+    <div class="streak-item">
+      <div class="streak-num" id="doneNum">0</div>
+      <div class="streak-label">완료 미션</div>
+    </div>
+    <div class="streak-divider"></div>
+    <div class="progress-mini">
+      <div class="progress-mini-label">30일 진행률</div>
+      <div class="progress-mini-bar"><div class="progress-mini-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 오늘의 미션 -->
+  <div class="sec-label" style="margin-bottom:10px">오늘의 미션</div>
+
+  <div class="today-card" id="todayCard">
+    <div class="today-header">
+      <div class="today-day" id="todayDayBadge">Day ?</div>
+      <div class="today-cat" id="todayCat">불러오는 중...</div>
+      <div class="today-date" id="todayDateTxt"></div>
+    </div>
+    <div class="today-body">
+      <div class="today-mission loading" id="todayMission">✨ 오늘의 미션을 불러오는 중이에요...</div>
+      <div class="today-reason" id="todayReason" style="display:none"></div>
+      <div class="today-verse" id="todayVerse" style="display:none"></div>
+    </div>
+    <div class="complete-section" id="completeSection">
+      <div class="reflect-label">오늘 실천 후 한 줄 소감 (선택)</div>
+      <textarea class="reflect-input" id="reflectInput" placeholder="어떻게 실천했나요? 어떤 마음이 들었나요?"></textarea>
+      <button class="complete-btn" id="completeBtn" onclick="completeMission()" disabled>
+        ✅ 오늘 미션 완료!
+      </button>
+    </div>
+  </div>
+
+  <button class="new-mission-btn" id="newMissionBtn" onclick="fetchMission(true)">
+    🔄 다른 미션 받기
+  </button>
+
+  <!-- 30일 달력 -->
+  <div class="sec-label">30일 달력</div>
+  <div class="calendar" id="calendar"></div>
+
+  <!-- 기록 -->
+  <div class="sec-label" id="historyLabel" style="display:none">완료한 미션들</div>
+  <div class="history-list" id="historyList"></div>
+
+</div>
+
+<!-- API 키 모달 -->
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 Claude API 키 설정</h3>
+    <p>AI 미션을 받으려면 API 키가 필요해요. 이 기기에만 저장돼요.</p>
+    <input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+
+<script>
+// ── 스토리지 키 ──
+var STORE_KEY = 'daily_mission_v1';
+var CATS = ['말씀','기도','섬김','감사','찬양'];
+var isFetching = false;
+
+// ── 데이터 로드 ──
+function loadData(){
+  try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); }
+  catch(e){ return {}; }
+}
+function saveData(data){
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+}
+
+// ── 날짜 유틸 ──
+var START_DATE = '2026-08-07'; // 수련회 D+7 기준 (7.28+7)
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function dayNum(dateStr){
+  var start = new Date(START_DATE);
+  var target = new Date(dateStr);
+  var diff = Math.floor((target - start) / 86400000) + 1;
+  return diff;
+}
+function formatDate(dateStr){
+  var d = new Date(dateStr);
+  return (d.getMonth()+1)+'월 '+d.getDate()+'일';
+}
+
+// ── 통계 계산 ──
+function calcStats(data){
+  var records = data.records || {};
+  var done = Object.keys(records).filter(function(k){ return records[k].completed; });
+  var doneCount = done.length;
+
+  // 연속 일수
+  var streak = 0;
+  var cur = new Date(todayStr());
+  while(true){
+    var s = cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
+    if(records[s] && records[s].completed){ streak++; cur.setDate(cur.getDate()-1); }
+    else break;
+  }
+  return { doneCount: doneCount, streak: streak };
+}
+
+// ── UI 업데이트 ──
+function updateUI(){
+  var data = loadData();
+  var stats = calcStats(data);
+  document.getElementById('streakNum').textContent = stats.streak;
+  document.getElementById('doneNum').textContent = stats.doneCount;
+  var pct = Math.round(stats.doneCount / 30 * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  renderCalendar(data);
+  renderHistory(data);
+}
+
+// ── 달력 렌더 ──
+function renderCalendar(data){
+  var records = data.records || {};
+  var cal = document.getElementById('calendar');
+  cal.innerHTML = '';
+  var today = todayStr();
+  var start = new Date(START_DATE);
+  for(var i = 0; i < 30; i++){
+    var d = new Date(start);
+    d.setDate(d.getDate() + i);
+    var s = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    var div = document.createElement('div');
+    var cls = 'cal-day';
+    if(records[s] && records[s].completed) cls += ' done';
+    else if(s === today) cls += ' today';
+    else if(s > today) cls += ' future';
+    div.className = cls;
+    div.innerHTML = '<span class="cal-num">'+(i+1)+'</span>';
+    div.title = formatDate(s);
+    cal.appendChild(div);
+  }
+}
+
+// ── 기록 렌더 ──
+function renderHistory(data){
+  var records = data.records || {};
+  var done = Object.keys(records).filter(function(k){ return records[k].completed; })
+    .sort(function(a,b){ return b.localeCompare(a); });
+  var list = document.getElementById('historyList');
+  var label = document.getElementById('historyLabel');
+  list.innerHTML = '';
+  if(done.length === 0){ label.style.display='none'; return; }
+  label.style.display='flex';
+  done.slice(0, 7).forEach(function(dateStr){
+    var rec = records[dateStr];
+    var dayN = dayNum(dateStr);
+    var div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML =
+      '<div class="hi-day-badge">D+'+dayN+'</div>'+
+      '<div class="hi-content">'+
+        '<div class="hi-cat">'+esc(rec.cat||'')+'</div>'+
+        '<div class="hi-mission">'+esc(rec.mission||'')+'</div>'+
+        (rec.reflect ? '<div class="hi-reflect">"'+esc(rec.reflect)+'"</div>' : '')+
+      '</div>'+
+      '<div class="hi-check">✅</div>';
+    list.appendChild(div);
+  });
+}
+
+// ── 카테고리 선택 ──
+// ── 미션 불러오기 ──
+async function fetchMission(forceNew){
+  var key = localStorage.getItem('retreat_api_key') || '';
+  if(!key){ openKeyModal(); return; }
+
+  var data = loadData();
+  var today = todayStr();
+  var records = data.records || {};
+
+  // 오늘 이미 완료했으면 완료 상태만 보여주기
+  if(records[today] && records[today].completed && !forceNew){
+    showTodayDone(records[today]);
+    return;
+  }
+
+  // 오늘 미션이 이미 있고 forceNew 아니면 재사용
+  if(records[today] && records[today].mission && !forceNew){
+    showMission(records[today]);
+    return;
+  }
+
+  if(isFetching) return;
+  isFetching = true;
+
+  var missionEl = document.getElementById('todayMission');
+  missionEl.className = 'today-mission loading';
+  missionEl.textContent = '✨ AI가 오늘의 미션을 만드는 중...';
+  document.getElementById('todayReason').style.display = 'none';
+  document.getElementById('todayVerse').style.display = 'none';
+  document.getElementById('completeBtn').disabled = true;
+  document.getElementById('newMissionBtn').innerHTML = '<span class="spin">🔄</span> 생성 중...';
+  document.getElementById('newMissionBtn').disabled = true;
+
+  var dayN = Math.max(1, dayNum(today));
+  var catTxt = CATS[(dayN - 1) % CATS.length];
+
+  var prompt = '2026 중등부 여름수련회를 마친 중학생을 위한 수련회 이후 신앙 실천 미션이야.\n'+
+    '오늘은 D+'+dayN+'째 날이고, 카테고리는 '+catTxt+'야.\n\n'+
+    '조건:\n'+
+    '- 오늘 하루 안에 실천할 수 있는 작고 구체적인 미션 1가지\n'+
+    '- 중학생이 혼자서도 할 수 있어야 함\n'+
+    '- 수련회에서 받은 은혜를 일상에서 이어가는 내용\n'+
+    '- 미션 난이도: 5~15분 내 실천 가능한 수준\n\n'+
+    '반드시 아래 JSON만 답해:\n'+
+    '{"cat":"카테고리(한 단어)","mission":"미션 내용(1-2문장, 구체적으로)","reason":"이 미션을 추천하는 이유(1문장)","verse":"관련 성경 구절(책 장:절 + 짧은 내용)"}';
+
+  try{
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    var resp = await res.json();
+    if(resp.error) throw new Error(resp.error.message);
+    var parsed = JSON.parse(resp.content[0].text.replace(/```json|```/g,'').trim());
+
+    // 저장
+    var rec = {
+      date: today,
+      dayN: dayN,
+      cat: parsed.cat || selectedCat,
+      mission: parsed.mission || '',
+      reason: parsed.reason || '',
+      verse: parsed.verse || '',
+      completed: false,
+      reflect: ''
+    };
+    data.records = data.records || {};
+    data.records[today] = rec;
+    saveData(data);
+    showMission(rec);
+  } catch(e){
+    missionEl.textContent = '미션을 불러오지 못했어요. 다시 시도해주세요.';
+    console.error(e);
+  }
+  isFetching = false;
+  document.getElementById('newMissionBtn').innerHTML = '🔄 다른 미션 받기';
+  document.getElementById('newMissionBtn').disabled = false;
+}
+
+function showMission(rec){
+  var today = todayStr();
+  var dayN = rec.dayN || Math.max(1, dayNum(today));
+  document.getElementById('todayDayBadge').textContent = 'Day ' + dayN;
+  document.getElementById('todayCat').textContent = rec.cat || '';
+  document.getElementById('todayDateTxt').textContent = formatDate(today);
+  var mEl = document.getElementById('todayMission');
+  mEl.className = 'today-mission';
+  mEl.textContent = rec.mission || '';
+  var rEl = document.getElementById('todayReason');
+  rEl.textContent = rec.reason || '';
+  rEl.style.display = rec.reason ? '' : 'none';
+  var vEl = document.getElementById('todayVerse');
+  vEl.textContent = rec.verse ? '📖 ' + rec.verse : '';
+  vEl.style.display = rec.verse ? '' : 'none';
+  document.getElementById('completeSection').style.display = '';
+  document.getElementById('completeBtn').disabled = false;
+  // 완료 상태 체크
+  if(rec.completed){
+    showTodayDone(rec);
+  } else {
+    document.getElementById('completeBtn').style.display = 'flex';
+    document.getElementById('completeBtn').innerHTML = '✅ 오늘 미션 완료!';
+    var doneBadge = document.getElementById('doneBadge');
+    if(doneBadge) doneBadge.remove();
+  }
+}
+
+function showTodayDone(rec){
+  var today = todayStr();
+  var dayN = rec.dayN || Math.max(1, dayNum(today));
+  document.getElementById('todayDayBadge').textContent = 'Day ' + dayN;
+  document.getElementById('todayCat').textContent = rec.cat || '';
+  document.getElementById('todayDateTxt').textContent = formatDate(today);
+  var mEl = document.getElementById('todayMission');
+  mEl.className = 'today-mission';
+  mEl.textContent = rec.mission || '';
+  document.getElementById('todayReason').style.display = 'none';
+  var vEl = document.getElementById('todayVerse');
+  vEl.textContent = rec.verse ? '📖 ' + rec.verse : '';
+  vEl.style.display = rec.verse ? '' : 'none';
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('reflectInput').style.display = 'none';
+  document.getElementById('reflectInput').previousElementSibling.style.display = 'none';
+  var cs = document.getElementById('completeSection');
+  if(!document.getElementById('doneBadge')){
+    var badge = document.createElement('div');
+    badge.id = 'doneBadge';
+    badge.className = 'done-badge';
+    badge.innerHTML = '<div class="done-badge-icon">🎉</div>'+
+      '<div><div class="done-badge-text">오늘 미션 완료!</div>'+
+      (rec.reflect ? '<div class="done-badge-sub">"'+esc(rec.reflect)+'"</div>' : '')+
+      '</div>';
+    cs.appendChild(badge);
+  }
+}
+
+// ── 미션 완료 ──
+function completeMission(){
+  var data = loadData();
+  var today = todayStr();
+  var rec = (data.records || {})[today];
+  if(!rec) return;
+  var reflect = document.getElementById('reflectInput').value.trim();
+  rec.completed = true;
+  rec.reflect = reflect;
+  data.records[today] = rec;
+  saveData(data);
+  showTodayDone(rec);
+  updateUI();
+}
+
+// ── 초기화 ──
+function init(){
+  var today = todayStr();
+  document.getElementById('todayDateTxt').textContent = formatDate(today);
+  updateUI();
+
+  var data = loadData();
+  var records = data.records || {};
+  if(records[today]){
+    showMission(records[today]);
+  } else {
+    fetchMission(false);
+  }
+}
+
+// ── 모달 ──
+function openKeyModal(){ document.getElementById('keyModal').classList.add('open'); }
+function closeKeyModal(){ document.getElementById('keyModal').classList.remove('open'); }
+function saveKey(){
+  var k = document.getElementById('keyInp').value.trim();
+  if(k){ localStorage.setItem('retreat_api_key', k); closeKeyModal(); fetchMission(false); }
+}
+document.getElementById('keyModal').addEventListener('click', function(e){ if(e.target===this) closeKeyModal(); });
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init();
+</script>
+</body>
+</html>
