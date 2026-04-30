@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1년 뒤 나에게 보내는 편지</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F7F4EE;
+  --white:#FFFFFF;
+  --text:#1A1612;
+  --sub:#8A8070;
+  --dim:#C8C0B0;
+  --border:rgba(0,0,0,.08);
+  --border2:rgba(0,0,0,.14);
+  --navy:#1C1830;
+  --brown:#8B5E3C;
+  --brown-bg:rgba(139,94,60,.08);
+  --brown-bd:rgba(139,94,60,.22);
+  --green:#2D6A4F;
+  --green-bg:rgba(45,106,79,.07);
+  --green-bd:rgba(45,106,79,.22);
+}
+html,body{min-height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ─ 탑바 ─ */
+.bar{height:52px;display:flex;align-items:center;padding:0 18px;gap:12px;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(247,244,238,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border)}
+.back{width:34px;height:34px;border-radius:9px;background:rgba(0,0,0,.05);
+  border:none;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;color:var(--text);font-size:.9rem;flex-shrink:0}
+.bar-mid{flex:1;text-align:center}
+.bar-title{font-size:.88rem;font-weight:700}
+.bar-sub{font-size:.62rem;color:var(--sub);margin-top:1px}
+
+.pgtrack{position:fixed;top:52px;left:0;right:0;height:2px;background:rgba(0,0,0,.06);z-index:199}
+.pgfill{height:100%;background:var(--brown);transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* ─ 슬라이드 ─ */
+.wrap{padding-top:54px;overflow:hidden}
+.deck{display:flex;transition:transform .42s cubic-bezier(.4,0,.2,1)}
+.screen{min-width:100vw;min-height:calc(100vh - 54px);display:flex;flex-direction:column}
+.inner{max-width:460px;margin:0 auto;padding:28px 20px 36px;flex:1;display:flex;flex-direction:column;width:100%}
+
+/* ─ 타이포 ─ */
+.eyebrow{font-size:.67rem;font-weight:700;letter-spacing:.12em;color:var(--brown);text-transform:uppercase;margin-bottom:10px}
+.headline{font-family:'Black Han Sans',sans-serif;font-size:1.55rem;line-height:1.2;color:var(--navy);margin-bottom:6px}
+.headline em{color:var(--brown);font-style:normal}
+.desc{font-size:.8rem;color:var(--sub);line-height:1.75;margin-bottom:22px}
+
+/* 스텝 도트 */
+.dots{display:flex;gap:5px;margin-bottom:22px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.3s}
+.dot.on{background:var(--brown);width:16px;border-radius:3px}
+.dot.done{background:rgba(139,94,60,.35)}
+
+/* ─ 폼 ─ */
+.flabel{font-size:.68rem;font-weight:700;letter-spacing:.07em;color:var(--sub);
+  text-transform:uppercase;margin-bottom:7px;display:block}
+.finput{width:100%;padding:13px 15px;background:var(--white);border:1px solid var(--border2);
+  border-radius:10px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;
+  color:var(--text);outline:none;transition:.18s}
+.finput::placeholder{color:var(--dim)}
+.finput:focus{border-color:var(--brown-bd)}
+.ftextarea{width:100%;padding:13px 15px;background:var(--white);border:1px solid var(--border2);
+  border-radius:10px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;
+  color:var(--text);outline:none;resize:none;line-height:1.8;transition:.18s}
+.ftextarea::placeholder{color:var(--dim)}
+.ftextarea:focus{border-color:var(--brown-bd)}
+.counter{text-align:right;font-size:.65rem;color:var(--dim);margin-top:4px}
+
+/* ─ 칩 ─ */
+.chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 15px;border-radius:8px;border:1px solid var(--border2);background:var(--white);
+  font-size:.78rem;font-weight:500;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.chip:hover{border-color:var(--brown-bd);color:var(--brown)}
+.chip.on{background:var(--brown);border-color:var(--brown);color:#FFF}
+
+/* 감정 카드 */
+.emotion-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.emo-card{border-radius:11px;border:1px solid var(--border);background:var(--white);
+  padding:12px 8px;text-align:center;cursor:pointer;transition:.18s}
+.emo-card:hover{border-color:var(--brown-bd);transform:translateY(-1px)}
+.emo-card.on{border-color:var(--brown);background:var(--brown-bg)}
+.emo-icon{font-size:1.4rem;display:block;margin-bottom:4px}
+.emo-name{font-size:.72rem;font-weight:600;color:var(--sub)}
+.emo-card.on .emo-name{color:var(--brown)}
+
+/* ─ AI 블록 ─ */
+.ai-block{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:18px;margin-bottom:16px}
+.ai-head{display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--brown);box-shadow:0 0 6px rgba(139,94,60,.4)}
+.ai-title{font-size:.8rem;font-weight:700;color:var(--text)}
+.ai-desc{font-size:.75rem;color:var(--sub);line-height:1.7;margin-bottom:12px}
+.ai-out{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.out-label{font-size:.65rem;font-weight:700;letter-spacing:.08em;color:var(--dim);text-transform:uppercase;margin-bottom:7px}
+.letter-preview{background:var(--bg);border-radius:9px;padding:14px 15px;
+  font-family:'Noto Serif KR',serif;font-size:.82rem;line-height:1.9;
+  color:var(--text);white-space:pre-wrap;max-height:200px;overflow-y:auto}
+.letter-preview::-webkit-scrollbar{width:3px}
+.letter-preview::-webkit-scrollbar-thumb{background:var(--dim);border-radius:2px}
+.use-btn{display:flex;align-items:center;gap:5px;margin-top:10px;padding:9px 13px;
+  border-radius:8px;border:1px solid var(--border2);background:none;
+  color:var(--sub);font-size:.75rem;font-weight:600;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:.13s}
+.use-btn:hover{border-color:var(--border2);color:var(--text)}
+
+/* ─ 편지 카드 ─ */
+.letter-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:16px;padding:28px 24px;margin-bottom:14px;
+  position:relative;overflow:hidden;
+}
+.letter-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--brown),#C4996A)}
+.letter-date-badge{display:inline-block;padding:4px 11px;border-radius:5px;
+  font-size:.65rem;font-weight:700;letter-spacing:.07em;
+  background:var(--brown-bg);color:var(--brown);border:1px solid var(--brown-bd);
+  margin-bottom:14px;text-transform:uppercase}
+.letter-to{font-size:.75rem;color:var(--sub);margin-bottom:4px}
+.letter-greeting{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--navy);margin-bottom:16px}
+.letter-body{font-family:'Noto Serif KR',serif;font-size:.83rem;line-height:1.95;
+  color:var(--text);white-space:pre-wrap;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.letter-from{font-size:.75rem;color:var(--sub);text-align:right;margin-top:12px}
+.letter-from strong{color:var(--text);font-weight:700}
+.seal{position:absolute;bottom:20px;right:20px;width:36px;height:36px;border-radius:50%;
+  background:var(--brown-bg);border:1.5px solid var(--brown-bd);
+  display:flex;align-items:center;justify-content:center;font-size:1rem}
+
+/* ─ 편지함 ─ */
+.mailbox-list{display:flex;flex-direction:column;gap:10px}
+.mail-card{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;cursor:pointer;transition:.15s;position:relative}
+.mail-card:hover{border-color:var(--brown-bd);transform:translateY(-1px)}
+.mail-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brown);border-radius:3px 0 0 3px}
+.mail-head{padding:14px 15px 10px 18px;display:flex;align-items:flex-start;gap:10px}
+.mail-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px}
+.mail-info{flex:1;min-width:0}
+.mail-from{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.mail-date{font-size:.68rem;color:var(--sub)}
+.mail-preview{padding:0 15px 13px 18px;font-size:.78rem;line-height:1.7;
+  color:var(--sub);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* 편지 상세 모달 */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,22,18,.5);z-index:300;
+  display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:28px 22px 40px;
+  width:100%;max-width:480px;max-height:85vh;overflow-y:auto;
+  animation:slideUp .35s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-close{width:100%;padding:12px;border-radius:9px;background:var(--bg);
+  border:none;font-size:.82rem;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;margin-top:16px}
+
+/* ─ 버튼 ─ */
+.btn-primary{width:100%;padding:15px;border-radius:10px;background:var(--navy);color:#FFF;
+  font-size:.92rem;font-weight:700;font-family:'Black Han Sans',sans-serif;
+  border:none;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-primary:hover{background:#2e2a48}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed}
+.btn-ghost{width:100%;padding:15px;border-radius:10px;background:var(--white);
+  color:var(--sub);font-size:.88rem;font-weight:600;
+  border:1px solid var(--border2);cursor:pointer;transition:.18s;
+  font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-ghost:hover{color:var(--text);border-color:rgba(0,0,0,.2)}
+.btn-back{width:100%;padding:11px;border-radius:10px;background:none;border:none;
+  font-size:.78rem;color:var(--sub);cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;margin-top:8px}
+.btn-back:hover{color:var(--text)}
+
+/* ─ 로딩 ─ */
+.loading-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px}
+.loader{width:44px;height:44px;margin:0 auto 24px;position:relative}
+.lr{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;animation:lspin linear infinite}
+.lr:nth-child(1){border-top-color:var(--brown);animation-duration:1.5s}
+.lr:nth-child(2){inset:9px;border-right-color:var(--green);animation-duration:2s;animation-direction:reverse}
+.lcore{position:absolute;inset:18px;border-radius:50%;background:var(--brown);opacity:.45;animation:lpulse 1.3s ease-in-out infinite}
+@keyframes lspin{to{transform:rotate(360deg)}}
+@keyframes lpulse{0%,100%{transform:scale(.8);opacity:.3}50%{transform:scale(1.1);opacity:.65}}
+.loading-t{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--navy);margin-bottom:8px}
+.loading-d{font-size:.78rem;color:var(--sub);line-height:1.85}
+.loading-d strong{color:var(--brown);display:block;margin-bottom:3px}
+
+/* 완료 */
+.done-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px}
+.done-icon{font-size:2.4rem;margin-bottom:14px}
+.done-title{font-family:'Black Han Sans',sans-serif;font-size:1.25rem;color:var(--navy);margin-bottom:8px}
+.done-desc{font-size:.81rem;color:var(--sub);line-height:1.8;margin-bottom:26px}
+
+/* 빈 상태 */
+.empty{text-align:center;padding:48px 20px;color:var(--sub)}
+.empty span{font-size:2rem;display:block;margin-bottom:10px;opacity:.5}
+.empty p{font-size:.81rem;line-height:1.7}
+
+/* ─ 토스트 ─ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:var(--navy);border-radius:50px;padding:10px 20px;font-size:.79rem;
+  color:#FFF;z-index:999;transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  opacity:0;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#FFF;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a class="back" href="javascript:void(0)" onclick="(window.parent!==window?window.parent.closeFrame():history.back())">←</a>
+  <div class="bar-mid">
+    <div class="bar-title">✉️ 1년 뒤 나에게 보내는 편지</div>
+    <div class="bar-sub">2027년의 나에게 전하는 신앙 편지</div>
+  </div>
+  <div style="width:34px"></div>
+</div>
+<div class="pgtrack"><div class="pgfill" id="pg" style="width:0%"></div></div>
+
+<div class="wrap">
+<div class="deck" id="deck">
+
+<!-- ══ S0: 내 정보 ══ -->
+<div class="screen" id="s0">
+<div class="inner">
+  <div class="eyebrow">STEP 1 · 내 정보</div>
+  <h1 class="headline">먼저<br><em>나를</em> 소개해요</h1>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <p class="desc">1년 뒤 미래의 내가 읽을 편지예요.<br>지금 이 순간이 얼마나 소중한지 담아봐요.</p>
+
+  <div style="margin-bottom:14px">
+    <label class="flabel">이름</label>
+    <input class="finput" id="f-name" type="text" placeholder="홍길동" maxlength="10">
+  </div>
+  <div style="margin-bottom:14px">
+    <label class="flabel">학년</label>
+    <div class="chip-row" id="gradeRow">
+      <button class="chip" onclick="pick('gradeRow',this)">중학교 1학년</button>
+      <button class="chip" onclick="pick('gradeRow',this)">중학교 2학년</button>
+      <button class="chip" onclick="pick('gradeRow',this)">중학교 3학년</button>
+    </div>
+  </div>
+  <div style="margin-bottom:24px">
+    <label class="flabel">우리 조</label>
+    <div class="chip-row" id="teamRow">
+      <button class="chip" onclick="pick('teamRow',this)">베드로 조</button>
+      <button class="chip" onclick="pick('teamRow',this)">바울 조</button>
+      <button class="chip" onclick="pick('teamRow',this)">에스더 조</button>
+      <button class="chip" onclick="pick('teamRow',this)">다윗 조</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="toS1()">다음 →</button>
+</div>
+</div>
+
+<!-- ══ S1: 지금 나의 상태 ══ -->
+<div class="screen" id="s1">
+<div class="inner">
+  <div class="eyebrow">STEP 2 · 지금 내 마음</div>
+  <h1 class="headline">수련회에서<br><em>어떤 마음</em>인가요?</h1>
+  <div class="dots"><div class="dot done"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+
+  <div style="margin-bottom:16px">
+    <label class="flabel">지금 내 감정</label>
+    <div class="emotion-grid">
+      <div class="emo-card" onclick="pickEmo(this,'기쁨')">
+        <span class="emo-icon">😊</span>
+        <div class="emo-name">기쁨</div>
+      </div>
+      <div class="emo-card" onclick="pickEmo(this,'감사')">
+        <span class="emo-icon">🙏</span>
+        <div class="emo-name">감사</div>
+      </div>
+      <div class="emo-card" onclick="pickEmo(this,'설렘')">
+        <span class="emo-icon">✨</span>
+        <div class="emo-name">설렘</div>
+      </div>
+      <div class="emo-card" onclick="pickEmo(this,'결심')">
+        <span class="emo-icon">💪</span>
+        <div class="emo-name">결심</div>
+      </div>
+      <div class="emo-card" onclick="pickEmo(this,'회개')">
+        <span class="emo-icon">🕊️</span>
+        <div class="emo-name">회개</div>
+      </div>
+      <div class="emo-card" onclick="pickEmo(this,'평안')">
+        <span class="emo-icon">🌿</span>
+        <div class="emo-name">평안</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px">
+    <label class="flabel">수련회에서 받은 은혜 한 줄</label>
+    <input class="finput" id="f-grace" type="text" placeholder="예: 하나님이 나를 사랑하신다는 걸 느꼈어요" maxlength="60">
+  </div>
+  <div style="margin-bottom:20px">
+    <label class="flabel">1년 뒤 나에게 바라는 것 <span style="text-transform:none;font-weight:400;opacity:.6">(선택)</span></label>
+    <input class="finput" id="f-wish" type="text" placeholder="예: 믿음이 더 자랐으면 해요" maxlength="60">
+  </div>
+
+  <button class="btn-primary" onclick="toS2()">다음 →</button>
+  <button class="btn-back" onclick="go(0)">← 이전</button>
+</div>
+</div>
+
+<!-- ══ S2: 편지 작성 ══ -->
+<div class="screen" id="s2">
+<div class="inner">
+  <div class="eyebrow">STEP 3 · 편지 쓰기</div>
+  <h1 class="headline">1년 뒤 나에게<br><em>편지</em>를 써요</h1>
+  <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot on"></div><div class="dot"></div></div>
+
+  <!-- AI 도움 블록 -->
+  <div class="ai-block">
+    <div class="ai-head">
+      <div class="ai-dot"></div>
+      <div class="ai-title">AI 편지 도우미</div>
+    </div>
+    <div class="ai-desc">버튼을 누르면 AI가 지금 내 마음을 담아<br>편지 초안을 써줘요. 그대로 써도 되고 수정해도 돼요.</div>
+    <button class="btn-ghost" id="aiBtn" onclick="runAI()" style="width:auto;padding:10px 16px">
+      ✦ AI가 초안 써주기
+    </button>
+    <div class="ai-out" id="aiOut">
+      <div class="out-label">AI가 쓴 편지 초안</div>
+      <div class="letter-preview" id="aiLetterPreview"></div>
+      <button class="use-btn" onclick="applyAI()">↓ 이 편지로 사용하기</button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:6px">
+    <label class="flabel">내 편지 <span style="text-transform:none;font-weight:400;opacity:.6">(직접 쓰거나 AI 초안 수정)</span></label>
+    <textarea class="ftextarea" id="f-letter" placeholder="사랑하는 1년 뒤의 나에게…" style="min-height:180px" oninput="cntUp()"></textarea>
+    <div class="counter"><span id="cnt">0</span>자</div>
+  </div>
+
+  <button class="btn-primary" onclick="toS3()" style="margin-top:6px">편지 완성하기 →</button>
+  <button class="btn-back" onclick="go(1)">← 이전</button>
+</div>
+</div>
+
+<!-- ══ S3: 로딩 ══ -->
+<div class="screen" id="s3">
+<div class="inner" style="justify-content:center">
+  <div class="loading-wrap">
+    <div class="loader">
+      <div class="lr"></div><div class="lr"></div>
+      <div class="lcore"></div>
+    </div>
+    <div class="loading-t">편지를 봉투에 담는 중</div>
+    <div class="loading-d">
+      <strong id="lmsg">편지를 정성껏 접는 중…</strong>
+      2027년의 나에게<br>소중히 전달할게요 ✉️
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ S4: 완성 편지 확인 ══ -->
+<div class="screen" id="s4">
+<div class="inner">
+  <div class="eyebrow">완성! · STEP 4</div>
+  <div class="dots" style="margin-bottom:16px">
+    <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot on"></div>
+  </div>
+
+  <div class="letter-card" id="finalCard">
+    <div class="letter-date-badge" id="lcDateBadge">📬 2027년 여름에 전달될 편지</div>
+    <div class="letter-to">To.</div>
+    <div class="letter-greeting" id="lcGreeting"></div>
+    <div class="letter-body" id="lcBody"></div>
+    <div class="letter-from">From. <strong id="lcFrom"></strong> · 2026 여름수련회</div>
+    <div class="seal">✉️</div>
+  </div>
+
+  <button class="btn-primary" id="saveBtn" onclick="saveLetter()">📮 편지 보관하기</button>
+  <button class="btn-back" onclick="go(2)">← 수정하기</button>
+</div>
+</div>
+
+<!-- ══ S5: 저장 완료 ══ -->
+<div class="screen" id="s5">
+<div class="inner">
+  <div class="done-wrap">
+    <div class="done-icon">📮</div>
+    <div class="done-title">편지가 보관됐어요!</div>
+    <div class="done-desc">1년 뒤인 2027년 여름,<br>이 편지를 다시 꺼내 읽어봐요.<br>하나님의 은혜가 얼마나 쌓였을지 기대돼요 🙏</div>
+    <button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="go(6)">편지함 보기 →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ S6: 편지함 ══ -->
+<div class="screen" id="s6">
+<div class="inner">
+  <div class="eyebrow">편지함</div>
+  <h1 class="headline">보관된<br><em>편지들</em></h1>
+  <p class="desc" style="margin-bottom:18px">2027년 여름, 다 함께 꺼내 읽어봐요 📬</p>
+  <div class="mailbox-list" id="mailboxList"></div>
+  <button class="btn-ghost" style="margin-top:16px" onclick="go(0)">+ 나도 편지 쓰기</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- 편지 상세 모달 -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="letter-card" id="modalCard" style="margin-bottom:0;box-shadow:none;border:none;padding:0">
+      <div class="letter-date-badge">📬 2027년 여름에 전달될 편지</div>
+      <div class="letter-to">To.</div>
+      <div class="letter-greeting" id="mGreeting"></div>
+      <div class="letter-body" id="mBody"></div>
+      <div class="letter-from">From. <strong id="mFrom"></strong> · 2026 여름수련회</div>
+    </div>
+    <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">닫기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='vbs_letter1';
+const PG=[0,25,50,75,100,100,100];
+const MSGS=['편지를 정성껏 접는 중…','봉투에 담는 중…','우표를 붙이는 중…','소중히 보관하는 중…'];
+let tmp={name:'',grade:'',team:'',emotion:'',grace:'',wish:'',aiLetter:'',letter:''};
+let msgT;
+
+function D(){try{return JSON.parse(localStorage.getItem(KEY))||{letters:[]}}catch(e){return{letters:[]}}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+
+function go(n){
+  document.getElementById('deck').style.transform=`translateX(-${n*100}vw)`;
+  document.getElementById('pg').style.width=(PG[n]||0)+'%';
+  window.scrollTo(0,0);
+  if(n===6) renderMailbox();
+}
+
+/* ─ 공통 ─ */
+function pick(rowId,btn){
+  document.querySelectorAll('#'+rowId+' .chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function pickEmo(card,v){
+  document.querySelectorAll('.emo-card').forEach(c=>c.classList.remove('on'));
+  card.classList.add('on'); tmp.emotion=v;
+}
+
+/* ─ STEP 이동 ─ */
+function toS1(){
+  tmp.name=document.getElementById('f-name').value.trim();
+  tmp.grade=document.querySelector('#gradeRow .chip.on')?.textContent||'';
+  tmp.team=document.querySelector('#teamRow .chip.on')?.textContent||'';
+  if(!tmp.name){toast('✍️ 이름을 입력해주세요');return}
+  if(!tmp.grade){toast('학년을 선택해주세요');return}
+  if(!tmp.team){toast('우리 조를 선택해주세요');return}
+  go(1);
+}
+
+function toS2(){
+  tmp.grace=document.getElementById('f-grace').value.trim();
+  tmp.wish=document.getElementById('f-wish').value.trim();
+  if(!tmp.emotion){toast('😊 지금 내 감정을 선택해주세요');return}
+  if(!tmp.grace){toast('✨ 수련회에서 받은 은혜를 적어주세요');return}
+  // AI 결과 초기화
+  document.getElementById('aiOut').style.display='none';
+  document.getElementById('aiBtn').innerHTML='✦ AI가 초안 써주기';
+  document.getElementById('aiBtn').disabled=false;
+  go(2);
+}
+
+function toS3(){
+  tmp.letter=document.getElementById('f-letter').value.trim();
+  if(tmp.letter.length<20){toast('📝 편지를 좀 더 써주세요! (최소 20자)');return}
+  renderFinalCard();
+  go(4);
+}
+
+function cntUp(){
+  document.getElementById('cnt').textContent=document.getElementById('f-letter').value.length;
+}
+
+/* ─ AI 초안 ─ */
+async function runAI(){
+  const btn=document.getElementById('aiBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spin"></div> 편지 쓰는 중…';
+
+  const prompt=`중학교 여름수련회에서 미래의 자신에게 보내는 신앙 편지 초안을 써줘.
+
+작성자 정보:
+- 이름: ${tmp.name}
+- 학년: ${tmp.grade}
+- 지금 감정: ${tmp.emotion}
+- 받은 은혜: ${tmp.grace}
+${tmp.wish?`- 1년 뒤 바람: ${tmp.wish}`:''}
+
+조건:
+- 중학생이 직접 쓴 것처럼 자연스럽고 진솔하게
+- 하나님의 사랑, 수련회 은혜, 1년 뒤의 나에 대한 기대 포함
+- 400자 내외, 문어체 아닌 편지체
+- "사랑하는 1년 뒤의 나에게"로 시작
+- 마지막은 "2026년 여름수련회에서, ${tmp.name} 올림"으로 끝
+
+편지 본문만 출력 (설명이나 따옴표 없이)`;
+
+  try{
+    const _key=localStorage.getItem('retreat_api_key')||'';
+    if(!_key){alert('API 키를 먼저 설정해주세요.');return;}
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':(localStorage.getItem('retreat_api_key')||''),'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const letter=data.content.find(b=>b.type==='text')?.text||'';
+    tmp.aiLetter=letter;
+    document.getElementById('aiLetterPreview').textContent=letter;
+    document.getElementById('aiOut').style.display='block';
+    btn.innerHTML='✓ 완료';
+    toast('✉️ AI가 편지 초안을 써줬어요!');
+  }catch(e){
+    toast('⚠️ 오류가 발생했어요. 다시 시도해주세요.');
+    btn.innerHTML='✦ AI가 초안 써주기';
+    btn.disabled=false;
+  }
+}
+
+function applyAI(){
+  document.getElementById('f-letter').value=tmp.aiLetter;
+  cntUp();
+  toast('✅ AI 편지를 적용했어요');
+}
+
+/* ─ 편지 카드 렌더 ─ */
+function renderFinalCard(){
+  tmp.letter=document.getElementById('f-letter').value.trim();
+  document.getElementById('lcGreeting').textContent=`사랑하는 1년 뒤의 ${tmp.name}에게`;
+  document.getElementById('lcBody').textContent=tmp.letter;
+  document.getElementById('lcFrom').textContent=`${tmp.name} (${tmp.grade} · ${tmp.team})`;
+}
+
+/* ─ 저장 ─ */
+function saveLetter(){
+  const d=D();
+  d.letters.push({
+    id:Date.now().toString(36),
+    name:tmp.name,grade:tmp.grade,team:tmp.team,
+    emotion:tmp.emotion,letter:tmp.letter,
+    ts:Date.now()
+  });
+  save(d);
+  go(5);
+  toast('📮 편지가 보관됐어요!');
+}
+
+/* ─ 편지함 ─ */
+const EMO_ICON={기쁨:'😊',감사:'🙏',설렘:'✨',결심:'💪',회개:'🕊️',평안:'🌿'};
+function renderMailbox(){
+  const d=D();
+  const letters=d.letters||[];
+  const el=document.getElementById('mailboxList');
+  if(!letters.length){
+    el.innerHTML=`<div class="empty"><span>✉️</span><p>아직 보관된 편지가 없어요.<br>첫 번째 편지를 써볼까요?</p></div>`;return;
+  }
+  el.innerHTML=[...letters].reverse().map(l=>`
+    <div class="mail-card" onclick="openModal('${l.id}')">
+      <div class="mail-head">
+        <div class="mail-icon">${EMO_ICON[l.emotion]||'✉️'}</div>
+        <div class="mail-info">
+          <div class="mail-from">${esc(l.name)} · ${esc(l.grade)}</div>
+          <div class="mail-date">${esc(l.team)} · ${new Date(l.ts).toLocaleDateString('ko-KR')}</div>
+        </div>
+      </div>
+      <div class="mail-preview">${esc(l.letter)}</div>
+    </div>`).join('');
+}
+
+function openModal(id){
+  const d=D();
+  const l=d.letters.find(x=>x.id===id);
+  if(!l)return;
+  document.getElementById('mGreeting').textContent=`사랑하는 1년 뒤의 ${l.name}에게`;
+  document.getElementById('mBody').textContent=l.letter;
+  document.getElementById('mFrom').textContent=`${l.name} (${l.grade} · ${l.team})`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e){
+  if(e.target===document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+/* ─ 유틸 ─ */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+let tt;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2500)}
+</script>
+</body>
+</html>
