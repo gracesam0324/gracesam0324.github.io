@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>감성 음성으로 듣는 말씀</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;font-family:'Noto Sans KR',sans-serif;color:#E2E8F0}
+
+/* ── 배경 — 밤하늘 ── */
+body{background:linear-gradient(180deg,#0A0E1A 0%,#0F172A 40%,#1E2D4A 100%);min-height:100vh}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d) ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.2;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.back-btn{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);font-size:1rem;cursor:pointer;font-family:inherit;font-weight:900;color:#fff;flex-shrink:0;transition:.15s}
+.back-btn:hover{background:rgba(255,255,255,.2)}
+.tag{font-size:.65rem;font-weight:900;background:#38BDF8;color:#0C4A6E;padding:3px 8px;border-radius:4px;border:1.5px solid rgba(255,255,255,.3)}
+.topbar-title{font-size:.88rem;font-weight:900;flex:1;color:#fff}
+.key-btn{font-size:.7rem;padding:5px 10px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:#94A3B8}
+
+/* ── hero ── */
+.hero{padding:28px 20px 22px;text-align:center;position:relative;z-index:1;border-bottom:1px solid rgba(255,255,255,.08)}
+.hero-badge{display:inline-block;background:rgba(56,189,248,.15);border:1.5px solid rgba(56,189,248,.4);border-radius:4px;font-size:.65rem;font-weight:900;padding:3px 10px;margin-bottom:10px;color:#7DD3FC}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.3rem,5vw,1.7rem);color:#fff;line-height:1.25;margin-bottom:5px}
+.hero h1 span{color:#38BDF8}
+.hero p{font-size:.76rem;color:#94A3B8;line-height:1.65}
+
+/* ── wrap ── */
+.wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px;position:relative;z-index:1}
+
+/* ── tabs ── */
+.tab-nav{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);border-radius:12px;display:flex;margin-bottom:16px;overflow:hidden;backdrop-filter:blur(6px)}
+.tab-btn{flex:1;padding:11px 4px;font-size:.73rem;font-weight:900;font-family:inherit;border:none;background:none;cursor:pointer;color:#64748B;transition:.15s;border-right:1px solid rgba(255,255,255,.08)}
+.tab-btn:last-child{border-right:none}
+.tab-btn.active{background:rgba(56,189,248,.15);color:#38BDF8}
+
+.tab-pane{display:none}
+.tab-pane.visible{display:block;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── glass card ── */
+.glass{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);border-radius:14px;padding:16px;margin-bottom:12px;backdrop-filter:blur(8px)}
+.glass-label{font-size:.68rem;font-weight:900;letter-spacing:.1em;color:#38BDF8;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.glass-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1)}
+
+/* ── 말씀 선택 칩 ── */
+.verse-grid{display:flex;flex-direction:column;gap:7px}
+.verse-btn{padding:12px 14px;border:1.5px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.04);cursor:pointer;font-family:inherit;text-align:left;transition:.15s;color:#E2E8F0}
+.verse-btn:hover{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.08)}
+.verse-btn.selected{border-color:#38BDF8;background:rgba(56,189,248,.12)}
+.verse-ref{font-size:.65rem;font-weight:900;color:#38BDF8;margin-bottom:3px;display:block}
+.verse-txt{font-size:.85rem;font-weight:600;color:#E2E8F0;line-height:1.55}
+
+.inp-dark{width:100%;padding:11px 13px;border:1.5px solid rgba(255,255,255,.15);border-radius:10px;font-size:.9rem;font-family:inherit;background:rgba(255,255,255,.06);font-weight:600;color:#E2E8F0;outline:none;transition:.2s;-webkit-appearance:none}
+.inp-dark:focus{border-color:#38BDF8;background:rgba(56,189,248,.07)}
+.inp-dark::placeholder{color:#475569;font-weight:400}
+.ta-dark{width:100%;padding:11px 13px;border:1.5px solid rgba(255,255,255,.15);border-radius:10px;font-size:.88rem;font-family:inherit;background:rgba(255,255,255,.06);font-weight:600;color:#E2E8F0;outline:none;transition:.2s;resize:vertical;min-height:70px;line-height:1.65;-webkit-appearance:none}
+.ta-dark:focus{border-color:#38BDF8;background:rgba(56,189,248,.07)}
+.ta-dark::placeholder{color:#475569;font-weight:400}
+
+/* ── 버튼 ── */
+.gen-btn{width:100%;padding:15px;border:2px solid rgba(255,255,255,.2);border-radius:12px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:0 4px 20px rgba(56,189,248,.2);transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;background:#38BDF8;color:#0C4A6E}
+.gen-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 24px rgba(56,189,248,.35)}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.ghost-dark{width:100%;padding:12px;border:1.5px solid rgba(255,255,255,.15);border-radius:12px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;background:rgba(255,255,255,.05);color:#94A3B8;transition:.15s;margin-top:8px}
+.ghost-dark:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}
+
+/* ── 묵상 텍스트 카드 ── */
+.med-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(56,189,248,.2);border-radius:14px;padding:16px;margin-bottom:12px}
+.med-verse-big{font-size:1.05rem;font-weight:700;color:#fff;line-height:1.8;margin-bottom:14px;padding:14px;background:rgba(56,189,248,.07);border-radius:10px;border-left:3px solid #38BDF8;font-style:italic;word-break:keep-all}
+.med-body{font-size:.87rem;color:#CBD5E1;line-height:1.9;white-space:pre-wrap;word-break:keep-all}
+.med-section-lbl{font-size:.62rem;font-weight:900;color:#38BDF8;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;margin-top:14px}
+
+/* ── 음성 플레이어 ── */
+.player-wrap{background:rgba(15,23,42,.8);border:1.5px solid rgba(56,189,248,.25);border-radius:16px;padding:18px;margin-bottom:12px;text-align:center}
+.player-state{font-size:.72rem;font-weight:700;color:#64748B;margin-bottom:14px;letter-spacing:.04em}
+.player-state.playing{color:#38BDF8;animation:pulse .8s ease-in-out infinite alternate}
+@keyframes pulse{from{opacity:.6}to{opacity:1}}
+.player-btns{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
+.p-btn{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;color:#fff}
+.p-btn:hover{background:rgba(255,255,255,.15);transform:scale(1.05)}
+.p-btn.play-main{width:64px;height:64px;font-size:1.5rem;background:rgba(56,189,248,.2);border-color:#38BDF8;color:#38BDF8}
+.p-btn.play-main:hover{background:rgba(56,189,248,.35)}
+.p-btn.stop{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.4);color:#FCA5A5}
+.speed-row{display:flex;gap:6px;justify-content:center}
+.speed-btn{padding:5px 12px;border:1.5px solid rgba(255,255,255,.15);border-radius:50px;font-size:.72rem;font-weight:900;cursor:pointer;font-family:inherit;background:rgba(255,255,255,.05);color:#94A3B8;transition:.12s}
+.speed-btn.sel{background:rgba(56,189,248,.2);border-color:#38BDF8;color:#38BDF8}
+
+/* ── 숨쉬기 가이드 ── */
+.breath-wrap{text-align:center;padding:20px 10px}
+.breath-circle{width:120px;height:120px;border-radius:50%;border:3px solid #38BDF8;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:900;color:#38BDF8;position:relative;transition:transform 4s ease-in-out}
+.breath-circle::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1.5px solid rgba(56,189,248,.2);animation:breathRing 8s ease-in-out infinite}
+@keyframes breathRing{0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.15);opacity:.8}}
+.breath-label{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#CBD5E1;margin-bottom:6px}
+.breath-count{font-family:'Black Han Sans',sans-serif;font-size:3rem;color:#38BDF8;line-height:1;margin-bottom:8px}
+.breath-inst{font-size:.8rem;color:#64748B;margin-bottom:16px}
+.breath-timer{font-size:.75rem;color:#475569;margin-top:8px}
+.breath-start{padding:12px 28px;border:2px solid #38BDF8;border-radius:50px;font-size:.9rem;font-weight:900;cursor:pointer;font-family:inherit;background:rgba(56,189,248,.12);color:#38BDF8;transition:.15s;margin-top:6px}
+.breath-start:hover{background:rgba(56,189,248,.25)}
+.breath-start.stop-breath{border-color:#EF4444;color:#FCA5A5;background:rgba(239,68,68,.1)}
+
+/* ── 기도 ── */
+.prayer-done-card{background:rgba(56,189,248,.08);border:1.5px solid rgba(56,189,248,.25);border-radius:14px;padding:14px;margin-top:12px}
+.prayer-done-txt{font-size:.88rem;font-weight:600;color:#BAE6FD;line-height:1.85;white-space:pre-wrap;word-break:keep-all}
+
+/* ── 로더 ── */
+.loading-box{text-align:center;padding:24px 10px}
+.loading-icon{font-size:2rem;display:inline-block;animation:spin 1.2s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.loading-txt{font-weight:900;font-size:.88rem;margin-top:8px;color:#94A3B8}
+.err-box{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 13px;font-size:.82rem;font-weight:700;color:#FCA5A5;margin-top:8px}
+
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+.key-modal.open{display:flex}
+.key-box{background:#0F172A;border:2px solid rgba(56,189,248,.3);border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:0 0 40px rgba(56,189,248,.15)}
+.key-box h3{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;margin-bottom:6px;color:#fff}
+.key-box p{font-size:.78rem;color:#64748B;margin-bottom:14px;line-height:1.6}
+.key-inp{width:100%;padding:11px 14px;border:1.5px solid rgba(255,255,255,.15);border-radius:8px;font-size:.88rem;font-family:inherit;background:rgba(255,255,255,.06);font-weight:600;color:#E2E8F0;outline:none;-webkit-appearance:none}
+.key-inp:focus{border-color:#38BDF8}
+.key-save{width:100%;padding:12px;background:#38BDF8;color:#0C4A6E;border:none;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem;margin-top:8px}
+.key-cancel{width:100%;padding:10px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:6px;color:#94A3B8}
+.divider{height:1px;background:rgba(255,255,255,.08);margin:16px 0}
+</style>
+</head>
+<body>
+
+<!-- 별 배경 -->
+<div class="stars" id="stars"></div>
+
+<div class="topbar">
+  <button class="back-btn" id="backBtn">&#8592;</button>
+  <span class="tag">&#51473;-4</span>
+  <span class="topbar-title">&#127769; 감성 음성으로 듣는 말씀</span>
+  <button class="key-btn" id="keyModalBtn">&#128273; API키</button>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">&#127769; 1일차 저녁 · 조용한 묵상</div>
+  <h1>말씀과 함께<br><span>하루를 마무리해요</span></h1>
+  <p>AI가 쓴 묵상 글을 음성으로 들으며<br>오늘 하루를 하나님 앞에 내려놔요</p>
+</div>
+
+<div class="wrap">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="verse">&#128214; 말씀</button>
+    <button class="tab-btn" data-tab="breath">&#127773; 숨쉬기</button>
+    <button class="tab-btn" data-tab="prayer">&#128591; 기도</button>
+  </div>
+
+  <!-- ══ 탭 1: 말씀 & 음성 ══ -->
+  <div class="tab-pane visible" id="tab-verse">
+
+    <div class="glass">
+      <div class="glass-label">&#128214; 오늘의 말씀 선택</div>
+      <div class="verse-grid" id="verseGrid">
+        <button class="verse-btn selected" data-verse="두려워하지 말라 내가 너와 함께함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와주리라 참으로 나의 의로운 오른손으로 너를 붙들리라" data-ref="이사야 41:10">
+          <span class="verse-ref">이사야 41:10</span>
+          <span class="verse-txt">두려워하지 말라 내가 너와 함께함이라...</span>
+        </button>
+        <button class="verse-btn" data-verse="내가 너희를 향하여 가진 생각을 내가 아노니 재앙이 아니라 곧 평안이요 너희 미래에 희망을 주려 하는 생각이라" data-ref="예레미야 29:11">
+          <span class="verse-ref">예레미야 29:11</span>
+          <span class="verse-txt">재앙이 아니라 평안이요 미래에 희망을...</span>
+        </button>
+        <button class="verse-btn" data-verse="내 안에 거하라 나도 너희 안에 거하리라 가지가 포도나무에 붙어있지 아니하면 스스로 열매를 맺을 수 없음 같이 너희도 내 안에 있지 아니하면 그러하리라" data-ref="요한복음 15:4">
+          <span class="verse-ref">요한복음 15:4</span>
+          <span class="verse-txt">내 안에 거하라 나도 너희 안에 거하리라...</span>
+        </button>
+        <button class="verse-btn" data-verse="보라 내가 새 일을 행하리니 이제 나타낼 것이라 너희가 그것을 알지 못하겠느냐 반드시 내가 광야에 길을 사막에 강을 내리니" data-ref="이사야 43:19">
+          <span class="verse-ref">이사야 43:19</span>
+          <span class="verse-txt">보라 내가 새 일을 행하리니...</span>
+        </button>
+        <button class="verse-btn" data-verse="직접 입력" data-ref="직접">
+          <span class="verse-ref">&#9997;&#65039; 직접 입력</span>
+          <span class="verse-txt">다른 말씀을 직접 입력해요</span>
+        </button>
+      </div>
+      <div id="customVerseWrap" style="display:none;margin-top:10px">
+        <input class="inp-dark" id="customRef" placeholder="성경 구절 (예: 시편 23:1)" style="margin-bottom:7px">
+        <textarea class="ta-dark" id="customVerse" placeholder="말씀 내용을 입력해주세요" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="glass">
+      <div class="glass-label">&#127775; 묵상 분위기</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button class="speed-btn sel" data-mood="조용하고 따뜻한">&#127757; 따뜻하게</button>
+        <button class="speed-btn" data-mood="힘을 주는 격려의">&#128170; 격려로</button>
+        <button class="speed-btn" data-mood="시적이고 감성적인">&#128171; 시적으로</button>
+        <button class="speed-btn" data-mood="간결하고 핵심적인">&#128270; 핵심만</button>
+      </div>
+    </div>
+
+    <button class="gen-btn" id="genMedBtn">&#127769; 묵상 글 & 음성 준비하기</button>
+    <div id="medErr"></div>
+
+    <!-- 결과 -->
+    <div id="medResult" style="display:none">
+      <div class="divider"></div>
+
+      <div class="med-card">
+        <div class="glass-label" style="margin-bottom:10px">&#128214; 오늘의 말씀</div>
+        <div class="med-verse-big" id="medVerseBig"></div>
+        <div class="med-section-lbl">&#127775; 묵상 글</div>
+        <div class="med-body" id="medBody"></div>
+      </div>
+
+      <!-- 음성 플레이어 -->
+      <div class="player-wrap">
+        <div class="player-state" id="playerState">&#128266; 재생 준비됨</div>
+        <div class="player-btns">
+          <button class="p-btn" id="restartBtn2" title="처음부터">&#9194;&#65039;</button>
+          <button class="p-btn play-main" id="playBtn">&#9654;&#65039;</button>
+          <button class="p-btn stop" id="stopBtn" title="정지">&#9646;&#9646;</button>
+        </div>
+        <div style="font-size:.68rem;color:#475569;margin-bottom:10px">재생 속도</div>
+        <div class="speed-row" id="speedRow">
+          <button class="speed-btn" data-rate="0.7">0.7×</button>
+          <button class="speed-btn" data-rate="0.85">0.85×</button>
+          <button class="speed-btn sel" data-rate="1">1×</button>
+          <button class="speed-btn" data-rate="1.2">1.2×</button>
+        </div>
+      </div>
+
+      <button class="ghost-dark" id="regenMedBtn">&#8635; 다시 생성하기</button>
+    </div>
+  </div>
+
+  <!-- ══ 탭 2: 숨쉬기 가이드 ══ -->
+  <div class="tab-pane" id="tab-breath">
+    <div class="glass" style="text-align:center;padding:20px">
+      <div class="glass-label">&#127773; 4-7-8 호흡법</div>
+      <p style="font-size:.78rem;color:#64748B;margin-bottom:20px;line-height:1.65">들숨 4초 · 참기 7초 · 날숨 8초<br>마음을 고요하게 하는 하나님의 리듬</p>
+
+      <div class="breath-circle" id="breathCircle">
+        <span id="breathEmoji" style="font-size:2rem">&#127773;</span>
+      </div>
+
+      <div class="breath-label" id="breathLabel">준비가 되면 시작해요</div>
+      <div class="breath-count" id="breathCount">&#x2022;</div>
+      <div class="breath-inst" id="breathInst">코로 천천히 숨을 들이마셔요</div>
+
+      <button class="breath-start" id="breathStartBtn">&#127773; 호흡 시작</button>
+      <div class="breath-timer" id="breathTimer"></div>
+    </div>
+
+    <div class="glass">
+      <div class="glass-label">&#128214; 묵상 말씀 카드</div>
+      <div style="font-size:.88rem;font-weight:700;color:#BAE6FD;line-height:1.8;padding:12px;border:1px solid rgba(56,189,248,.2);border-radius:10px;text-align:center;min-height:70px;display:flex;align-items:center;justify-content:center" id="breathVerse">
+        말씀 탭에서 묵상 글을 먼저 생성해주세요
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 탭 3: 기도 ══ -->
+  <div class="tab-pane" id="tab-prayer">
+    <div class="glass">
+      <div class="glass-label">&#128591; 오늘의 기도 제목</div>
+      <p style="font-size:.8rem;color:#64748B;margin-bottom:12px;line-height:1.6">말씀을 듣고 떠오르는 기도 제목을 써봐요</p>
+
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <div>
+          <div style="font-size:.68rem;font-weight:900;color:#38BDF8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">감사</div>
+          <textarea class="ta-dark" id="prayThanks" rows="2" placeholder="오늘 감사한 것을 하나님께 말해봐요..."></textarea>
+        </div>
+        <div>
+          <div style="font-size:.68rem;font-weight:900;color:#38BDF8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">고백</div>
+          <textarea class="ta-dark" id="prayConfess" rows="2" placeholder="솔직하게 내 마음을 고백해봐요..."></textarea>
+        </div>
+        <div>
+          <div style="font-size:.68rem;font-weight:900;color:#38BDF8;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">간구</div>
+          <textarea class="ta-dark" id="prayAsk" rows="2" placeholder="하나님께 구하고 싶은 것을 써봐요..."></textarea>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="genPrayerBtn">&#128591; AI가 기도문으로 다듬어주기</button>
+      <div id="prayErr"></div>
+      <div id="prayLoading" style="display:none" class="loading-box">
+        <div class="loading-icon">&#128591;</div>
+        <div class="loading-txt" style="color:#94A3B8">기도문 작성 중...</div>
+      </div>
+      <div class="prayer-done-card" id="prayResult" style="display:none">
+        <div style="font-size:.62rem;font-weight:900;color:#38BDF8;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">&#128591; 오늘의 기도</div>
+        <div class="prayer-done-txt" id="prayTxt"></div>
+      </div>
+    </div>
+
+    <div class="glass">
+      <div class="glass-label">&#11088; 오늘 하루 한 줄 감사</div>
+      <textarea class="ta-dark" id="oneLiner" rows="2" placeholder="오늘 하루를 한 문장으로 표현한다면..."></textarea>
+      <button class="gen-btn" id="saveBtn" style="background:rgba(56,189,248,.15);color:#38BDF8;border-color:rgba(56,189,248,.3);box-shadow:none;margin-top:8px">&#128197; 저장하기</button>
+      <div id="savedMsg" style="display:none;text-align:center;padding:10px;font-size:.8rem;font-weight:700;color:#34D399;margin-top:6px">&#9989; 오늘의 묵상이 저장됐어요</div>
+    </div>
+  </div>
+</div>
+
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>&#128273; API 키 설정</h3>
+    <p>Anthropic API 키를 입력하면<br>AI 묵상 글이 생성돼요.</p>
+    <input class="key-inp" id="keyInput" type="password" placeholder="sk-ant-api03-...">
+    <button class="key-save" id="keySaveBtn">저장하기</button>
+    <button class="key-cancel" id="keyCancelBtn">취소</button>
+  </div>
+</div>
+
+<script>
+var CLAUDE_KEY = 'YOUR_API_KEY_HERE';
+var selectedVerse = '두려워하지 말라 내가 너와 함께함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와주리라 참으로 나의 의로운 오른손으로 너를 붙들리라';
+var selectedRef = '이사야 41:10';
+var selectedMood = '조용하고 따뜻한';
+var medFullText = '';
+var speechRate = 1;
+var tts = null;
+var isPlaying = false;
+var breathTimer = null;
+var breathCycle = 0;
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getKey(){return localStorage.getItem('retreat_api_key')||CLAUDE_KEY;}
+
+function callClaude(msgs,sys){
+  var key=getKey();
+  if(!key||key==='YOUR_API_KEY_HERE'||!/^[\x00-\xFF]+$/.test(key))
+    return Promise.reject(new Error('API 키를 설정해주세요.'));
+  return fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:sys||'',messages:msgs})
+  }).then(function(r){return r.json();}).then(function(d){if(d.error)throw new Error(d.error.message);return d.content[0].text;});
+}
+
+/* ── 별 생성 ── */
+function makeStars(){
+  var wrap=document.getElementById('stars');
+  for(var i=0;i<80;i++){
+    var s=document.createElement('div');
+    s.className='star';
+    var size=(Math.random()*2+0.5)+'px';
+    s.style.cssText='width:'+size+';height:'+size+';top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;--d:'+(2+Math.random()*4)+'s;animation-delay:'+(Math.random()*4)+'s';
+    wrap.appendChild(s);
+  }
+}
+
+/* ── 탭 ── */
+function switchTab(id){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===id);});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.toggle('visible',p.id==='tab-'+id);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── 묵상 생성 ── */
+function genMed(){
+  var verse = selectedVerse === '직접 입력'
+    ? document.getElementById('customVerse').value.trim()
+    : selectedVerse;
+  var ref = selectedVerse === '직접 입력'
+    ? document.getElementById('customRef').value.trim()
+    : selectedRef;
+  if(!verse){document.getElementById('medErr').innerHTML='<div class="err-box">말씀을 선택하거나 입력해주세요.</div>';return;}
+  document.getElementById('medErr').innerHTML='';
+  var btn=document.getElementById('genMedBtn');
+  btn.disabled=true; btn.textContent='생성 중...';
+
+  var sys='너는 교회 수련회 청소년 묵상 글을 쓰는 AI야.\n'+selectedMood+' 톤으로 중학생이 밤에 조용히 읽을 수 있는 묵상 글을 써줘.\n설교하지 말고, 마치 하나님이 학생 옆에서 조용히 말씀하시는 것처럼. 4-6문장으로. 한국어로.';
+  var prompt='말씀: "'+verse+'" ('+ref+')\n\n'+
+    '이 말씀에 대한 '+selectedMood+' 묵상 글을 써줘. 중학생 청소년에게 말하듯이, 오늘 하루를 마무리하며 읽을 수 있게. 4-6문장으로.';
+
+  callClaude([{role:'user',content:prompt}],sys)
+    .then(function(text){
+      medFullText = ref + '. ' + verse + '.\n\n' + text;
+      document.getElementById('medVerseBig').textContent = '"' + verse + '" (' + ref + ')';
+      document.getElementById('medBody').textContent = text;
+      document.getElementById('medResult').style.display = 'block';
+      document.getElementById('breathVerse').textContent = '"' + verse + '"';
+      document.getElementById('playerState').textContent = '▶ 재생 준비됨';
+      stopSpeech();
+    })
+    .catch(function(e){
+      document.getElementById('medErr').innerHTML='<div class="err-box">오류: '+esc(e.message)+'</div>';
+    })
+    .finally(function(){
+      btn.disabled=false; btn.innerHTML='&#127769; 묵상 글 & 음성 준비하기';
+    });
+}
+
+/* ── TTS ── */
+function stopSpeech(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  isPlaying=false;
+  document.getElementById('playBtn').innerHTML='&#9654;&#65039;';
+  document.getElementById('playerState').textContent='▶ 재생 준비됨';
+  document.getElementById('playerState').classList.remove('playing');
+}
+
+function playSpeech(){
+  if(!medFullText){alert('먼저 묵상 글을 생성해주세요.');return;}
+  if(!window.speechSynthesis){alert('이 기기에서는 음성 재생이 지원되지 않아요.');return;}
+  if(isPlaying){
+    window.speechSynthesis.pause();
+    isPlaying=false;
+    document.getElementById('playBtn').innerHTML='&#9654;&#65039;';
+    document.getElementById('playerState').textContent='일시정지';
+    document.getElementById('playerState').classList.remove('playing');
+    return;
+  }
+  if(window.speechSynthesis.paused){
+    window.speechSynthesis.resume();
+    isPlaying=true;
+    document.getElementById('playBtn').innerHTML='&#9646;&#9646;';
+    document.getElementById('playerState').textContent='재생 중...';
+    document.getElementById('playerState').classList.add('playing');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  var utt=new SpeechSynthesisUtterance(medFullText);
+  utt.lang='ko-KR'; utt.rate=speechRate; utt.pitch=0.9; utt.volume=1;
+
+  /* 한국어 음성 찾기 */
+  var voices=window.speechSynthesis.getVoices();
+  var koVoice=voices.find(function(v){return v.lang.startsWith('ko');});
+  if(koVoice)utt.voice=koVoice;
+
+  utt.onstart=function(){isPlaying=true;document.getElementById('playBtn').innerHTML='&#9646;&#9646;';document.getElementById('playerState').textContent='재생 중...';document.getElementById('playerState').classList.add('playing');};
+  utt.onend=function(){isPlaying=false;document.getElementById('playBtn').innerHTML='&#9654;&#65039;';document.getElementById('playerState').textContent='&#9989; 재생 완료';document.getElementById('playerState').classList.remove('playing');};
+  utt.onerror=function(){isPlaying=false;document.getElementById('playerState').textContent='오류 — 다시 시도해주세요';document.getElementById('playerState').classList.remove('playing');};
+  window.speechSynthesis.speak(utt);
+  tts=utt;
+}
+
+/* ── 숨쉬기 가이드 ── */
+var breathPhases=[
+  {label:'들숨',inst:'코로 천천히 들이마셔요',emoji:'🌬️',dur:4,scale:1.3},
+  {label:'참기',inst:'살며시 멈춰요',emoji:'🌙',dur:7,scale:1.3},
+  {label:'날숨',inst:'입으로 천천히 내쉬어요',emoji:'💨',dur:8,scale:1}
+];
+var breathPhaseIdx=0, breathSec=0, breathRunning=false, breathTotal=0;
+
+function startBreath(){
+  if(breathRunning){
+    clearInterval(breathTimer);
+    breathRunning=false;
+    document.getElementById('breathStartBtn').textContent='🌬️ 호흡 시작';
+    document.getElementById('breathStartBtn').classList.remove('stop-breath');
+    document.getElementById('breathLabel').textContent='준비가 되면 시작해요';
+    document.getElementById('breathCount').textContent='•';
+    document.getElementById('breathCircle').style.transform='scale(1)';
+    document.getElementById('breathTimer').textContent='';
+    return;
+  }
+  breathRunning=true; breathPhaseIdx=0; breathSec=0; breathTotal=0;
+  document.getElementById('breathStartBtn').textContent='■ 중단';
+  document.getElementById('breathStartBtn').classList.add('stop-breath');
+  updateBreathUI();
+  breathTimer=setInterval(function(){
+    breathSec++;
+    breathTotal++;
+    var phase=breathPhases[breathPhaseIdx];
+    document.getElementById('breathCount').textContent=phase.dur-breathSec+1;
+    document.getElementById('breathTimer').textContent='총 '+Math.floor(breathTotal/60)+'분 '+( breathTotal%60)+'초';
+    if(breathSec>=phase.dur){
+      breathPhaseIdx=(breathPhaseIdx+1)%breathPhases.length;
+      breathSec=0;
+      updateBreathUI();
+    }
+  },1000);
+}
+
+function updateBreathUI(){
+  var p=breathPhases[breathPhaseIdx];
+  document.getElementById('breathLabel').textContent=p.label;
+  document.getElementById('breathInst').textContent=p.inst;
+  document.getElementById('breathEmoji').textContent=p.emoji;
+  document.getElementById('breathCount').textContent=p.dur;
+  document.getElementById('breathCircle').style.transform='scale('+p.scale+')';
+}
+
+/* ── 기도문 ── */
+function genPrayer(){
+  var thanks=document.getElementById('prayThanks').value.trim();
+  var confess=document.getElementById('prayConfess').value.trim();
+  var ask=document.getElementById('prayAsk').value.trim();
+  if(!thanks&&!confess&&!ask){document.getElementById('prayErr').innerHTML='<div class="err-box">기도 제목을 하나 이상 입력해주세요.</div>';return;}
+  document.getElementById('prayErr').innerHTML='';
+  document.getElementById('genPrayerBtn').disabled=true;
+  document.getElementById('prayLoading').style.display='block';
+  document.getElementById('prayResult').style.display='none';
+
+  var sys='너는 중학생의 기도 제목을 바탕으로 진심 담긴 기도문을 써주는 AI야. 하나님께 직접 말하는 형식으로. 자연스럽고 솔직하게. 3-5문장으로.';
+  var prompt='감사: '+(thanks||'없음')+'\n고백: '+(confess||'없음')+'\n간구: '+(ask||'없음')+'\n\n이 내용을 바탕으로 하나님께 드리는 기도문을 써줘. "하나님," 으로 시작해서 자연스럽게.';
+
+  callClaude([{role:'user',content:prompt}],sys)
+    .then(function(text){
+      document.getElementById('prayTxt').textContent=text;
+      document.getElementById('prayResult').style.display='block';
+    })
+    .catch(function(e){document.getElementById('prayErr').innerHTML='<div class="err-box">오류: '+esc(e.message)+'</div>';})
+    .finally(function(){document.getElementById('genPrayerBtn').disabled=false;document.getElementById('prayLoading').style.display='none';});
+}
+
+/* ── 저장 ── */
+function saveEntry(){
+  var entry={
+    date:new Date().toLocaleDateString('ko-KR'),
+    ref:selectedRef,
+    verse:selectedVerse,
+    oneliner:document.getElementById('oneLiner').value.trim()
+  };
+  var prev=JSON.parse(localStorage.getItem('med_entries')||'[]');
+  prev.push(entry);
+  localStorage.setItem('med_entries',JSON.stringify(prev));
+  document.getElementById('savedMsg').style.display='block';
+  setTimeout(function(){document.getElementById('savedMsg').style.display='none';},2500);
+}
+
+/* ── 이벤트 ── */
+document.addEventListener('DOMContentLoaded',function(){
+  makeStars();
+
+  document.getElementById('backBtn').addEventListener('click',function(){
+    stopSpeech();
+    if(window.parent&&window.parent!==window&&typeof window.parent.closeFrame==='function')
+      window.parent.closeFrame();
+    else history.back();
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){switchTab(this.getAttribute('data-tab'));});
+  });
+
+  /* 말씀 선택 */
+  document.querySelectorAll('.verse-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.verse-btn').forEach(function(b){b.classList.remove('selected');});
+      btn.classList.add('selected');
+      selectedVerse=btn.getAttribute('data-verse');
+      selectedRef=btn.getAttribute('data-ref');
+      document.getElementById('customVerseWrap').style.display=selectedVerse==='직접 입력'?'block':'none';
+    });
+  });
+
+  /* 분위기 */
+  document.querySelectorAll('[data-mood]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('[data-mood]').forEach(function(b){b.classList.remove('sel');});
+      btn.classList.add('sel');
+      selectedMood=btn.getAttribute('data-mood');
+    });
+  });
+
+  document.getElementById('genMedBtn').addEventListener('click',genMed);
+  document.getElementById('regenMedBtn').addEventListener('click',function(){document.getElementById('medResult').style.display='none';genMed();});
+
+  /* 플레이어 */
+  document.getElementById('playBtn').addEventListener('click',playSpeech);
+  document.getElementById('stopBtn').addEventListener('click',stopSpeech);
+  document.getElementById('restartBtn2').addEventListener('click',function(){stopSpeech();setTimeout(playSpeech,300);});
+
+  document.querySelectorAll('[data-rate]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('[data-rate]').forEach(function(b){b.classList.remove('sel');});
+      btn.classList.add('sel');
+      speechRate=parseFloat(btn.getAttribute('data-rate'));
+      if(isPlaying){stopSpeech();setTimeout(playSpeech,300);}
+    });
+  });
+
+  /* 숨쉬기 */
+  document.getElementById('breathStartBtn').addEventListener('click',startBreath);
+
+  /* 기도 */
+  document.getElementById('genPrayerBtn').addEventListener('click',genPrayer);
+  document.getElementById('saveBtn').addEventListener('click',saveEntry);
+
+  /* API 키 모달 */
+  document.getElementById('keyModalBtn').addEventListener('click',function(){
+    document.getElementById('keyInput').value=localStorage.getItem('retreat_api_key')||'';
+    document.getElementById('keyModal').classList.add('open');
+  });
+  document.getElementById('keySaveBtn').addEventListener('click',function(){
+    var v=document.getElementById('keyInput').value.trim();
+    if(v){
+      if(!/^[\x00-\xFF]+$/.test(v)){alert('API 키에 잘못된 문자가 포함되어 있어요.');return;}
+      localStorage.setItem('retreat_api_key',v);
+    }
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyCancelBtn').addEventListener('click',function(){document.getElementById('keyModal').classList.remove('open');});
+  document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+
+  /* 음성 목록 미리 로드 */
+  if(window.speechSynthesis){
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};
+  }
+});
+</script>
+</body>
+</html>
