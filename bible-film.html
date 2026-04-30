@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성경 단편영화 제작 & 상영회</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%;background:#f0f0f0;font-family:'Noto Sans KR',sans-serif;color:#111}
+
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:#fff;border-bottom:3px solid #111}
+.back-btn{width:36px;height:36px;border-radius:8px;background:#f0f0f0;border:2px solid #111;font-size:1rem;cursor:pointer;font-family:inherit;font-weight:900;flex-shrink:0}
+.tag{font-size:.65rem;font-weight:900;background:#F59E0B;color:white;padding:3px 8px;border-radius:4px;border:2px solid #111}
+.topbar-title{font-size:.85rem;font-weight:900;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:#f0f0f0;border:2px solid #111;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:#666}
+
+.hero{background:linear-gradient(135deg,#111,#1C1917 40%,#92400E);padding:22px 20px 18px;text-align:center;border-bottom:3px solid #111;position:relative;overflow:hidden}
+.hero::before{content:'🎬🎭📽️🎞️🎤🎨✝️⭐';position:absolute;top:5px;left:0;right:0;font-size:1rem;letter-spacing:4px;opacity:.12;white-space:nowrap}
+.hero-badge{display:inline-block;background:#fff;border:2px solid #111;border-radius:4px;font-size:.65rem;font-weight:900;padding:3px 10px;margin-bottom:8px;color:#92400E;box-shadow:2px 2px 0 #111}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.3rem,5vw,1.8rem);color:#fff;line-height:1.2;margin-bottom:3px;text-shadow:2px 2px 0 rgba(0,0,0,.4)}
+.hero h1 span{color:#FFD43B}
+.hero p{font-size:.76rem;color:rgba(255,255,255,.8);line-height:1.6}
+
+/* tab nav */
+.tab-nav{background:#fff;border-bottom:3px solid #111;display:flex;position:sticky;top:52px;z-index:90}
+.tab-btn{flex:1;padding:12px 4px;font-size:.75rem;font-weight:900;font-family:inherit;border:none;background:none;cursor:pointer;border-bottom:4px solid transparent;transition:.15s;color:#888}
+.tab-btn.active{color:#111;border-bottom-color:#F59E0B}
+
+.wrap{max-width:480px;margin:0 auto;padding:18px 16px 60px}
+.tab-pane{display:none}
+.tab-pane.visible{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:#fff;border:3px solid #111;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:4px 4px 0 #111}
+.card-label{font-size:.7rem;font-weight:900;letter-spacing:.1em;color:#92400E;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-label::after{content:'';flex:1;height:2px;background:#111}
+
+/* 팀 선택 */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-btn{padding:13px 8px;border:2.5px solid #111;border-radius:10px;font-size:.85rem;font-weight:900;cursor:pointer;font-family:inherit;background:#f0f0f0;text-align:center;transition:.15s}
+.team-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #111}
+.team-btn .t-icon{font-size:1.5rem;display:block;margin-bottom:4px}
+.team-btn.sel-peter{background:#FF4E8B;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+.team-btn.sel-paul{background:#3B5BFF;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+.team-btn.sel-esther{background:#2ECC71;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+.team-btn.sel-david{background:#FF8C00;color:#fff;border-color:#111;box-shadow:3px 3px 0 #111}
+
+/* 역할 배지 */
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.role-card{background:#f0f0f0;border:2px solid #111;border-radius:10px;padding:10px 12px;text-align:center}
+.role-icon{font-size:1.4rem;margin-bottom:4px;display:block}
+.role-name{font-size:.75rem;font-weight:900;color:#111;display:block}
+.role-inp{width:100%;padding:5px 8px;border:1.5px solid #111;border-radius:6px;font-size:.78rem;font-family:inherit;background:#fff;outline:none;margin-top:4px;text-align:center}
+.role-inp::placeholder{color:#bbb}
+
+/* 영화 선택 */
+.story-grid{display:flex;flex-direction:column;gap:8px}
+.story-btn{padding:13px 15px;border:2.5px solid #111;border-radius:10px;background:#f0f0f0;cursor:pointer;font-family:inherit;display:flex;align-items:flex-start;gap:12px;transition:.15s;text-align:left}
+.story-btn:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #111;background:#fff}
+.story-btn.selected{border-color:#F59E0B;background:#FFFBEB;box-shadow:4px 4px 0 #F59E0B}
+.story-emoji{font-size:1.8rem;flex-shrink:0;margin-top:2px}
+.story-info{}
+.story-title{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#111;margin-bottom:3px}
+.story-desc{font-size:.75rem;color:#888;line-height:1.5}
+.story-ref{font-size:.65rem;font-weight:900;color:#F59E0B;margin-top:4px;display:block}
+
+/* custom input */
+.inp{width:100%;padding:10px 13px;border:2.5px solid #111;border-radius:8px;font-size:.9rem;font-family:inherit;background:#f0f0f0;font-weight:600;outline:none;-webkit-appearance:none;transition:.2s}
+.inp:focus{border-color:#F59E0B;background:#fff}
+.inp::placeholder{color:#bbb;font-weight:400}
+.inp-area{width:100%;padding:12px 13px;border:2.5px solid #111;border-radius:10px;font-size:.88rem;font-family:inherit;background:#FFFDF7;font-weight:600;line-height:1.7;resize:vertical;min-height:80px;outline:none;-webkit-appearance:none;transition:.2s}
+.inp-area:focus{border-color:#F59E0B;background:#fff}
+.inp-area::placeholder{color:#bbb;font-weight:400}
+
+/* 버튼 */
+.gen-btn{width:100%;padding:15px;color:#fff;border:3px solid #111;border-radius:10px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;box-shadow:4px 4px 0 #111;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.gen-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:6px 6px 0 #111}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-amber{background:#F59E0B;color:#111}
+.btn-dark{background:#111}
+.ghost-btn{width:100%;padding:12px;border:2.5px solid #111;border-radius:10px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;background:#f0f0f0;box-shadow:3px 3px 0 #111;transition:.15s;margin-top:10px}
+.ghost-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #111}
+
+/* 기획안 */
+.plan-section{margin-bottom:16px}
+.plan-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.plan-icon{font-size:1.3rem}
+.plan-title{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#111}
+.plan-card{background:#fff;border:2.5px solid #111;border-radius:10px;padding:13px 15px;box-shadow:3px 3px 0 #111;font-size:.86rem;font-weight:600;line-height:1.8;color:#111;white-space:pre-wrap;word-break:keep-all}
+.plan-card.synopsis{border-color:#F59E0B;box-shadow:3px 3px 0 #F59E0B;background:#FFFBEB}
+.plan-card.scenes{border-color:#7C3AED;box-shadow:3px 3px 0 #7C3AED;background:#F5F3FF}
+.plan-card.script{border-color:#059669;box-shadow:3px 3px 0 #059669;background:#ECFDF5}
+.plan-badge{display:inline-block;font-size:.6rem;font-weight:900;padding:2px 7px;border:2px solid #111;border-radius:4px;margin-bottom:7px}
+.pb-amber{background:#FEF3C7;color:#92400E}
+.pb-purple{background:#EDE9FE;color:#5B21B6}
+.pb-green{background:#D1FAE5;color:#065F46}
+
+/* 제작 가이드 */
+.guide-step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1.5px dashed #ddd}
+.guide-step:last-child{border-bottom:none}
+.guide-num{width:28px;height:28px;border-radius:8px;background:#111;color:#FFD43B;font-family:'Black Han Sans',sans-serif;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.guide-txt{}
+.guide-ttl{font-size:.88rem;font-weight:900;color:#111;margin-bottom:3px}
+.guide-sub{font-size:.76rem;color:#888;line-height:1.55}
+.tip-box{background:#FFFBEB;border:2px solid #F59E0B;border-radius:8px;padding:10px 13px;margin-top:8px;font-size:.78rem;font-weight:700;color:#92400E;line-height:1.6}
+.tip-box::before{content:'💡 ';font-size:.85rem}
+
+/* 투표 */
+.vote-team-card{background:#fff;border:3px solid #111;border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:4px 4px 0 #111}
+.vtc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.vtc-name{font-family:'Black Han Sans',sans-serif;font-size:1rem}
+.vtc-film{font-size:.75rem;color:#888;margin-top:2px}
+.award-row{display:flex;flex-direction:column;gap:6px}
+.award-item{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.award-lbl{font-size:.72rem;font-weight:700;color:#555;min-width:70px;flex-shrink:0}
+.vote-counter{display:flex;align-items:center;gap:6px}
+.vc-minus{width:28px;height:28px;border:2px solid #111;border-radius:6px;background:#f0f0f0;font-size:1rem;font-weight:900;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vc-num{font-family:'Black Han Sans',sans-serif;font-size:1rem;min-width:24px;text-align:center}
+.vc-plus{width:28px;height:28px;border:2px solid #111;border-radius:6px;background:#F59E0B;color:#111;font-size:1rem;font-weight:900;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* 시상 결과 */
+.award-result{background:#111;border:3px solid #111;border-radius:14px;padding:20px;margin-bottom:12px;box-shadow:5px 5px 0 #F59E0B;text-align:center}
+.ar-trophy{font-size:2.8rem;display:block;margin-bottom:8px;animation:bounce .8s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.ar-award{font-size:.65rem;font-weight:900;color:#F59E0B;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.ar-team{font-family:'Black Han Sans',sans-serif;font-size:1.4rem;color:#fff;margin-bottom:4px}
+.ar-film{font-size:.78rem;color:rgba(255,255,255,.7)}
+.award-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.al-row{background:#fff;border:2.5px solid #111;border-radius:10px;padding:11px 14px;box-shadow:3px 3px 0 #111;display:flex;align-items:center;gap:12px}
+.al-icon{font-size:1.4rem;flex-shrink:0}
+.al-info{flex:1}
+.al-award{font-size:.65rem;font-weight:900;color:#888;letter-spacing:.06em;text-transform:uppercase}
+.al-team{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#111}
+.al-film{font-size:.72rem;color:#888}
+.al-votes{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:#F59E0B;flex-shrink:0}
+
+/* 로더 */
+.loading-box{text-align:center;padding:28px 10px}
+.loading-icon{font-size:2.2rem;display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.loading-txt{font-weight:900;font-size:.9rem;margin-top:10px}
+.loading-sub{font-size:.75rem;color:#888;margin-top:4px}
+.err-box{background:#FEE2E2;border:2.5px solid #EF4444;border-radius:10px;padding:10px 13px;font-size:.82rem;font-weight:700;color:#991B1B;margin-top:8px}
+
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+.key-modal.open{display:flex}
+.key-box{background:#fff;border:3px solid #111;border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:6px 6px 0 #111}
+.key-box h3{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:#888;margin-bottom:14px;line-height:1.6}
+.key-inp{width:100%;padding:11px 14px;border:2.5px solid #111;border-radius:8px;font-size:.88rem;font-family:inherit;background:#f0f0f0;font-weight:600;outline:none;-webkit-appearance:none}
+.key-inp:focus{border-color:#F59E0B;background:#fff}
+.key-save{width:100%;padding:12px;background:#F59E0B;color:#111;border:2px solid #111;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem;margin-top:8px;box-shadow:3px 3px 0 #111}
+.key-cancel{width:100%;padding:10px;background:#f0f0f0;border:2px solid #111;border-radius:8px;font-weight:700;font-family:inherit;cursor:pointer;font-size:.85rem;margin-top:6px}
+.divider{height:3px;background:#111;border-radius:2px;margin:18px 0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" id="backBtn">&#8592;</button>
+  <span class="tag">&#51473;-12</span>
+  <span class="topbar-title">&#127916; 성경 단편영화 제작 & 상영회</span>
+  <button class="key-btn" id="keyModalBtn">&#128273; API키</button>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">&#127916; 3일차 · 팀 프로젝트</div>
+  <h1>성경을 <span>영화로</span> 만들어봐요</h1>
+  <p>AI가 기획안을 써주고 캡컷으로 편집<br>상영 후 관객 투표로 시상까지!</p>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" data-tab="plan">&#127916; 기획</button>
+  <button class="tab-btn" data-tab="guide">&#127908; 제작</button>
+  <button class="tab-btn" data-tab="vote">&#127942; 시상식</button>
+</div>
+
+<div class="wrap">
+
+  <!-- ══ 탭 1: 기획 ══ -->
+  <div class="tab-pane visible" id="tab-plan">
+
+    <!-- 팀 선택 -->
+    <div class="card" id="teamCard">
+      <div class="card-label">&#128101; 우리 팀</div>
+      <div class="team-grid" id="teamGrid">
+        <button class="team-btn" data-team="베드로팀" data-cls="sel-peter"><span class="t-icon">&#9875;</span>베드로팀</button>
+        <button class="team-btn" data-team="바울팀" data-cls="sel-paul"><span class="t-icon">&#10013;</span>바울팀</button>
+        <button class="team-btn" data-team="에스더팀" data-cls="sel-esther"><span class="t-icon">&#128081;</span>에스더팀</button>
+        <button class="team-btn" data-team="다윗팀" data-cls="sel-david"><span class="t-icon">&#127929;</span>다윗팀</button>
+      </div>
+    </div>
+
+    <!-- 역할 분담 -->
+    <div class="card">
+      <div class="card-label">&#127916; 역할 분담</div>
+      <div class="role-grid">
+        <div class="role-card"><span class="role-icon">&#127917;</span><span class="role-name">감독</span><input class="role-inp" id="role1" placeholder="이름"></div>
+        <div class="role-card"><span class="role-icon">&#127908;</span><span class="role-name">배우</span><input class="role-inp" id="role2" placeholder="이름들"></div>
+        <div class="role-card"><span class="role-icon">&#129302;</span><span class="role-name">AI 담당</span><input class="role-inp" id="role3" placeholder="이름"></div>
+        <div class="role-card"><span class="role-icon">&#9986;&#65039;</span><span class="role-name">편집</span><input class="role-inp" id="role4" placeholder="이름"></div>
+      </div>
+    </div>
+
+    <!-- 성경 이야기 선택 -->
+    <div class="card">
+      <div class="card-label">&#128214; 영화 소재 선택</div>
+      <div class="story-grid" id="storyGrid">
+        <button class="story-btn" data-story="탕자의 비유" data-ref="누가복음 15:11-32">
+          <span class="story-emoji">&#129333;</span>
+          <div class="story-info">
+            <div class="story-title">탕자의 비유 현대판</div>
+            <div class="story-desc">집을 떠난 아들이 돌아오는 이야기를 현대 학교 배경으로</div>
+            <span class="story-ref">누가복음 15:11-32</span>
+          </div>
+        </button>
+        <button class="story-btn" data-story="선한 사마리아인" data-ref="누가복음 10:30-37">
+          <span class="story-emoji">&#129871;</span>
+          <div class="story-info">
+            <div class="story-title">선한 사마리아인 현대판</div>
+            <div class="story-desc">따돌림 당하는 친구를 돕는 이야기로 재해석</div>
+            <span class="story-ref">누가복음 10:30-37</span>
+          </div>
+        </button>
+        <button class="story-btn" data-story="다윗과 골리앗" data-ref="사무엘상 17장">
+          <span class="story-emoji">&#129354;</span>
+          <div class="story-info">
+            <div class="story-title">다윗과 골리앗</div>
+            <div class="story-desc">작은 믿음으로 큰 두려움을 이기는 청소년 이야기</div>
+            <span class="story-ref">사무엘상 17장</span>
+          </div>
+        </button>
+        <button class="story-btn" data-story="베드로의 부인과 회복" data-ref="요한복음 21장">
+          <span class="story-emoji">&#128148;</span>
+          <div class="story-info">
+            <div class="story-title">실패 후 회복</div>
+            <div class="story-desc">큰 실수를 하고 용서받는 친구 관계 이야기</div>
+            <span class="story-ref">요한복음 21장</span>
+          </div>
+        </button>
+        <button class="story-btn" data-story="직접 입력" data-ref="">
+          <span class="story-emoji">&#9997;&#65039;</span>
+          <div class="story-info">
+            <div class="story-title">직접 입력하기</div>
+            <div class="story-desc">원하는 성경 이야기나 주제를 직접 입력해요</div>
+            <span class="story-ref">자유 선택</span>
+          </div>
+        </button>
+      </div>
+      <div id="customStoryWrap" style="display:none;margin-top:10px">
+        <input class="inp" id="customStory" placeholder="예) 에스더의 용기 — 왕 앞에 나가는 현대 이야기">
+      </div>
+    </div>
+
+    <!-- 분량 / 톤 -->
+    <div class="card">
+      <div class="card-label">&#127917; 영화 스타일</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1">
+          <div style="font-size:.7rem;font-weight:900;color:#888;margin-bottom:5px">분량</div>
+          <select class="inp" id="duration" style="cursor:pointer">
+            <option>3분 이내</option>
+            <option selected>5분 이내</option>
+            <option>10분 이내</option>
+          </select>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.7rem;font-weight:900;color:#888;margin-bottom:5px">톤</div>
+          <select class="inp" id="tone" style="cursor:pointer">
+            <option>감동적</option>
+            <option selected>유머+감동</option>
+            <option>진지한</option>
+            <option>뮤지컬</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:.7rem;font-weight:900;color:#888;margin-bottom:5px">추가 요청사항 (선택)</div>
+      <textarea class="inp-area" id="extraNote" placeholder="예) 학교 옥상 씬을 꼭 넣어줘, 코믹한 장면이 있으면 좋겠어..." style="min-height:60px"></textarea>
+    </div>
+
+    <button class="gen-btn btn-amber" id="genPlanBtn">&#129302; AI 기획안 생성하기</button>
+    <div id="planErr"></div>
+
+    <!-- 기획안 결과 -->
+    <div id="planResult" style="display:none">
+      <div class="divider"></div>
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;margin-bottom:14px;color:#111" id="planTitle"></div>
+
+      <div class="plan-section">
+        <div class="plan-hdr"><span class="plan-icon">&#128221;</span><span class="plan-title">시놉시스</span></div>
+        <div class="plan-card synopsis"><span class="plan-badge pb-amber">SYNOPSIS</span><br><span id="planSynopsis"></span></div>
+      </div>
+
+      <div class="plan-section">
+        <div class="plan-hdr"><span class="plan-icon">&#127917;</span><span class="plan-title">장면 구성</span></div>
+        <div class="plan-card scenes"><span class="plan-badge pb-purple">SCENES</span><br><span id="planScenes"></span></div>
+      </div>
+
+      <div class="plan-section">
+        <div class="plan-hdr"><span class="plan-icon">&#128172;</span><span class="plan-title">핵심 대사 초안</span></div>
+        <div class="plan-card script"><span class="plan-badge pb-green">KEY LINES</span><br><span id="planScript"></span></div>
+      </div>
+
+      <div class="plan-section">
+        <div class="plan-hdr"><span class="plan-icon">&#127891;</span><span class="plan-title">신앙 메시지</span></div>
+        <div class="plan-card" style="border-color:#F59E0B;box-shadow:3px 3px 0 #F59E0B;background:#FFFBEB"><span id="planMessage"></span></div>
+      </div>
+
+      <button class="ghost-btn" id="regenBtn">&#8635; 다시 생성하기</button>
+    </div>
+  </div>
+
+  <!-- ══ 탭 2: 제작 가이드 ══ -->
+  <div class="tab-pane" id="tab-guide">
+    <div class="card">
+      <div class="card-label">&#127916; 촬영 & 편집 가이드</div>
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-txt">
+          <div class="guide-ttl">기획안 프린트 또는 화면 공유</div>
+          <div class="guide-sub">AI가 만들어준 시놉시스와 장면 구성을 팀원 모두 확인해요. 역할을 다시 한번 분담해요.</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-txt">
+          <div class="guide-ttl">촬영 장소 & 소품 준비</div>
+          <div class="guide-sub">수련회 공간(로비, 강당, 야외)을 배경으로 활용해요. 소품은 주변에서 찾아봐요.</div>
+          <div class="tip-box">장소 이동 시간을 최소화하도록 같은 장소 씬을 묶어 촬영하세요</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div class="guide-txt">
+          <div class="guide-ttl">스마트폰으로 촬영</div>
+          <div class="guide-sub">가로 모드로 촬영해요. 한 장면당 여러 번 찍어 베스트컷 선택. 음성이 잘 들리도록 조용한 환경 확보.</div>
+          <div class="tip-box">흔들림 방지 — 책상이나 벽에 폰을 기대어 고정하면 삼각대 없이도 안정적으로 찍을 수 있어요</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">4</div>
+        <div class="guide-txt">
+          <div class="guide-ttl">캡컷으로 편집</div>
+          <div class="guide-sub">캡컷 앱 → 새 프로젝트 → 영상 불러오기 → 순서 배치 → 자막 추가 → 배경음악 삽입</div>
+          <div class="tip-box">캡컷 자동자막 기능(설정 → 자동자막)을 쓰면 편집 시간을 크게 줄일 수 있어요</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">5</div>
+        <div class="guide-txt">
+          <div class="guide-ttl">제목 & 엔딩 크레딧</div>
+          <div class="guide-sub">영화 제목, 팀명, 역할(감독·배우·편집)을 넣어요. 마지막에 성경 구절이나 메시지를 자막으로 마무리해요.</div>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">6</div>
+        <div class="guide-txt">
+          <div class="guide-ttl">상영 준비</div>
+          <div class="guide-sub">완성된 영상을 대형 화면(빔프로젝터 또는 TV)에 연결. 음량 확인 후 상영회 시작!</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">&#127914; 촬영 체크리스트</div>
+      <div id="checkList"></div>
+    </div>
+  </div>
+
+  <!-- ══ 탭 3: 시상식 ══ -->
+  <div class="tab-pane" id="tab-vote">
+    <div class="card">
+      <div class="card-label">&#127942; 시상 부문</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#FFFBEB;border:2px solid #F59E0B;border-radius:8px">
+          <span style="font-size:1.2rem">&#127942;</span>
+          <span style="font-weight:900;font-size:.85rem">최우수 작품상</span>
+          <span style="font-size:.72rem;color:#888;margin-left:auto">전체 완성도</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#F5F3FF;border:2px solid #7C3AED;border-radius:8px">
+          <span style="font-size:1.2rem">&#127908;</span>
+          <span style="font-weight:900;font-size:.85rem">최고 연기상</span>
+          <span style="font-size:.72rem;color:#888;margin-left:auto">배우 연기력</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#EFF6FF;border:2px solid #2563EB;border-radius:8px">
+          <span style="font-size:1.2rem">&#127916;</span>
+          <span style="font-weight:900;font-size:.85rem">최고 영상미상</span>
+          <span style="font-size:.72rem;color:#888;margin-left:auto">촬영·편집 퀄리티</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="voteTeamsWrap"></div>
+
+    <button class="gen-btn btn-dark" id="showResultBtn">&#127942; 시상 결과 발표!</button>
+
+    <div id="resultWrap" style="display:none">
+      <div class="divider"></div>
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;text-align:center;margin-bottom:14px">&#127916; 상영회 시상 결과</div>
+      <div id="mainAward"></div>
+      <div class="award-list" id="awardList"></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- API 키 모달 -->
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>&#128273; API 키 설정</h3>
+    <p>Anthropic API 키를 입력하면<br>AI가 기획안을 작성해줘요.</p>
+    <input class="key-inp" id="keyInput" type="password" placeholder="sk-ant-api03-...">
+    <button class="key-save" id="keySaveBtn">저장하기</button>
+    <button class="key-cancel" id="keyCancelBtn">취소</button>
+  </div>
+</div>
+
+<script>
+var CLAUDE_KEY = 'YOUR_API_KEY_HERE';
+var currentTeam = '';
+var selectedStory = '';
+var votes = {}; // {teamId: {best:n, act:n, visual:n}}
+
+var TEAMS = [
+  {id:'peter', name:'베드로팀', icon:'⚓'},
+  {id:'paul',  name:'바울팀',  icon:'✝️'},
+  {id:'esther',name:'에스더팀',icon:'👑'},
+  {id:'david', name:'다윗팀',  icon:'🎸'}
+];
+
+var CHECKS = [
+  '팀원 역할 분담 완료','성경 이야기 선택 완료','AI 기획안 출력/공유',
+  '촬영 장소 섭외','소품 준비','스마트폰 배터리 충전',
+  '촬영 완료','캡컷 편집 완료','제목 & 크레딧 삽입',
+  '영상 길이 확인 (규정 이내)','최종 영상 저장'
+];
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getKey(){return localStorage.getItem('retreat_api_key')||CLAUDE_KEY;}
+
+function callClaude(msgs,sys){
+  var key=getKey();
+  if(!key||key==='YOUR_API_KEY_HERE'||!/^[\x00-\xFF]+$/.test(key))
+    return Promise.reject(new Error('API 키를 설정해주세요. 🔑 버튼을 눌러주세요.'));
+  return fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,system:sys||'',messages:msgs})
+  }).then(function(r){return r.json();}).then(function(d){if(d.error)throw new Error(d.error.message);return d.content[0].text;});
+}
+
+/* ── 탭 ── */
+function switchTab(id){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===id);});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.toggle('visible',p.id==='tab-'+id);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── 기획안 생성 ── */
+function genPlan(){
+  var story = selectedStory === '직접 입력'
+    ? (document.getElementById('customStory').value.trim() || '직접 입력')
+    : selectedStory;
+  if(!story){document.getElementById('planErr').innerHTML='<div class="err-box">영화 소재를 선택해주세요!</div>';return;}
+  document.getElementById('planErr').innerHTML='';
+  var btn=document.getElementById('genPlanBtn');
+  btn.disabled=true; btn.textContent='기획안 작성 중...';
+
+  var dur=document.getElementById('duration').value;
+  var tone=document.getElementById('tone').value;
+  var extra=document.getElementById('extraNote').value.trim();
+  var team=currentTeam||'우리 팀';
+
+  var prompt='팀명: '+team+'\n소재: '+story+'\n분량: '+dur+'\n톤: '+tone
+    +(extra?'\n추가요청: '+extra:'')+'\n\n'
+    +'중학생 수련회 단편영화 기획안을 아래 형식으로만 작성해줘:\n'
+    +'[TITLE] 영화 제목\n'
+    +'[SYNOPSIS] 시놉시스 (현대 배경으로 재해석, 3-4문장)\n'
+    +'[SCENES] 장면 구성 (씬1~씬5, 각 씬마다 장소·행동·분위기 간략히)\n'
+    +'[LINES] 핵심 대사 3-4개 (등장인물: 대사 형식)\n'
+    +'[MESSAGE] 이 영화가 전하는 신앙 메시지 (1-2문장)';
+
+  var sys='너는 교회 수련회 단편영화 기획을 도와주는 AI야. 중학생이 스마트폰으로 직접 찍고 캡컷으로 편집할 수 있는 현실적인 기획안을 써줘. 성경 이야기를 현대적으로 재해석해서 공감 가게. 대사는 중학생 말투로.';
+
+  callClaude([{role:'user',content:prompt}],sys)
+    .then(function(text){
+      function extr(tag){var m=text.match(new RegExp('\\['+tag+'\\]([\\s\\S]*?)(?=\\[|$)'));return m?m[1].trim():'';}
+      document.getElementById('planTitle').textContent='🎬 '+extr('TITLE');
+      document.getElementById('planSynopsis').textContent=extr('SYNOPSIS');
+      document.getElementById('planScenes').textContent=extr('SCENES');
+      document.getElementById('planScript').textContent=extr('LINES');
+      document.getElementById('planMessage').textContent=extr('MESSAGE');
+      document.getElementById('planResult').style.display='block';
+      document.getElementById('planResult').scrollIntoView({behavior:'smooth'});
+    })
+    .catch(function(e){
+      document.getElementById('planErr').innerHTML='<div class="err-box">오류: '+esc(e.message)+'</div>';
+    })
+    .finally(function(){
+      btn.disabled=false; btn.innerHTML='&#129302; AI 기획안 생성하기';
+    });
+}
+
+/* ── 체크리스트 ── */
+function renderChecklist(){
+  var wrap=document.getElementById('checkList');
+  wrap.innerHTML=CHECKS.map(function(c,i){
+    return '<label style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed #ddd;cursor:pointer;font-size:.85rem;font-weight:700">'
+      +'<input type="checkbox" id="chk'+i+'" style="width:18px;height:18px;cursor:pointer;accent-color:#F59E0B">'
+      +c+'</label>';
+  }).join('');
+}
+
+/* ── 투표 팀 카드 ── */
+function renderVoteTeams(){
+  var wrap=document.getElementById('voteTeamsWrap');
+  TEAMS.forEach(function(t){
+    if(!votes[t.id]) votes[t.id]={best:0,act:0,visual:0};
+  });
+
+  wrap.innerHTML=TEAMS.map(function(t){
+    var v=votes[t.id];
+    return '<div class="vote-team-card">'+
+      '<div class="vtc-top">'+
+        '<div><div class="vtc-name">'+t.icon+' '+t.name+'</div>'+
+        '<div class="vtc-film" id="film_'+t.id+'">영화 제목 미정</div></div>'+
+      '</div>'+
+      '<div class="award-row">'+
+        makeCounter(t.id,'best','&#127942; 최우수 작품',v.best)+
+        makeCounter(t.id,'act','&#127908; 최고 연기',v.act)+
+        makeCounter(t.id,'visual','&#127916; 최고 영상미',v.visual)+
+      '</div></div>';
+  }).join('');
+
+  /* 이벤트 */
+  wrap.querySelectorAll('[data-action]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var tid=this.getAttribute('data-team');
+      var cat=this.getAttribute('data-cat');
+      var act=this.getAttribute('data-action');
+      if(act==='plus') votes[tid][cat]++;
+      else votes[tid][cat]=Math.max(0,votes[tid][cat]-1);
+      document.getElementById('vnum_'+tid+'_'+cat).textContent=votes[tid][cat];
+    });
+  });
+}
+
+function makeCounter(tid,cat,lbl,val){
+  return '<div class="award-item">'+
+    '<span class="award-lbl">'+lbl+'</span>'+
+    '<div class="vote-counter">'+
+      '<button class="vc-minus" data-action="minus" data-team="'+tid+'" data-cat="'+cat+'">−</button>'+
+      '<span class="vc-num" id="vnum_'+tid+'_'+cat+'">'+val+'</span>'+
+      '<button class="vc-plus" data-action="plus" data-team="'+tid+'" data-cat="'+cat+'">+</button>'+
+    '</div></div>';
+}
+
+/* ── 시상 결과 ── */
+function showResult(){
+  var cats=[
+    {key:'best',icon:'&#127942;',label:'최우수 작품상'},
+    {key:'act', icon:'&#127908;',label:'최고 연기상'},
+    {key:'visual',icon:'&#127916;',label:'최고 영상미상'}
+  ];
+
+  var winners={};
+  cats.forEach(function(cat){
+    var best=null,bestV=-1;
+    TEAMS.forEach(function(t){
+      if(votes[t.id][cat.key]>bestV){bestV=votes[t.id][cat.key];best=t;}
+    });
+    winners[cat.key]={team:best,votes:bestV};
+  });
+
+  /* 대상 — best 기준 */
+  var grand=winners['best'];
+  document.getElementById('mainAward').innerHTML=
+    '<div class="award-result">'+
+      '<span class="ar-trophy">&#127942;</span>'+
+      '<div class="ar-award">&#11088; 대상 — 최우수 작품상</div>'+
+      '<div class="ar-team">'+(grand.team?grand.team.icon+' '+grand.team.name:'미정')+'</div>'+
+      '<div class="ar-film">'+(grand.votes>0?grand.votes+'표':'투표 없음')+'</div>'+
+    '</div>';
+
+  /* 나머지 시상 */
+  document.getElementById('awardList').innerHTML=cats.map(function(cat){
+    var w=winners[cat.key];
+    return '<div class="al-row">'+
+      '<span class="al-icon">'+cat.icon+'</span>'+
+      '<div class="al-info">'+
+        '<div class="al-award">'+cat.label+'</div>'+
+        '<div class="al-team">'+(w.team?w.team.icon+' '+w.team.name:'미정')+'</div>'+
+      '</div>'+
+      '<span class="al-votes">'+(w.votes>0?w.votes+'표':'—')+'</span>'+
+    '</div>';
+  }).join('');
+
+  document.getElementById('resultWrap').style.display='block';
+  document.getElementById('resultWrap').scrollIntoView({behavior:'smooth'});
+}
+
+/* ── 이벤트 등록 ── */
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('backBtn').addEventListener('click',function(){
+    if(window.parent&&window.parent!==window&&typeof window.parent.closeFrame==='function')
+      window.parent.closeFrame();
+    else history.back();
+  });
+
+  /* 탭 */
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){switchTab(this.getAttribute('data-tab'));});
+  });
+
+  /* 팀 선택 */
+  document.querySelectorAll('.team-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.team-btn').forEach(function(b){b.className=b.className.replace(/ sel-\w+/g,'');});
+      btn.className+=' '+btn.getAttribute('data-cls');
+      currentTeam=btn.getAttribute('data-team');
+    });
+  });
+
+  /* 소재 선택 */
+  document.querySelectorAll('.story-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.story-btn').forEach(function(b){b.classList.remove('selected');});
+      btn.classList.add('selected');
+      selectedStory=btn.getAttribute('data-story');
+      document.getElementById('customStoryWrap').style.display=selectedStory==='직접 입력'?'block':'none';
+    });
+  });
+
+  /* 기획안 생성 */
+  document.getElementById('genPlanBtn').addEventListener('click',genPlan);
+  document.getElementById('regenBtn').addEventListener('click',function(){
+    document.getElementById('planResult').style.display='none';
+    genPlan();
+  });
+
+  /* 체크리스트 */
+  renderChecklist();
+
+  /* 투표 */
+  renderVoteTeams();
+  document.getElementById('showResultBtn').addEventListener('click',showResult);
+
+  /* API 키 모달 */
+  document.getElementById('keyModalBtn').addEventListener('click',function(){
+    document.getElementById('keyInput').value=localStorage.getItem('retreat_api_key')||'';
+    document.getElementById('keyModal').classList.add('open');
+  });
+  document.getElementById('keySaveBtn').addEventListener('click',function(){
+    var v=document.getElementById('keyInput').value.trim();
+    if(v){
+      if(!/^[\x00-\xFF]+$/.test(v)){alert('API 키에 잘못된 문자가 포함되어 있어요.');return;}
+      localStorage.setItem('retreat_api_key',v);
+    }
+    document.getElementById('keyModal').classList.remove('open');
+  });
+  document.getElementById('keyCancelBtn').addEventListener('click',function(){document.getElementById('keyModal').classList.remove('open');});
+  document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
+</script>
+</body>
+</html>
