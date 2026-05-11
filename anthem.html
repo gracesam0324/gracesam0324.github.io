@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>우리 조 입성가 만들기</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* 평화로운 초원 팔레트 */
+    --sky-1: #c8e8f0;
+    --sky-2: #d8eedb;
+    --meadow-1: #b8d99a;
+    --meadow-2: #94c474;
+    --grass: #7eb574;
+    --grass-dark: #4a7a3f;
+    --sun: #f4c430;
+    --warm: #e8a85c;
+    --cream: #fdf8e8;
+    --card: rgba(255, 254, 245, 0.92);
+    --card-solid: #fffef5;
+    --card-soft: #f5f0dc;
+    --border: #d8e2c4;
+    --border-soft: #e8eed8;
+    --text: #2d4a2b;
+    --text-soft: #5a7558;
+    --text-mute: #8aa087;
+    --accent: #5a8a4a;
+    --accent-hover: #487038;
+    --accent-soft: #c0d8a8;
+    --error: #c97070;
+    --success: #5a8a4a;
+    --gold: #c8a444;
+    --shadow: 0 8px 28px rgba(74, 122, 63, 0.12);
+    --shadow-sm: 0 2px 8px rgba(74, 122, 63, 0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    background:
+      linear-gradient(180deg,
+        var(--sky-1) 0%,
+        var(--sky-2) 35%,
+        var(--meadow-1) 70%,
+        var(--meadow-2) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.65;
+    padding: 24px 16px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* 햇살 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -100px; right: -100px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(244,196,48,0.35) 0%, rgba(244,196,48,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    animation: sunPulse 6s ease-in-out infinite;
+  }
+  @keyframes sunPulse {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
+  }
+
+  /* 흘러가는 구름 */
+  .cloud {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 100px;
+    pointer-events: none;
+    z-index: 1;
+    filter: blur(0.5px);
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+  }
+  .cloud-1 {
+    top: 8%; width: 80px; height: 22px;
+    animation: drift 60s linear infinite;
+  }
+  .cloud-1::before { width: 36px; height: 36px; top: -16px; left: 12px; }
+  .cloud-1::after { width: 28px; height: 28px; top: -12px; left: 42px; }
+
+  .cloud-2 {
+    top: 18%; width: 100px; height: 26px;
+    animation: drift 80s linear infinite;
+    animation-delay: -20s;
+  }
+  .cloud-2::before { width: 44px; height: 44px; top: -20px; left: 18px; }
+  .cloud-2::after { width: 32px; height: 32px; top: -14px; left: 54px; }
+
+  @keyframes drift {
+    0% { left: -120px; }
+    100% { left: 110%; }
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ===== 헤더 ===== */
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding: 0 8px;
+  }
+  .header .badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--grass-dark);
+    background: rgba(255, 255, 255, 0.6);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+    text-shadow: 0 2px 8px rgba(255,255,255,0.5);
+  }
+  .header p { font-size: 14px; color: var(--text-soft); }
+
+  /* ===== 키바 ===== */
+  .keybar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(8px);
+  }
+  .keybar label { font-size: 13px; font-weight: 600; color: var(--text-soft); flex-shrink: 0; }
+  .keybar input {
+    flex: 1; min-width: 200px;
+    border: 1px solid var(--border);
+    background: var(--card-solid);
+    border-radius: 14px;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: monospace;
+  }
+  .keybar input:focus { outline: none; border-color: var(--accent); }
+  .keybar .key-status { font-size: 12px; color: var(--text-mute); }
+  .keybar .key-status.ok { color: var(--success); font-weight: 600; }
+  .keybar .key-status.bad { color: var(--error); font-weight: 600; }
+
+  /* ===== 카드 ===== */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 24px 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+  }
+  .card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .section-label.optional { color: var(--text-mute); margin-top: 18px; }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    margin-bottom: 5px;
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--text-mute);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .field input[type="text"],
+  .field input[type="number"],
+  .field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card-solid);
+    border-radius: 14px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    line-height: 1.5;
+    transition: all 0.15s;
+  }
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--cream);
+  }
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .row { display: flex; gap: 10px; }
+  .row .field { flex: 1; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { position: relative; display: inline-block; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span {
+    display: block;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    font-size: 12px;
+    color: var(--text-soft);
+    background: var(--card-solid);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+  }
+  .chip:hover span { border-color: var(--accent-soft); }
+  .chip input:checked + span {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .count {
+    font-size: 12px;
+    color: var(--text-mute);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* ===== 버튼 ===== */
+  .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .btn {
+    border: none;
+    border-radius: 16px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    flex: 1;
+    min-width: 140px;
+    border-radius: 999px;
+    padding: 14px 24px;
+    box-shadow: 0 4px 12px rgba(90, 138, 74, 0.3);
+  }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .btn-primary:disabled { background: var(--text-mute); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    background: var(--cream);
+    border-color: var(--accent-soft);
+  }
+
+  .status {
+    margin-top: 12px;
+    font-size: 13px;
+    text-align: center;
+    color: var(--text-soft);
+    min-height: 20px;
+  }
+  .status.error { color: var(--error); }
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--accent-soft);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== 결과 ===== */
+  .result { display: none; }
+  .result.show { display: block; }
+
+  .result-team {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .tune {
+    background: var(--cream);
+    border-left: 4px solid var(--gold);
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+  }
+  .tune-label {
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-bottom: 4px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .tune-input {
+    width: 100%; border: none; padding: 0;
+    font-family: inherit; font-size: 15px; font-weight: 600;
+    background: transparent; color: var(--text);
+  }
+  .tune-input:focus { outline: none; }
+
+  .lyrics {
+    width: 100%;
+    min-height: 220px;
+    border: 1px solid var(--border);
+    background: var(--card-solid);
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.85;
+    font-family: inherit;
+    color: var(--text);
+    resize: vertical;
+  }
+  .lyrics:focus { outline: none; border-color: var(--accent); background: var(--cream); }
+
+  .tip {
+    background: rgba(244, 196, 48, 0.15);
+    border: 1px solid rgba(244, 196, 48, 0.4);
+    padding: 12px 16px;
+    border-radius: 14px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .tip strong { color: var(--grass-dark); }
+  .tip-input {
+    width: 100%; border: none; padding: 0; margin-top: 4px;
+    font-family: inherit; font-size: 13px;
+    background: transparent; color: var(--text);
+  }
+  .tip-input:focus { outline: none; }
+
+  .saved-mark {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--success);
+    margin-left: 6px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 600;
+  }
+  .saved-mark.show { opacity: 1; }
+
+  /* ===== 보너스 카드 ===== */
+  .bonus-card {
+    display: none;
+    background: linear-gradient(135deg, #fff8d8 0%, #fbe9b0 100%);
+    border: 2px solid var(--gold);
+    border-radius: 24px;
+    padding: 22px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 12px 32px rgba(200, 164, 68, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .bonus-card.show { display: block; animation: bonusIn 0.8s ease-out; }
+  @keyframes bonusIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .bonus-title {
+    text-align: center;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .bonus-headline {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .bonus-content {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid rgba(200, 164, 68, 0.5);
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.8;
+    font-family: inherit;
+    color: var(--text);
+    resize: vertical;
+  }
+  .bonus-content:focus { outline: none; border-color: var(--gold); }
+
+  /* ===== 잠긴 보너스 힌트 ===== */
+  .bonus-hint {
+    display: none;
+    text-align: center;
+    padding: 14px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px dashed var(--accent-soft);
+    border-radius: 16px;
+  }
+  .bonus-hint.show { display: block; }
+  .bonus-hint .progress {
+    display: inline-block;
+    margin-left: 6px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ===== 캐릭터들 ===== */
+  .character {
+    position: fixed;
+    width: 90px;
+    height: 90px;
+    cursor: pointer;
+    z-index: 5;
+    transition: transform 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .character svg { width: 100%; height: 100%; display: block; }
+  .character:hover { transform: scale(1.08); }
+  .character.clicked { animation: charClick 0.4s ease; }
+  @keyframes charClick {
+    0%, 100% { transform: scale(1); }
+    40% { transform: scale(1.2) rotate(-5deg); }
+    60% { transform: scale(0.95) rotate(3deg); }
+  }
+  .character.bobbing { animation: bob 3s ease-in-out infinite; }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* 위치별 타이밍 */
+  .char-sheep { top: 14%; left: 2%; width: 100px; height: 100px; animation-delay: 0s; }
+  .char-dove { top: 8%; right: 4%; width: 75px; height: 75px; animation-delay: -1s; }
+  .char-lamb { bottom: 18%; left: 3%; width: 70px; height: 70px; animation-delay: -1.5s; }
+  .char-lion { bottom: 10%; right: 3%; width: 90px; height: 90px; animation-delay: -2s; }
+  .char-boy { width: 80px; height: 100px; bottom: auto; top: 30%; left: -120px; transform: none; z-index: 50; animation-delay: 0s; }
+  .char-boy.bobbing {
+    animation: boyStroll 50s linear infinite, boyStep 0.7s ease-in-out infinite;
+  }
+  @keyframes boyStroll {
+    0%       { top: 30%; left: -120px; }
+    8%, 13%  { top: 30%; left: 8%; }
+    22%, 27% { top: 55%; left: 24%; }
+    36%, 41% { top: 35%; left: 50%; }
+    50%, 55% { top: 62%; left: 72%; }
+    64%, 69% { top: 25%; left: 86%; }
+    78%, 83% { top: 50%; left: 60%; }
+    90%, 95% { top: 72%; left: 22%; }
+    100%     { top: 30%; left: -120px; }
+  }
+  @keyframes boyStep {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .character.tagged::after {
+    content: '✓';
+    position: absolute;
+    top: -4px; right: -4px;
+    background: var(--success);
+    color: white;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  /* 모자 떨어지는 애니메이션 */
+  .boy-hat {
+    transform-origin: center bottom;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .boy-hat.dropped {
+    animation: hatFall 0.9s cubic-bezier(0.5, 0.05, 0.5, 1) forwards;
+  }
+  @keyframes hatFall {
+    0% { transform: translate(0, 0) rotate(0); }
+    30% { transform: translate(-2px, -8px) rotate(-15deg); }
+    100% { transform: translate(15px, 80px) rotate(120deg); opacity: 0; }
+  }
+
+  /* ===== 말풍선 ===== */
+  .bubble {
+    position: fixed;
+    background: white;
+    border: 2px solid var(--accent-soft);
+    border-radius: 18px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 6px 16px rgba(74, 122, 63, 0.18);
+    z-index: 60;
+    max-width: 240px;
+    pointer-events: none;
+    animation: bubbleIn 0.3s ease-out;
+    line-height: 1.5;
+  }
+  .bubble::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    background: white;
+    border-right: 2px solid var(--accent-soft);
+    border-bottom: 2px solid var(--accent-soft);
+    transform: rotate(45deg);
+  }
+  .bubble.below::after { top: -8px; left: 20px; transform: rotate(-135deg); }
+  .bubble.above::after { bottom: -8px; left: 20px; }
+  @keyframes bubbleIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .bubble.fade-out { animation: bubbleOut 0.3s ease-in forwards; }
+  @keyframes bubbleOut {
+    to { opacity: 0; transform: translateY(-4px) scale(0.95); }
+  }
+
+  /* ===== 폭죽 ===== */
+  .firework-container {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 100;
+    display: none;
+  }
+  .firework-container.active { display: block; }
+
+  .spark {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .celebration-banner {
+    position: fixed;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, #ffd863 0%, #f5a830 100%);
+    color: white;
+    padding: 20px 32px;
+    border-radius: 28px;
+    font-size: 22px;
+    font-weight: 800;
+    box-shadow: 0 12px 36px rgba(245, 168, 48, 0.4);
+    z-index: 110;
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .celebration-banner.show {
+    animation: bannerPop 2.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes bannerPop {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0; }
+  }
+
+  /* ===== 선물박스 ===== */
+  .gift-box-wrap {
+    text-align: center;
+    margin: 16px 0 22px;
+  }
+  .gift-box {
+    display: inline-block;
+    width: 130px;
+    height: 130px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    animation: giftBob 2.4s ease-in-out infinite;
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 8px 18px rgba(200, 100, 100, 0.25));
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+  .gift-box:hover { transform: scale(1.06); }
+  .gift-box:active { transform: scale(0.95); }
+  .gift-box:focus { outline: none; }
+  .gift-box:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 16px; }
+  .gift-box svg { width: 100%; height: 100%; display: block; }
+  .gift-box.opening { animation: giftOpen 0.5s cubic-bezier(0.4, 0, 0.6, 1) forwards; }
+  @keyframes giftBob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
+  }
+  @keyframes giftOpen {
+    0% { transform: scale(1) rotate(0); opacity: 1; }
+    40% { transform: scale(1.2) rotate(-10deg); opacity: 1; }
+    100% { transform: scale(2.4) rotate(8deg); opacity: 0; }
+  }
+  .gift-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 500;
+    animation: hintFade 2.4s ease-in-out infinite;
+  }
+  @keyframes hintFade {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* ===== 가사 무대 (풀스크린) ===== */
+  .lyrics-stage {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    overflow-y: auto;
+    background:
+      linear-gradient(180deg,
+        #b8dde8 0%,
+        #d4e8d8 30%,
+        #b8d99a 52%,
+        #94c474 75%,
+        #6ea564 100%);
+  }
+  .lyrics-stage.show {
+    display: block;
+    animation: stageIn 0.55s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .lyrics-stage.closing { animation: stageOut 0.35s ease-in forwards; }
+  @keyframes stageIn {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes stageOut {
+    to { opacity: 0; transform: scale(0.96); }
+  }
+
+  .stage-sun {
+    position: absolute;
+    top: 8%; right: 10%;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff8c8 0%, rgba(255,248,200,0) 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .stage-sun::after {
+    content: '';
+    position: absolute;
+    top: 30px; left: 30px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #fff8d0;
+  }
+
+  .stage-cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 100px;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .stage-cloud::before, .stage-cloud::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+  }
+  .stage-cloud-1 { top: 12%; left: 8%; width: 80px; height: 22px; }
+  .stage-cloud-1::before { width: 40px; height: 40px; top: -18px; left: 12px; }
+  .stage-cloud-1::after { width: 30px; height: 30px; top: -12px; left: 44px; }
+  .stage-cloud-2 { top: 22%; right: 25%; width: 70px; height: 20px; }
+  .stage-cloud-2::before { width: 32px; height: 32px; top: -14px; left: 10px; }
+  .stage-cloud-2::after { width: 26px; height: 26px; top: -10px; left: 36px; }
+
+  .stage-grass-bg {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 110px;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+  .stage-grass-bg::before {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 0; right: 0;
+    height: 100px;
+    background:
+      radial-gradient(ellipse 50px 14px at 8% 100%, rgba(74, 122, 63, 0.5), transparent),
+      radial-gradient(ellipse 70px 18px at 30% 100%, rgba(74, 122, 63, 0.4), transparent),
+      radial-gradient(ellipse 60px 16px at 70% 100%, rgba(74, 122, 63, 0.45), transparent),
+      radial-gradient(ellipse 80px 20px at 92% 100%, rgba(74, 122, 63, 0.5), transparent);
+  }
+
+  .stage-close {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255,255,255,0.7);
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1010;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .stage-close:hover { background: white; transform: scale(1.06); }
+  .stage-close:active { transform: scale(0.96); }
+
+  .stage-content {
+    position: relative;
+    z-index: 5;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 76px 24px 130px;
+    text-align: center;
+  }
+
+  .stage-team {
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    font-weight: 700;
+    color: rgba(45, 74, 43, 0.7);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .stage-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 22px;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+    letter-spacing: -0.01em;
+  }
+  .stage-tune-pill {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--grass-dark);
+    margin-bottom: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+  .stage-tune-pill::before { content: '♪ '; color: var(--gold); font-weight: 700; }
+
+  .stage-lyrics {
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 2.1;
+    color: var(--text);
+    white-space: pre-wrap;
+    background: rgba(255, 255, 248, 0.92);
+    padding: 30px 26px;
+    border-radius: 28px;
+    box-shadow: 0 16px 42px rgba(74, 122, 63, 0.22);
+    text-align: center;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    word-break: keep-all;
+  }
+
+  .stage-tip-pill {
+    margin-top: 22px;
+    font-size: 13px;
+    color: var(--text);
+    background: rgba(244, 196, 48, 0.4);
+    padding: 10px 20px;
+    border-radius: 999px;
+    display: inline-block;
+    font-weight: 500;
+    border: 1px solid rgba(244, 196, 48, 0.55);
+  }
+  .stage-tip-pill::before { content: '💡 '; }
+
+  @media (max-width: 600px) {
+    .stage-title { font-size: 22px; }
+    .stage-lyrics { font-size: 16px; padding: 24px 20px; line-height: 2; }
+    .stage-content { padding: 64px 16px 110px; }
+    .stage-sun { width: 70px; height: 70px; top: 6%; right: 6%; }
+    .stage-sun::after { width: 30px; height: 30px; top: 20px; left: 20px; }
+  }
+
+  /* ===== 인쇄 ===== */
+  @media print {
+    body { background: white; }
+    body::before, .cloud, .character, .firework-container, .keybar, .actions, .header, .bubble, .gift-box-wrap, .lyrics-stage, .bonus-hint { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ccc; backdrop-filter: none; background: white; }
+  }
+
+  /* ===== 모바일 ===== */
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 110px; }
+    .header h1 { font-size: 22px; }
+    .card { padding: 18px 16px; }
+    .row { flex-direction: column; gap: 0; }
+    .actions { flex-direction: column; }
+    .btn-primary { width: 100%; }
+
+    /* 모바일에서 캐릭터 작게 */
+    .char-sheep { width: 60px; height: 60px; top: 11%; left: 2%; }
+    .char-dove { width: 50px; height: 50px; top: 6%; right: 2%; }
+    .char-lamb { width: 50px; height: 50px; bottom: 12%; left: 2%; }
+    .char-lion { width: 60px; height: 60px; bottom: 7%; right: 2%; }
+    .char-boy { width: 56px; height: 70px; }
+  }
+
+  /* 캐릭터들이 모바일에서 본문 가리지 않도록 */
+  @media (max-width: 380px) {
+    .character { opacity: 0.85; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cloud cloud-1"></div>
+<div class="cloud cloud-2"></div>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="badge">TEAM ANTHEM</div>
+    <h1>🎵 우리 조 입성가 만들기</h1>
+    <p>키워드를 모아 우리 조만의 노래를 만들어요</p>
+  </div>
+
+  <div class="keybar">
+    <label>API 키</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-... (미리보기에선 비워둬도 OK)" autocomplete="off">
+    <span class="key-status" id="keyStatus">미리보기 모드</span>
+  </div>
+
+  <div class="card" id="formCard">
+    <h2>우리 조에 대해 알려주세요</h2>
+
+    <div class="section-label">기본 정보</div>
+
+    <div class="field">
+      <label>조 이름</label>
+      <input type="text" id="f-team" placeholder="예: 베드로조" maxlength="20">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>조원 수</label>
+        <input type="number" id="f-size" placeholder="예: 8" min="2" max="50">
+      </div>
+      <div class="field">
+        <label>학년 분포 <span class="hint">(선택)</span></label>
+        <input type="text" id="f-grades" placeholder="예: 중1 3명, 중2 5명">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>조 슬로건 <span class="hint">(선택)</span></label>
+      <input type="text" id="f-slogan" placeholder="예: 함께라면 못할 게 없어!" maxlength="40">
+    </div>
+
+    <div class="section-label">노래 만들기 옵션</div>
+
+    <div class="field">
+      <label>분위기</label>
+      <div class="chips" id="moodChips">
+        <label class="chip"><input type="radio" name="mood" value="활기찬"><span>활기찬</span></label>
+        <label class="chip"><input type="radio" name="mood" value="진지한"><span>진지한</span></label>
+        <label class="chip"><input type="radio" name="mood" value="코믹한"><span>코믹한</span></label>
+        <label class="chip"><input type="radio" name="mood" value="영적인"><span>영적인</span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>곡조 카테고리</label>
+      <div class="chips" id="tuneChips">
+        <label class="chip"><input type="radio" name="tunecat" value="찬양곡"><span>찬양곡</span></label>
+        <label class="chip"><input type="radio" name="tunecat" value="동요"><span>동요</span></label>
+        <label class="chip"><input type="radio" name="tunecat" value="가요 멜로디"><span>가요 멜로디</span></label>
+        <label class="chip"><input type="radio" name="tunecat" value="자유"><span>자유 (AI 추천)</span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>분량</label>
+      <div class="chips" id="lengthChips">
+        <label class="chip"><input type="radio" name="length" value="짧게"><span>짧게 (15초)</span></label>
+        <label class="chip"><input type="radio" name="length" value="보통"><span>보통 (30초)</span></label>
+        <label class="chip"><input type="radio" name="length" value="길게"><span>길게 (45초)</span></label>
+      </div>
+    </div>
+
+    <div class="section-label">우리 조의 이야기</div>
+
+    <div class="field">
+      <label>키워드 <span class="hint">(한 줄에 하나, 8개 이상 권장)</span></label>
+      <textarea id="f-keywords" placeholder="단합&#10;웃음&#10;은혜&#10;도전&#10;여름&#10;형제애&#10;찬양&#10;기도"></textarea>
+      <div class="count" id="kwCount">0개</div>
+    </div>
+
+    <div class="field">
+      <label>우리 조만의 에피소드 <span class="hint">(선택, 가사에 녹여줌)</span></label>
+      <textarea id="f-episode" placeholder="예: 첫 모임 때 다 같이 떡볶이를 시켰는데 매워서 다들 울었던 추억" style="min-height:60px"></textarea>
+    </div>
+
+    <div class="field">
+      <label>후렴에 꼭 들어갈 단어 <span class="hint">(선택)</span></label>
+      <input type="text" id="f-chorus" placeholder="예: 베드로조, 영원히, 우리는">
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="generateBtn">🎵 입성가 만들기</button>
+      <button class="btn btn-secondary" id="resetBtn">초기화</button>
+    </div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card result" id="resultCard">
+    <div class="result-team" id="resultTeam"></div>
+
+    <div class="gift-box-wrap" id="giftBoxWrap">
+      <button class="gift-box" id="giftBox" type="button" aria-label="가사 큰 화면으로 보기">
+        <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="50" cy="105" rx="34" ry="3" fill="rgba(0,0,0,0.15)"/>
+          <rect x="22" y="44" width="56" height="52" fill="#e889a0" stroke="#a85878" stroke-width="1.5"/>
+          <rect x="65" y="44" width="13" height="52" fill="#c87088" opacity="0.45"/>
+          <rect x="22" y="93" width="56" height="3" fill="#a85878" opacity="0.3"/>
+          <rect x="18" y="38" width="64" height="14" fill="#f5a8b8" stroke="#a85878" stroke-width="1.5"/>
+          <rect x="18" y="48" width="64" height="3" fill="#a85878" opacity="0.3"/>
+          <rect x="46" y="38" width="8" height="58" fill="#fff5d8" stroke="#d8a838" stroke-width="0.8"/>
+          <rect x="51" y="38" width="3" height="58" fill="#e8c878" opacity="0.55"/>
+          <rect x="22" y="60" width="56" height="8" fill="#fff5d8" stroke="#d8a838" stroke-width="0.8"/>
+          <rect x="22" y="65" width="56" height="3" fill="#e8c878" opacity="0.55"/>
+          <path d="M 50 38 Q 38 34 33 30 Q 30 24 36 22 Q 44 22 50 30 Z" fill="#fff5d8" stroke="#d8a838" stroke-width="1"/>
+          <path d="M 50 38 Q 62 34 67 30 Q 70 24 64 22 Q 56 22 50 30 Z" fill="#fff5d8" stroke="#d8a838" stroke-width="1"/>
+          <ellipse cx="50" cy="32" rx="6" ry="4.5" fill="#fff5d8" stroke="#d8a838" stroke-width="1"/>
+          <ellipse cx="50" cy="32" rx="3" ry="2" fill="#e8c878" opacity="0.6"/>
+          <path d="M 46 35 Q 42 42 39 44 L 37 42 Q 40 38 44 33 Z" fill="#fff5d8" stroke="#d8a838" stroke-width="0.7"/>
+          <path d="M 54 35 Q 58 42 61 44 L 63 42 Q 60 38 56 33 Z" fill="#fff5d8" stroke="#d8a838" stroke-width="0.7"/>
+          <g fill="#fff5d8">
+            <circle cx="20" cy="28" r="1.5"/>
+            <circle cx="80" cy="32" r="1.5"/>
+            <circle cx="14" cy="62" r="1.2"/>
+            <circle cx="86" cy="74" r="1.2"/>
+          </g>
+        </svg>
+      </button>
+      <div class="gift-hint">탭해서 큰 화면으로 펼쳐보기</div>
+    </div>
+
+    <div class="tune">
+      <div class="tune-label">♪ 추천 곡조 (수정 가능)</div>
+      <input type="text" id="r-tune" class="tune-input" autocomplete="off">
+    </div>
+
+    <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:6px">
+      가사 <span class="hint">(직접 수정 가능)</span>
+      <span class="saved-mark" id="savedMark1">✓ 저장됨</span>
+    </label>
+    <textarea id="r-lyrics" class="lyrics"></textarea>
+
+    <div class="tip">
+      <strong>💡 부르는 팁:</strong>
+      <input type="text" id="r-tip" class="tip-input" autocomplete="off">
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" id="regenBtn">🔄 다시 만들기</button>
+      <button class="btn btn-secondary" id="copyBtn">📋 복사</button>
+      <button class="btn btn-secondary" id="printBtn">🖨️ 인쇄</button>
+    </div>
+
+    <div class="bonus-hint" id="bonusHint">
+      🌿 우리 조에게는 아직 발견하지 못한 작은 축복이 숨어 있어요...
+      <span class="progress" id="bonusProgress">0/5</span>
+    </div>
+  </div>
+
+  <div class="bonus-card" id="bonusCard">
+    <div class="bonus-title">🎉 BONUS UNLOCKED 🎉</div>
+    <div class="bonus-headline" id="bonusHeadline">너희 조에 특별한 축복이!</div>
+    <textarea class="bonus-content" id="bonusContent"></textarea>
+  </div>
+
+</div>
+
+<!-- ===== 캐릭터 5종 ===== -->
+
+<!-- 양 -->
+<div class="character char-sheep bobbing" data-char="sheep" id="char-sheep" aria-label="양">
+  <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="65" rx="38" ry="6" fill="rgba(74,122,63,0.2)"/>
+    <circle cx="28" cy="44" r="13" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <circle cx="42" cy="34" r="14" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <circle cx="58" cy="34" r="14" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <circle cx="72" cy="44" r="13" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <ellipse cx="50" cy="50" rx="28" ry="18" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <ellipse cx="50" cy="55" rx="14" ry="13" fill="#3a3026"/>
+    <ellipse cx="44" cy="57" rx="2" ry="1.5" fill="#3a3026" transform="rotate(-30 44 57)"/>
+    <ellipse cx="56" cy="57" rx="2" ry="1.5" fill="#3a3026" transform="rotate(30 56 57)"/>
+    <circle cx="45" cy="52" r="2" fill="#fff"/>
+    <circle cx="55" cy="52" r="2" fill="#fff"/>
+    <circle cx="45.5" cy="52" r="1" fill="#000"/>
+    <circle cx="55.5" cy="52" r="1" fill="#000"/>
+    <ellipse cx="50" cy="60" rx="2.5" ry="1.5" fill="#e8a8a0"/>
+    <rect x="38" y="65" width="4" height="10" rx="1" fill="#3a3026"/>
+    <rect x="58" y="65" width="4" height="10" rx="1" fill="#3a3026"/>
+  </svg>
+</div>
+
+<!-- 비둘기 (정보 안내) -->
+<div class="character char-dove bobbing" data-char="dove" id="char-dove" aria-label="비둘기">
+  <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="78" rx="20" ry="3" fill="rgba(74,122,63,0.2)"/>
+    <ellipse cx="50" cy="55" rx="26" ry="20" fill="#ffffff" stroke="#c8d4d8" stroke-width="1.5"/>
+    <path d="M 25 50 Q 18 38 24 32 Q 32 36 36 48 Z" fill="#ffffff" stroke="#c8d4d8" stroke-width="1.5"/>
+    <path d="M 28 48 Q 26 42 30 40" fill="none" stroke="#c8d4d8" stroke-width="1"/>
+    <circle cx="60" cy="38" r="14" fill="#ffffff" stroke="#c8d4d8" stroke-width="1.5"/>
+    <circle cx="64" cy="36" r="2" fill="#000"/>
+    <circle cx="64.5" cy="35.5" r="0.7" fill="#fff"/>
+    <path d="M 73 38 L 80 39 L 73 41 Z" fill="#f4c430" stroke="#c89020" stroke-width="0.5"/>
+    <ellipse cx="60" cy="32" rx="8" ry="4" fill="#a8c8d8" opacity="0.6"/>
+    <path d="M 45 70 L 42 78" stroke="#e8a85c" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 55 70 L 58 78" stroke="#e8a85c" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<!-- 어린 양 -->
+<div class="character char-lamb bobbing" data-char="lamb" id="char-lamb" aria-label="어린 양">
+  <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="78" rx="28" ry="4" fill="rgba(74,122,63,0.2)"/>
+    <circle cx="35" cy="50" r="11" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <circle cx="50" cy="42" r="12" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <circle cx="65" cy="50" r="11" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <ellipse cx="50" cy="55" rx="22" ry="14" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1.5"/>
+    <ellipse cx="50" cy="60" rx="11" ry="10" fill="#5a4838"/>
+    <ellipse cx="42" cy="62" rx="1.5" ry="1" fill="#5a4838" transform="rotate(-25 42 62)"/>
+    <ellipse cx="58" cy="62" rx="1.5" ry="1" fill="#5a4838" transform="rotate(25 58 62)"/>
+    <circle cx="46" cy="58" r="1.5" fill="#fff"/>
+    <circle cx="54" cy="58" r="1.5" fill="#fff"/>
+    <circle cx="46.3" cy="58" r="0.8" fill="#000"/>
+    <circle cx="54.3" cy="58" r="0.8" fill="#000"/>
+    <ellipse cx="50" cy="64" rx="1.8" ry="1" fill="#e8a8a0"/>
+    <rect x="42" y="68" width="3" height="8" rx="1" fill="#5a4838"/>
+    <rect x="55" y="68" width="3" height="8" rx="1" fill="#5a4838"/>
+    <circle cx="78" cy="55" r="3" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1"/>
+    <circle cx="82" cy="58" r="2" fill="#fffaf0" stroke="#d8d0bc" stroke-width="1"/>
+  </svg>
+</div>
+
+<!-- 작은 사자 -->
+<div class="character char-lion bobbing" data-char="lion" id="char-lion" aria-label="작은 사자">
+  <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="78" rx="30" ry="4" fill="rgba(74,122,63,0.2)"/>
+    <ellipse cx="50" cy="55" rx="22" ry="20" fill="#f4b860" stroke="#c89438" stroke-width="1.5"/>
+    <g fill="#d89030">
+      <path d="M 28 38 Q 25 30 32 28 Q 33 35 32 40 Z"/>
+      <path d="M 36 28 Q 36 18 44 19 Q 42 28 41 32 Z"/>
+      <path d="M 50 16 Q 50 14 52 16 Q 51 22 50 24 Z"/>
+      <path d="M 56 19 Q 64 18 64 28 Q 58 28 56 32 Z"/>
+      <path d="M 68 28 Q 75 30 72 38 Q 68 35 67 30 Z"/>
+      <path d="M 26 50 Q 18 50 22 58 Q 26 56 28 53 Z"/>
+      <path d="M 74 50 Q 82 50 78 58 Q 74 56 72 53 Z"/>
+    </g>
+    <ellipse cx="50" cy="50" rx="18" ry="16" fill="#f9d088" stroke="#c89438" stroke-width="1"/>
+    <circle cx="42" cy="46" r="3" fill="#fff"/>
+    <circle cx="58" cy="46" r="3" fill="#fff"/>
+    <circle cx="42.5" cy="46.5" r="1.6" fill="#3a2a18"/>
+    <circle cx="58.5" cy="46.5" r="1.6" fill="#3a2a18"/>
+    <circle cx="43" cy="46" r="0.6" fill="#fff"/>
+    <circle cx="59" cy="46" r="0.6" fill="#fff"/>
+    <ellipse cx="50" cy="55" rx="3" ry="2" fill="#3a2a18"/>
+    <path d="M 50 57 L 50 60 M 50 60 Q 47 62 45 60 M 50 60 Q 53 62 55 60" stroke="#3a2a18" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <circle cx="38" cy="52" r="0.6" fill="#3a2a18"/>
+    <circle cx="62" cy="52" r="0.6" fill="#3a2a18"/>
+    <ellipse cx="38" cy="38" rx="4" ry="6" fill="#f4b860" stroke="#c89438" stroke-width="1"/>
+    <ellipse cx="62" cy="38" rx="4" ry="6" fill="#f4b860" stroke="#c89438" stroke-width="1"/>
+    <ellipse cx="38" cy="40" rx="2" ry="3" fill="#e8a8a0"/>
+    <ellipse cx="62" cy="40" rx="2" ry="3" fill="#e8a8a0"/>
+  </svg>
+</div>
+
+<!-- 남자아이 -->
+<div class="character char-boy bobbing" data-char="boy" id="char-boy" aria-label="남자아이">
+  <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="115" rx="24" ry="3" fill="rgba(74,122,63,0.2)"/>
+    <rect x="32" y="78" width="36" height="32" rx="6" fill="#5a8ad4" stroke="#3a6ab4" stroke-width="1.5"/>
+    <rect x="40" y="86" width="4" height="14" fill="#fff" opacity="0.5"/>
+    <rect x="56" y="86" width="4" height="14" fill="#fff" opacity="0.5"/>
+    <rect x="32" y="95" width="36" height="3" fill="#3a6ab4"/>
+    <rect x="36" y="108" width="10" height="10" fill="#3a3026"/>
+    <rect x="54" y="108" width="10" height="10" fill="#3a3026"/>
+    <rect x="34" y="80" width="6" height="20" fill="#5a8ad4" stroke="#3a6ab4" stroke-width="1.5"/>
+    <rect x="60" y="80" width="6" height="20" fill="#5a8ad4" stroke="#3a6ab4" stroke-width="1.5"/>
+    <circle cx="36" cy="100" r="3.5" fill="#f8d8b8" stroke="#d8a880" stroke-width="1"/>
+    <circle cx="64" cy="100" r="3.5" fill="#f8d8b8" stroke="#d8a880" stroke-width="1"/>
+    <circle cx="50" cy="55" r="22" fill="#f8d8b8" stroke="#d8a880" stroke-width="1.5"/>
+    <ellipse cx="42" cy="56" rx="2.5" ry="3" fill="#fff"/>
+    <ellipse cx="58" cy="56" rx="2.5" ry="3" fill="#fff"/>
+    <circle cx="42.3" cy="56.5" r="1.4" fill="#3a2a18"/>
+    <circle cx="58.3" cy="56.5" r="1.4" fill="#3a2a18"/>
+    <circle cx="43" cy="56" r="0.5" fill="#fff"/>
+    <circle cx="59" cy="56" r="0.5" fill="#fff"/>
+    <ellipse cx="34" cy="62" rx="3" ry="2" fill="#f0a880" opacity="0.5"/>
+    <ellipse cx="66" cy="62" rx="3" ry="2" fill="#f0a880" opacity="0.5"/>
+    <path d="M 44 65 Q 50 70 56 65" stroke="#5a4838" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <g class="boy-hat" id="boyHat">
+      <path d="M 28 38 Q 50 24 72 38 L 72 42 Q 50 32 28 42 Z" fill="#c44a3a" stroke="#8a2818" stroke-width="1.5"/>
+      <ellipse cx="50" cy="42" rx="22" ry="3" fill="#a83828"/>
+      <path d="M 45 38 Q 50 33 55 38 L 55 42 Q 50 39 45 42 Z" fill="#f4c430" stroke="#c89020" stroke-width="1"/>
+      <text x="50" y="40.5" text-anchor="middle" font-size="5" fill="#8a4818" font-weight="700">♥</text>
+    </g>
+  </svg>
+</div>
+
+<!-- 폭죽 컨테이너 -->
+<div class="firework-container" id="fireworkContainer"></div>
+
+<!-- 축하 배너 -->
+<div class="celebration-banner" id="celebrationBanner">🎉 너희 조에 특별한 축복이! 🎉</div>
+
+<!-- 가사 무대 (풀스크린) -->
+<div class="lyrics-stage" id="lyricsStage" aria-hidden="true">
+  <div class="stage-sun" aria-hidden="true"></div>
+  <div class="stage-cloud stage-cloud-1" aria-hidden="true"></div>
+  <div class="stage-cloud stage-cloud-2" aria-hidden="true"></div>
+  <div class="stage-grass-bg" aria-hidden="true"></div>
+  <button class="stage-close" id="stageClose" type="button" aria-label="닫기">←</button>
+  <div class="stage-content">
+    <div class="stage-team" id="stageTeam">우리 조</div>
+    <h2 class="stage-title">우리 조의 입성가</h2>
+    <div class="stage-tune-pill" id="stageTune"></div>
+    <pre class="stage-lyrics" id="stageLyrics"></pre>
+    <div class="stage-tip-pill" id="stageTip"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ===== Storage keys =====
+  var KEY_API = 'retreat_api_key';
+  var KEY = {
+    team: 'anthem_team',
+    size: 'anthem_size',
+    grades: 'anthem_grades',
+    slogan: 'anthem_slogan',
+    mood: 'anthem_mood',
+    tunecat: 'anthem_tunecat',
+    length: 'anthem_length',
+    keywords: 'anthem_keywords',
+    episode: 'anthem_episode',
+    chorus: 'anthem_chorus',
+    rTune: 'anthem_r_tune',
+    rLyrics: 'anthem_r_lyrics',
+    rTip: 'anthem_r_tip',
+    bonus: 'anthem_bonus',
+    bonusUnlocked: 'anthem_bonus_unlocked'
+  };
+
+  // ===== Header safety guard =====
+  function isHeaderSafe(s) {
+    return typeof s === 'string' && /^[\x20-\x7E]*$/.test(s);
+  }
+
+  var $ = function(id) { return document.getElementById(id); };
+
+  // ===== Elements =====
+  var apiKeyEl = $('apiKey');
+  var keyStatusEl = $('keyStatus');
+  var statusEl = $('status');
+  var generateBtn = $('generateBtn');
+  var resetBtn = $('resetBtn');
+  var regenBtn = $('regenBtn');
+  var copyBtn = $('copyBtn');
+  var printBtn = $('printBtn');
+  var formCard = $('formCard');
+  var resultCard = $('resultCard');
+  var bonusCard = $('bonusCard');
+  var bonusHint = $('bonusHint');
+  var bonusProgress = $('bonusProgress');
+  var resultTeamEl = $('resultTeam');
+  var rTuneEl = $('r-tune');
+  var rLyricsEl = $('r-lyrics');
+  var rTipEl = $('r-tip');
+  var bonusContentEl = $('bonusContent');
+  var kwCountEl = $('kwCount');
+  var savedMark1 = $('savedMark1');
+  var celebrationBanner = $('celebrationBanner');
+  var fireworkContainer = $('fireworkContainer');
+  var giftBox = $('giftBox');
+  var giftBoxWrap = $('giftBoxWrap');
+  var lyricsStage = $('lyricsStage');
+  var stageClose = $('stageClose');
+  var stageTeamEl = $('stageTeam');
+  var stageTuneEl = $('stageTune');
+  var stageLyricsEl = $('stageLyrics');
+  var stageTipEl = $('stageTip');
+
+  var saveTimer = null;
+  var clickedChars = new Set();
+  var bonusUnlocked = false;
+  var boyClickCount = 0;
+
+  // ===== API key =====
+  function loadApiKey() {
+    var k = localStorage.getItem(KEY_API) || '';
+    if (k && !isHeaderSafe(k)) {
+      k = '';
+      localStorage.removeItem(KEY_API);
+    }
+    apiKeyEl.value = k;
+    updateKeyStatus();
+  }
+  function updateKeyStatus() {
+    var k = apiKeyEl.value.trim();
+    if (!k) { keyStatusEl.textContent = '미리보기 모드'; keyStatusEl.className = 'key-status'; }
+    else if (!isHeaderSafe(k)) { keyStatusEl.textContent = '잘못된 문자 포함'; keyStatusEl.className = 'key-status bad'; }
+    else if (k.indexOf('sk-ant-') === 0) { keyStatusEl.textContent = '입력됨'; keyStatusEl.className = 'key-status ok'; }
+    else { keyStatusEl.textContent = '형식 확인'; keyStatusEl.className = 'key-status bad'; }
+  }
+  apiKeyEl.addEventListener('input', function() {
+    var v = apiKeyEl.value.trim();
+    if (v && !isHeaderSafe(v)) {
+      localStorage.removeItem(KEY_API);
+    } else {
+      localStorage.setItem(KEY_API, v);
+    }
+    updateKeyStatus();
+  });
+
+  // ===== Form data =====
+  function getFormData() {
+    var mood = (document.querySelector('input[name="mood"]:checked') || {}).value || '';
+    var tunecat = (document.querySelector('input[name="tunecat"]:checked') || {}).value || '';
+    var length = (document.querySelector('input[name="length"]:checked') || {}).value || '';
+    return {
+      team: $('f-team').value.trim(),
+      size: $('f-size').value.trim(),
+      grades: $('f-grades').value.trim(),
+      slogan: $('f-slogan').value.trim(),
+      mood: mood,
+      tunecat: tunecat,
+      length: length,
+      keywords: $('f-keywords').value.trim(),
+      episode: $('f-episode').value.trim(),
+      chorus: $('f-chorus').value.trim()
+    };
+  }
+  function setFormData(d) {
+    d = d || {};
+    $('f-team').value = d.team || '';
+    $('f-size').value = d.size || '';
+    $('f-grades').value = d.grades || '';
+    $('f-slogan').value = d.slogan || '';
+    $('f-keywords').value = d.keywords || '';
+    $('f-episode').value = d.episode || '';
+    $('f-chorus').value = d.chorus || '';
+    document.querySelectorAll('input[name="mood"]').forEach(function(i) { i.checked = (i.value === d.mood); });
+    document.querySelectorAll('input[name="tunecat"]').forEach(function(i) { i.checked = (i.value === d.tunecat); });
+    document.querySelectorAll('input[name="length"]').forEach(function(i) { i.checked = (i.value === d.length); });
+    updateCount();
+  }
+  function saveDraft() {
+    var d = getFormData();
+    localStorage.setItem(KEY.team, d.team);
+    localStorage.setItem(KEY.size, d.size);
+    localStorage.setItem(KEY.grades, d.grades);
+    localStorage.setItem(KEY.slogan, d.slogan);
+    localStorage.setItem(KEY.mood, d.mood);
+    localStorage.setItem(KEY.tunecat, d.tunecat);
+    localStorage.setItem(KEY.length, d.length);
+    localStorage.setItem(KEY.keywords, d.keywords);
+    localStorage.setItem(KEY.episode, d.episode);
+    localStorage.setItem(KEY.chorus, d.chorus);
+  }
+  function loadDraft() {
+    setFormData({
+      team: localStorage.getItem(KEY.team) || '',
+      size: localStorage.getItem(KEY.size) || '',
+      grades: localStorage.getItem(KEY.grades) || '',
+      slogan: localStorage.getItem(KEY.slogan) || '',
+      mood: localStorage.getItem(KEY.mood) || '',
+      tunecat: localStorage.getItem(KEY.tunecat) || '',
+      length: localStorage.getItem(KEY.length) || '',
+      keywords: localStorage.getItem(KEY.keywords) || '',
+      episode: localStorage.getItem(KEY.episode) || '',
+      chorus: localStorage.getItem(KEY.chorus) || ''
+    });
+  }
+
+  function updateCount() {
+    var n = $('f-keywords').value.split('\n').filter(function(s) { return s.trim().length > 0; }).length;
+    kwCountEl.textContent = n + '개';
+  }
+
+  formCard.addEventListener('input', function() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function() { saveDraft(); updateCount(); }, 300);
+  });
+  formCard.addEventListener('change', function() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 300);
+  });
+
+  // ===== Build prompt =====
+  function buildPrompt(d) {
+    var lines = [];
+    lines.push('당신은 한국 교회 중학생 여름수련회 프로그램을 돕는 작사가입니다.');
+    lines.push('아래 정보를 바탕으로 "' + (d.team || '우리 조') + '"의 입성가(team anthem)를 만들어주세요.');
+    lines.push('');
+    lines.push('[조 정보]');
+    lines.push('- 조 이름: ' + (d.team || '우리 조'));
+    if (d.size) lines.push('- 조원 수: ' + d.size + '명');
+    if (d.grades) lines.push('- 학년 분포: ' + d.grades);
+    if (d.slogan) lines.push('- 조 슬로건: ' + d.slogan);
+    lines.push('');
+    lines.push('[노래 옵션]');
+    lines.push('- 분위기: ' + (d.mood || '활기찬'));
+    lines.push('- 곡조 카테고리: ' + (d.tunecat || '자유'));
+    lines.push('- 분량: ' + (d.length || '보통') + ' (짧게=15초/2~3줄+짧은 후렴, 보통=30초/4~6줄+후렴2~4줄, 길게=45초/6~8줄+후렴3~5줄)');
+    lines.push('');
+    lines.push('[조의 이야기]');
+    lines.push('- 키워드: ' + (d.keywords ? d.keywords.split('\n').map(function(s){return s.trim();}).filter(Boolean).join(', ') : '(미입력)'));
+    if (d.episode) lines.push('- 에피소드 (가사에 자연스럽게 녹여줄 것): ' + d.episode);
+    if (d.chorus) lines.push('- 후렴에 꼭 들어갈 단어: ' + d.chorus);
+    lines.push('');
+    lines.push('[작성 지침]');
+    lines.push('1. 분위기와 분량 옵션에 맞춰 작성');
+    lines.push('2. 곡조 카테고리에 따라 추천 곡을 정함:');
+    lines.push('   - 찬양곡: "예수 사랑하심은", "주 예수보다 더 귀한 것은 없네", "내 영혼의 그윽이 깊은 데서" 등');
+    lines.push('   - 동요: "곰 세 마리", "산토끼", "학교종" 등');
+    lines.push('   - 가요 멜로디: 한국 학생이 알 만한 가요·캠프송·CCM 등');
+    lines.push('   - 자유: AI가 가장 잘 어울리는 곡 직접 추천');
+    lines.push('3. 후렴구는 짧고 외치기 쉬운 구호 형태로');
+    lines.push('4. 신앙적 색채는 자연스럽게 (영적인 분위기일 땐 더 진하게)');
+    lines.push('5. 추가로 "보너스 응원 구호"를 4~6줄로 별도 작성. 조원들이 같이 외칠 수 있는 짧고 강한 콜앤리스폰스 형태로.');
+    lines.push('');
+    lines.push('[출력 형식 — 반드시 JSON만, 다른 설명 일절 금지]');
+    lines.push('{"tune": "추천 곡조 이름", "lyrics": "1절:\\n(가사)\\n\\n후렴:\\n(가사)", "tip": "곡조에 가사 얹는 방법 한 줄", "bonus": "보너스 응원 구호 4~6줄"}');
+    return lines.join('\n');
+  }
+
+  // ===== Call Claude =====
+  async function callClaude(prompt, apiKey) {
+    if (apiKey && !isHeaderSafe(apiKey)) {
+      throw new Error('API 키에 사용할 수 없는 문자(한글 등)가 섞여 있어요. 키 칸을 비우거나 다시 입력해 주세요.');
+    }
+
+    var timeoutHandle;
+    var timeoutPromise = new Promise(function(_, reject) {
+      timeoutHandle = setTimeout(function() { reject(new Error('__TIMEOUT__')); }, 60000);
+    });
+
+    var headers, body;
+    if (apiKey) {
+      headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      };
+      body = JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      });
+    } else {
+      headers = { 'Content-Type': 'application/json' };
+      body = JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      });
+    }
+
+    var fetchPromise = fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: headers,
+      body: body
+    });
+
+    try {
+      var res = await Promise.race([fetchPromise, timeoutPromise]);
+      clearTimeout(timeoutHandle);
+      if (res.status === 401 || res.status === 403) {
+        throw new Error('API 키가 유효하지 않거나 권한이 없습니다. 키를 확인해 주세요.');
+      }
+      if (!res.ok) {
+        var errText = await res.text().catch(function(){ return ''; });
+        throw new Error('서버 오류 (' + res.status + '). ' + errText.slice(0, 120));
+      }
+      var data = await res.json();
+      var text = (data.content || []).map(function(b){ return b.text || ''; }).join('').trim();
+      if (!text) throw new Error('AI 응답이 비어있습니다.');
+      return text;
+    } catch (err) {
+      clearTimeout(timeoutHandle);
+      if (err && err.message === '__TIMEOUT__') {
+        throw new Error('요청 시간이 초과되었습니다 (60초). 다시 시도해 주세요.');
+      }
+      throw err;
+    }
+  }
+
+  function parseResult(text) {
+    var cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    var s = cleaned.indexOf('{');
+    var e = cleaned.lastIndexOf('}');
+    if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);
+    try {
+      var obj = JSON.parse(cleaned);
+      return {
+        tune: (obj.tune || '직접 정해보세요').trim(),
+        lyrics: (obj.lyrics || '').trim(),
+        tip: (obj.tip || '곡조에 맞춰 자연스럽게 부르면 됩니다').trim(),
+        bonus: (obj.bonus || '').trim()
+      };
+    } catch (err) {
+      return { tune: '직접 정해보세요', lyrics: cleaned, tip: '곡조에 맞춰 자연스럽게', bonus: '' };
+    }
+  }
+
+  // ===== Generate flow =====
+  generateBtn.addEventListener('click', generate);
+  if (regenBtn) regenBtn.addEventListener('click', generate);
+
+  async function generate() {
+    var apiKey = apiKeyEl.value.trim();
+    var data = getFormData();
+
+    if (!data.team) {
+      statusEl.textContent = '조 이름을 입력해 주세요.';
+      statusEl.className = 'status error';
+      $('f-team').focus();
+      return;
+    }
+    var kwList = data.keywords.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    if (kwList.length < 3) {
+      statusEl.textContent = '키워드를 최소 3개 이상 입력해 주세요.';
+      statusEl.className = 'status error';
+      $('f-keywords').focus();
+      return;
+    }
+
+    generateBtn.disabled = true;
+    if (regenBtn) regenBtn.disabled = true;
+    statusEl.innerHTML = '<span class="spinner"></span>AI가 입성가를 짓고 있어요... (최대 60초)';
+    statusEl.className = 'status';
+
+    try {
+      var prompt = buildPrompt(data);
+      var raw = await callClaude(prompt, apiKey);
+      var parsed = parseResult(raw);
+
+      rTuneEl.value = parsed.tune;
+      rLyricsEl.value = parsed.lyrics;
+      rTipEl.value = parsed.tip;
+      localStorage.setItem(KEY.rTune, parsed.tune);
+      localStorage.setItem(KEY.rLyrics, parsed.lyrics);
+      localStorage.setItem(KEY.rTip, parsed.tip);
+      if (parsed.bonus) {
+        localStorage.setItem(KEY.bonus, parsed.bonus);
+        bonusContentEl.value = parsed.bonus;
+      }
+
+      // 새로 만들었으니 보너스 잠금 리셋 (이미 잠금해제 상태가 아니라면)
+      if (!bonusUnlocked) {
+        clickedChars.clear();
+        document.querySelectorAll('.character').forEach(function(el) { el.classList.remove('tagged'); });
+        updateBonusProgress();
+      }
+
+      showResult(data.team);
+      statusEl.textContent = '';
+
+      setTimeout(function() {
+        resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    } catch (err) {
+      statusEl.textContent = '⚠ ' + err.message;
+      statusEl.className = 'status error';
+    } finally {
+      generateBtn.disabled = false;
+      if (regenBtn) regenBtn.disabled = false;
+    }
+  }
+
+  function showResult(team) {
+    resultTeamEl.textContent = (team || '우리 조') + '의 입성가';
+    resultCard.classList.add('show');
+    if (giftBox) giftBox.classList.remove('opening');
+    if (!bonusUnlocked) {
+      bonusHint.classList.add('show');
+    }
+  }
+
+  resetBtn.addEventListener('click', function() {
+    if (!confirm('입력한 내용을 모두 지울까요?')) return;
+    setFormData({});
+    Object.keys(KEY).forEach(function(k) {
+      if (k !== 'bonus' && k !== 'bonusUnlocked') localStorage.removeItem(KEY[k]);
+    });
+    statusEl.textContent = '';
+  });
+
+  // ===== Result auto-save =====
+  function bindAutoSave(el, storageKey) {
+    el.addEventListener('input', function() {
+      clearTimeout(el._t);
+      el._t = setTimeout(function() {
+        localStorage.setItem(storageKey, el.value);
+        if (savedMark1) {
+          savedMark1.classList.add('show');
+          clearTimeout(savedMark1._t);
+          savedMark1._t = setTimeout(function() { savedMark1.classList.remove('show'); }, 1500);
+        }
+      }, 400);
+    });
+  }
+  bindAutoSave(rTuneEl, KEY.rTune);
+  bindAutoSave(rLyricsEl, KEY.rLyrics);
+  bindAutoSave(rTipEl, KEY.rTip);
+  bonusContentEl.addEventListener('input', function() {
+    clearTimeout(bonusContentEl._t);
+    bonusContentEl._t = setTimeout(function() {
+      localStorage.setItem(KEY.bonus, bonusContentEl.value);
+    }, 400);
+  });
+
+  // ===== Copy =====
+  copyBtn.addEventListener('click', function() {
+    var teamName = ($('f-team').value.trim() || '우리 조');
+    var text = '[' + teamName + '의 입성가]\n' +
+               '♪ 곡조: ' + rTuneEl.value + '\n\n' +
+               rLyricsEl.value + '\n\n' +
+               '💡 ' + rTipEl.value;
+    if (bonusUnlocked && bonusContentEl.value.trim()) {
+      text += '\n\n[보너스 응원 구호]\n' + bonusContentEl.value;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() { alert('복사됐어요!'); }, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+    function fallbackCopy() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert('복사됐어요!');
+      } catch (e) {
+        alert('복사 실패. 수동으로 복사해 주세요.');
+      }
+    }
+  });
+
+  printBtn.addEventListener('click', function() { window.print(); });
+
+  // ===== Bubble system =====
+  var activeBubble = null;
+  function showBubble(target, text, duration) {
+    duration = duration || 3000;
+    if (activeBubble) {
+      activeBubble.remove();
+      activeBubble = null;
+    }
+    var rect = target.getBoundingClientRect();
+    var bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    document.body.appendChild(bubble);
+    var bRect = bubble.getBoundingClientRect();
+    var top, left, isAbove;
+    if (rect.top - bRect.height - 16 > 10) {
+      top = rect.top - bRect.height - 14;
+      isAbove = true;
+    } else {
+      top = rect.bottom + 14;
+      isAbove = false;
+    }
+    left = rect.left + rect.width / 2 - bRect.width / 2;
+    if (left < 10) left = 10;
+    if (left + bRect.width > window.innerWidth - 10) left = window.innerWidth - bRect.width - 10;
+    bubble.style.top = top + 'px';
+    bubble.style.left = left + 'px';
+    bubble.classList.add(isAbove ? 'above' : 'below');
+    activeBubble = bubble;
+    setTimeout(function() {
+      if (bubble.parentNode) {
+        bubble.classList.add('fade-out');
+        setTimeout(function() {
+          if (bubble.parentNode) bubble.remove();
+          if (activeBubble === bubble) activeBubble = null;
+        }, 300);
+      }
+    }, duration);
+  }
+
+  // ===== Character interactions =====
+  var doveTips = [
+    '키워드는 8개 이상이면 노래가 더 풍성해져요!',
+    '에피소드를 자세히 적으면 가사에 너희만의 추억이 녹아들어요.',
+    '곡조 카테고리를 "자유"로 두면 AI가 가장 잘 어울리는 곡을 골라줘요.',
+    '"영적인" 분위기를 고르면 신앙적 색채가 더 짙어져요.',
+    '후렴에 꼭 들어갈 단어를 정해두면 외치기 좋은 구호가 만들어져요.',
+    '결과 가사는 직접 수정할 수 있어요 — AI는 시작점일 뿐!',
+    '복사 버튼으로 단톡방에 바로 공유할 수 있어요.'
+  ];
+  var doveTipIndex = 0;
+
+  document.querySelectorAll('.character').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var charType = el.dataset.char;
+      handleCharClick(el, charType);
+    });
+  });
+
+  function handleCharClick(el, charType) {
+    el.classList.remove('clicked');
+    void el.offsetWidth;
+    el.classList.add('clicked');
+
+    if (charType === 'dove') {
+      var tip = doveTips[doveTipIndex % doveTips.length];
+      doveTipIndex++;
+      showBubble(el, '🕊️ ' + tip, 4500);
+    } else if (charType === 'sheep') {
+      showBubble(el, '음매~', 1800);
+    } else if (charType === 'lamb') {
+      showBubble(el, '메~ 메~', 1800);
+    } else if (charType === 'lion') {
+      showBubble(el, '으르릉~ (귀여움)', 1800);
+    } else if (charType === 'boy') {
+      boyClickCount++;
+      if (boyClickCount === 3) {
+        var hat = $('boyHat');
+        if (hat) hat.classList.add('dropped');
+        setTimeout(function() {
+          showBubble(el, '헉, 모자가...!', 2200);
+        }, 400);
+      } else if (boyClickCount > 3) {
+        showBubble(el, '내 모자 어디 갔지?', 1800);
+      } else {
+        showBubble(el, '히히, 안녕!', 1500);
+      }
+    }
+
+    // 보너스 추적
+    if (!clickedChars.has(charType)) {
+      clickedChars.add(charType);
+      el.classList.add('tagged');
+      updateBonusProgress();
+      if (clickedChars.size === 5 && !bonusUnlocked) {
+        unlockBonus();
+      }
+    }
+  }
+
+  function updateBonusProgress() {
+    if (bonusProgress) bonusProgress.textContent = clickedChars.size + '/5';
+  }
+
+  // ===== Unlock bonus + fireworks =====
+  function unlockBonus() {
+    bonusUnlocked = true;
+    localStorage.setItem(KEY.bonusUnlocked, '1');
+
+    triggerFireworks();
+    celebrationBanner.classList.remove('show');
+    void celebrationBanner.offsetWidth;
+    celebrationBanner.classList.add('show');
+
+    // 보너스 카드 표시 (살짝 지연)
+    setTimeout(function() {
+      bonusHint.classList.remove('show');
+      var stored = localStorage.getItem(KEY.bonus) || '';
+      if (stored && !bonusContentEl.value) bonusContentEl.value = stored;
+      if (!bonusContentEl.value) {
+        bonusContentEl.value = '아직 입성가를 만들지 않았어요. 먼저 위에서 입성가를 만들어주세요!';
+      }
+      bonusCard.classList.add('show');
+      setTimeout(function() {
+        bonusCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+    }, 1400);
+  }
+
+  function triggerFireworks() {
+    fireworkContainer.classList.add('active');
+    fireworkContainer.innerHTML = '';
+
+    var colors = ['#f4c430', '#e8a85c', '#c44a3a', '#5a8ad4', '#7eb574', '#f5a830', '#ffd863'];
+    var bursts = 5;
+
+    for (var b = 0; b < bursts; b++) {
+      (function(burstIdx) {
+        setTimeout(function() {
+          var cx = 20 + Math.random() * 60; // 20~80%
+          var cy = 20 + Math.random() * 50; // 20~70%
+          var sparkCount = 24;
+          for (var i = 0; i < sparkCount; i++) {
+            var spark = document.createElement('div');
+            spark.className = 'spark';
+            spark.style.left = cx + '%';
+            spark.style.top = cy + '%';
+            spark.style.background = colors[Math.floor(Math.random() * colors.length)];
+            var angle = (i / sparkCount) * Math.PI * 2;
+            var dist = 80 + Math.random() * 80;
+            var dx = Math.cos(angle) * dist;
+            var dy = Math.sin(angle) * dist;
+            spark.animate([
+              { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+              { transform: 'translate(' + dx + 'px, ' + (dy + 100) + 'px) scale(0.3)', opacity: 0 }
+            ], {
+              duration: 1200 + Math.random() * 400,
+              easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)',
+              fill: 'forwards'
+            });
+            fireworkContainer.appendChild(spark);
+          }
+        }, burstIdx * 350);
+      })(b);
+    }
+
+    setTimeout(function() {
+      fireworkContainer.classList.remove('active');
+      fireworkContainer.innerHTML = '';
+    }, 3500);
+  }
+
+  // ===== Gift box → Lyrics stage =====
+  function openLyricsStage() {
+    if (!lyricsStage) return;
+    var teamName = ($('f-team').value.trim() || '우리 조');
+    stageTeamEl.textContent = teamName + ' · THE ANTHEM';
+    document.querySelector('.stage-title').textContent = teamName + '의 입성가';
+    stageTuneEl.textContent = rTuneEl.value || '곡조 미정';
+    stageLyricsEl.textContent = rLyricsEl.value || '(가사가 비어 있어요)';
+    var tipText = rTipEl.value || '';
+    if (tipText) {
+      stageTipEl.style.display = 'inline-block';
+      stageTipEl.textContent = tipText;
+    } else {
+      stageTipEl.style.display = 'none';
+    }
+
+    if (giftBox) giftBox.classList.add('opening');
+    setTimeout(function() {
+      lyricsStage.classList.remove('closing');
+      lyricsStage.classList.add('show');
+      lyricsStage.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      if (stageClose) stageClose.focus();
+    }, 280);
+  }
+
+  function closeLyricsStage() {
+    if (!lyricsStage || !lyricsStage.classList.contains('show')) return;
+    lyricsStage.classList.add('closing');
+    setTimeout(function() {
+      lyricsStage.classList.remove('show', 'closing');
+      lyricsStage.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (giftBox) {
+        giftBox.classList.remove('opening');
+        try { giftBox.focus({ preventScroll: true }); } catch (e) {}
+      }
+    }, 350);
+  }
+
+  if (giftBox) {
+    giftBox.addEventListener('click', openLyricsStage);
+  }
+  if (stageClose) {
+    stageClose.addEventListener('click', closeLyricsStage);
+  }
+  // 무대 배경 (가사 외 영역) 클릭으로도 닫기
+  if (lyricsStage) {
+    lyricsStage.addEventListener('click', function(e) {
+      // 가사/팁/제목/닫기버튼 영역 클릭은 무시, 배경만 닫기
+      if (e.target === lyricsStage) closeLyricsStage();
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && lyricsStage && lyricsStage.classList.contains('show')) {
+      closeLyricsStage();
+    }
+  });
+
+  // ===== Init =====
+  loadApiKey();
+  loadDraft();
+
+  // Restore previous result
+  var rTune = localStorage.getItem(KEY.rTune);
+  var rLyrics = localStorage.getItem(KEY.rLyrics);
+  var rTip = localStorage.getItem(KEY.rTip);
+  if (rLyrics) {
+    rTuneEl.value = rTune || '';
+    rLyricsEl.value = rLyrics;
+    rTipEl.value = rTip || '';
+    showResult($('f-team').value.trim());
+  }
+
+  // Restore bonus state
+  if (localStorage.getItem(KEY.bonusUnlocked) === '1') {
+    bonusUnlocked = true;
+    var storedBonus = localStorage.getItem(KEY.bonus) || '';
+    if (storedBonus) bonusContentEl.value = storedBonus;
+    if (rLyrics) {
+      bonusCard.classList.add('show');
+      bonusHint.classList.remove('show');
+    }
+  }
+
+  updateBonusProgress();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이름을 불러주는 초대장</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-1: #ffe5ec;
+    --bg-2: #e8f3ff;
+    --bg-3: #f0f9e8;
+    --card: rgba(255, 255, 255, 0.88);
+    --card-solid: #ffffff;
+    --card-soft: #faf6f8;
+    --border: #f0d8e0;
+    --border-soft: #f7e8ed;
+    --text: #4a3a44;
+    --text-soft: #786068;
+    --text-mute: #a08890;
+    --accent: #d8869c;
+    --accent-hover: #c46d85;
+    --accent-soft: #f5d0dc;
+    --secondary: #8eb8d4;
+    --error: #c97070;
+    --success: #7aa888;
+    --shadow: 0 8px 32px rgba(216, 134, 156, 0.12);
+    --shadow-sm: 0 2px 8px rgba(216, 134, 156, 0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.65;
+    padding: 24px 16px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .petal {
+    position: fixed;
+    top: -30px;
+    width: 12px; height: 12px;
+    background: radial-gradient(ellipse at 30% 30%, #ffd6e0 0%, #f5b8d0 70%);
+    border-radius: 50% 0 50% 0;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: fall 18s linear infinite;
+    z-index: 1;
+  }
+  .petal:nth-child(1) { left: 8%; animation-delay: 0s; animation-duration: 22s; }
+  .petal:nth-child(2) { left: 22%; animation-delay: 4s; animation-duration: 18s; background: radial-gradient(ellipse at 30% 30%, #e0e8ff 0%, #b8c8f0 70%); }
+  .petal:nth-child(3) { left: 50%; animation-delay: 9s; animation-duration: 25s; }
+  .petal:nth-child(4) { left: 70%; animation-delay: 2s; animation-duration: 20s; background: radial-gradient(ellipse at 30% 30%, #d8f0e0 0%, #a8d8b0 70%); }
+  .petal:nth-child(5) { left: 88%; animation-delay: 12s; animation-duration: 19s; }
+  .petal:nth-child(6) { left: 35%; animation-delay: 16s; animation-duration: 23s; background: radial-gradient(ellipse at 30% 30%, #e0e8ff 0%, #b8c8f0 70%); }
+
+  @keyframes fall {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.7; }
+    100% { transform: translateY(105vh) translateX(40px) rotate(720deg); opacity: 0.3; }
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+
+  .header { text-align: center; margin-bottom: 28px; padding: 0 8px; }
+  .header .badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    background: rgba(216, 134, 156, 0.1);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .header p { font-size: 14px; color: var(--text-soft); }
+
+  .keybar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(10px);
+  }
+  .keybar label { font-size: 13px; font-weight: 600; color: var(--text-soft); flex-shrink: 0; }
+  .keybar input {
+    flex: 1; min-width: 200px;
+    border: 1px solid var(--border);
+    background: var(--card-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: monospace;
+  }
+  .keybar input:focus { outline: none; border-color: var(--accent); }
+  .keybar .key-status { font-size: 12px; color: var(--text-mute); }
+  .keybar .key-status.ok { color: var(--success); }
+  .keybar .key-status.bad { color: var(--error); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    backdrop-filter: blur(12px);
+  }
+  .card h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+  .section-label:first-of-type { margin-top: 0; }
+  .section-label.optional { color: var(--secondary); margin-top: 18px; }
+
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--text-mute);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .field input[type="text"],
+  .field input[type="number"],
+  .field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card-soft);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    line-height: 1.5;
+    transition: all 0.15s;
+  }
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--card-solid);
+  }
+  .field textarea { resize: vertical; min-height: 70px; }
+
+  .row { display: flex; gap: 10px; }
+  .row .field { flex: 1; }
+
+  .actions { display: flex; gap: 10px; margin-top: 22px; }
+  .btn {
+    border: none;
+    border-radius: 12px;
+    padding: 13px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    flex: 1;
+    box-shadow: 0 4px 12px rgba(216, 134, 156, 0.3);
+  }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .btn-primary:disabled { background: var(--text-mute); cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-secondary { background: transparent; color: var(--text-soft); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--card-soft); border-color: var(--accent-soft); }
+
+  .status {
+    margin-top: 14px;
+    font-size: 13px;
+    text-align: center;
+    color: var(--text-soft);
+    min-height: 20px;
+  }
+  .status.error { color: var(--error); }
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--accent-soft);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .invitation {
+    display: none;
+    background: linear-gradient(135deg, #ffffff 0%, #fff5f8 50%, #f5f9ff 100%);
+    border: 1px solid var(--border-soft);
+    border-radius: 24px;
+    padding: 36px 28px;
+    box-shadow: 0 12px 40px rgba(216, 134, 156, 0.18);
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .invitation.show { display: block; animation: cardIn 0.6s ease-out; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .invitation::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(216,134,156,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .invitation::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(142,184,212,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .invite-title {
+    text-align: center;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    font-weight: 700;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .invite-name {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .invite-meta {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-mute);
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .invite-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 24px;
+    border-radius: 2px;
+    opacity: 0.4;
+    position: relative;
+  }
+  .invite-message {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 18px 20px;
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.85;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 160px;
+    position: relative;
+    transition: all 0.15s;
+  }
+  .invite-message:focus { outline: none; border-color: var(--accent); background: var(--card-solid); }
+
+  .saved-mark {
+    display: block;
+    font-size: 11px;
+    color: var(--success);
+    margin-top: 4px;
+    text-align: right;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 600;
+    position: relative;
+    height: 14px;
+  }
+  .saved-mark.show { opacity: 1; }
+
+  .invite-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .btn-voice {
+    background: linear-gradient(135deg, var(--accent) 0%, #c46d85 100%);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    flex: 1;
+    box-shadow: 0 4px 14px rgba(216, 134, 156, 0.35);
+    transition: all 0.15s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-voice:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(216, 134, 156, 0.45); }
+  .btn-voice:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn-voice.playing {
+    background: linear-gradient(135deg, var(--secondary) 0%, #6b9cc4 100%);
+    box-shadow: 0 4px 14px rgba(142, 184, 212, 0.4);
+  }
+
+  .voice-icon { width: 16px; height: 16px; display: inline-block; flex-shrink: 0; }
+
+  .voice-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    border: 1px solid var(--border-soft);
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-soft);
+    position: relative;
+  }
+  .voice-controls label { font-weight: 600; flex-shrink: 0; }
+  .voice-controls select {
+    flex: 1;
+    min-width: 140px;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: white;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .voice-controls input[type="range"] {
+    flex: 1;
+    min-width: 100px;
+    accent-color: var(--accent);
+  }
+  .voice-controls .speed-val {
+    font-variant-numeric: tabular-nums;
+    color: var(--text-mute);
+    width: 40px;
+    text-align: right;
+  }
+
+  .voice-warn {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: rgba(201, 112, 112, 0.08);
+    border: 1px solid rgba(201, 112, 112, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--error);
+    text-align: center;
+    display: none;
+    position: relative;
+  }
+  .voice-warn.show { display: block; }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 40px; }
+    .header h1 { font-size: 24px; }
+    .card { padding: 22px 18px; }
+    .invitation { padding: 28px 20px; }
+    .invite-name { font-size: 26px; }
+    .row { flex-direction: column; gap: 0; }
+    .actions { flex-direction: column; }
+    .btn-primary, .btn-voice { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+<div class="petal"></div>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="badge">VOICE INVITATION</div>
+    <h1>이름을 불러주는 초대장</h1>
+    <p>너만을 위한 초대장이 곧 도착해.</p>
+  </div>
+
+  <div class="keybar">
+    <label>API 키</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-... (미리보기에선 비워둬도 OK)" autocomplete="off">
+    <span class="key-status" id="keyStatus">미리보기 모드</span>
+  </div>
+
+  <div class="card" id="formCard">
+    <h2>나에 대해 알려줘</h2>
+
+    <div class="section-label">필수</div>
+
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="f-name" placeholder="예: 김지민" maxlength="20">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>나이</label>
+        <input type="number" id="f-age" placeholder="예: 14" min="9" max="20">
+      </div>
+      <div class="field">
+        <label>소속 교회</label>
+        <input type="text" id="f-church" placeholder="예: 용인성도교회" maxlength="40">
+      </div>
+    </div>
+
+    <div class="section-label optional">선택 (없어도 괜찮아)</div>
+
+    <div class="field">
+      <label>요즘 마음의 고민</label>
+      <textarea id="f-worry" placeholder="예: 친구 관계가 어색해. / 기도가 잘 안 돼." style="min-height:60px"></textarea>
+    </div>
+
+    <div class="field">
+      <label>그 밖에 하고 싶은 말</label>
+      <textarea id="f-extra" placeholder="자유롭게 적어도 돼. AI가 너만을 위한 초대장을 만들어줄 거야." style="min-height:60px"></textarea>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="generateBtn">초대장 받기</button>
+      <button class="btn btn-secondary" id="resetBtn">초기화</button>
+    </div>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="invitation" id="inviteCard">
+    <div class="invite-title">너에게 보내는 초대장</div>
+    <div class="invite-name" id="inviteName"></div>
+    <div class="invite-meta" id="inviteMeta"></div>
+    <div class="invite-divider"></div>
+    <textarea class="invite-message" id="inviteMessage" data-key="message"></textarea>
+    <span class="saved-mark" id="savedMark">✓ 저장됨</span>
+
+    <div class="invite-actions">
+      <button class="btn-voice" id="speakBtn">
+        <svg class="voice-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a9 9 0 010 14"/></svg>
+        <span id="speakBtnText">내 이름 들어보기</span>
+      </button>
+      <button class="btn btn-secondary" id="newInviteBtn">새로 만들기</button>
+    </div>
+
+    <div class="voice-controls" id="voiceControls">
+      <label>목소리</label>
+      <select id="voiceSelect"></select>
+      <label style="margin-left:8px">속도</label>
+      <input type="range" id="rateSlider" min="0.7" max="1.3" step="0.05" value="0.95">
+      <span class="speed-val" id="rateVal">0.95×</span>
+    </div>
+
+    <div class="voice-warn" id="voiceWarn">
+      ⚠ 이 기기에는 한국어 음성이 설치되어 있지 않아. 기본 음성으로 재생할게.
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const KEY_API = 'retreat_api_key';
+  const KEY_DRAFT = 'invite_draft';
+  const KEY_CARD = 'invite_my_card';
+
+  const $ = (id) => document.getElementById(id);
+  const apiKeyEl = $('apiKey');
+  const keyStatusEl = $('keyStatus');
+  const statusEl = $('status');
+  const generateBtn = $('generateBtn');
+  const resetBtn = $('resetBtn');
+  const newInviteBtn = $('newInviteBtn');
+  const formCard = $('formCard');
+  const inviteCard = $('inviteCard');
+  const inviteNameEl = $('inviteName');
+  const inviteMetaEl = $('inviteMeta');
+  const inviteMessageEl = $('inviteMessage');
+  const speakBtn = $('speakBtn');
+  const speakBtnText = $('speakBtnText');
+  const voiceSelect = $('voiceSelect');
+  const rateSlider = $('rateSlider');
+  const rateVal = $('rateVal');
+  const voiceWarn = $('voiceWarn');
+  const savedMark = $('savedMark');
+
+  let saveTimer = null;
+  let currentInvite = null;
+  let voices = [];
+  let selectedVoice = null;
+  let isSpeaking = false;
+
+  // Header values must be ISO-8859-1 safe (printable ASCII only)
+  function isHeaderSafe(s) {
+    return typeof s === 'string' && /^[\x20-\x7E]*$/.test(s);
+  }
+
+  function loadApiKey() {
+    let k = localStorage.getItem(KEY_API) || '';
+    // Defensively clear if storage somehow contains non-ASCII (would crash fetch headers)
+    if (k && !isHeaderSafe(k)) {
+      k = '';
+      localStorage.removeItem(KEY_API);
+    }
+    apiKeyEl.value = k;
+    updateKeyStatus();
+  }
+  function updateKeyStatus() {
+    const k = apiKeyEl.value.trim();
+    if (!k) { keyStatusEl.textContent = '미리보기 모드'; keyStatusEl.className = 'key-status'; }
+    else if (!isHeaderSafe(k)) { keyStatusEl.textContent = '잘못된 문자 포함'; keyStatusEl.className = 'key-status bad'; }
+    else if (k.startsWith('sk-ant-')) { keyStatusEl.textContent = '입력됨'; keyStatusEl.className = 'key-status ok'; }
+    else { keyStatusEl.textContent = '형식 확인'; keyStatusEl.className = 'key-status bad'; }
+  }
+  apiKeyEl.addEventListener('input', () => {
+    const v = apiKeyEl.value.trim();
+    if (v && !isHeaderSafe(v)) {
+      // Don't store invalid value — would corrupt other programs sharing this key
+      localStorage.removeItem(KEY_API);
+    } else {
+      localStorage.setItem(KEY_API, v);
+    }
+    updateKeyStatus();
+  });
+
+  function getFormData() {
+    return {
+      name: $('f-name').value.trim(),
+      age: $('f-age').value.trim(),
+      church: $('f-church').value.trim(),
+      worry: $('f-worry').value.trim(),
+      extra: $('f-extra').value.trim()
+    };
+  }
+  function setFormData(d) {
+    d = d || {};
+    $('f-name').value = d.name || '';
+    $('f-age').value = d.age || '';
+    $('f-church').value = d.church || '';
+    $('f-worry').value = d.worry || '';
+    $('f-extra').value = d.extra || '';
+  }
+  function saveDraft() { localStorage.setItem(KEY_DRAFT, JSON.stringify(getFormData())); }
+  function loadDraft() {
+    try { setFormData(JSON.parse(localStorage.getItem(KEY_DRAFT) || '{}')); } catch (e) {}
+  }
+  function clearDraft() { localStorage.removeItem(KEY_DRAFT); }
+
+  formCard.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 400);
+  });
+
+  // === Voice setup ===
+  function loadVoices() {
+    voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    const koVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
+    const otherVoices = voices.filter(v => !v.lang || !v.lang.toLowerCase().startsWith('ko'));
+
+    voiceSelect.innerHTML = '';
+
+    if (koVoices.length === 0) {
+      voiceWarn.classList.add('show');
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = '(기본 음성)';
+      voiceSelect.appendChild(opt);
+      // Add a few first non-Korean voices as a fallback selectable
+      otherVoices.slice(0, 5).forEach(v => {
+        const opt2 = document.createElement('option');
+        opt2.value = v.name;
+        opt2.textContent = v.name + ' (' + v.lang + ')';
+        voiceSelect.appendChild(opt2);
+      });
+      selectedVoice = null;
+    } else {
+      voiceWarn.classList.remove('show');
+      koVoices.forEach((v) => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = v.name + ' (한국어)';
+        voiceSelect.appendChild(opt);
+      });
+      otherVoices.slice(0, 3).forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = v.name + ' (' + v.lang + ')';
+        voiceSelect.appendChild(opt);
+      });
+      selectedVoice = koVoices[0];
+    }
+  }
+
+  if (window.speechSynthesis) {
+    loadVoices();
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+  } else {
+    voiceWarn.textContent = '⚠ 이 브라우저는 음성 합성을 지원하지 않아.';
+    voiceWarn.classList.add('show');
+    speakBtn.disabled = true;
+  }
+
+  voiceSelect.addEventListener('change', () => {
+    const v = voices.find(x => x.name === voiceSelect.value);
+    selectedVoice = v || null;
+  });
+
+  rateSlider.addEventListener('input', () => {
+    rateVal.textContent = parseFloat(rateSlider.value).toFixed(2) + '×';
+  });
+
+  // === Build prompt ===
+  function buildPrompt(d) {
+    const lines = [];
+    lines.push('너는 한국 교회 중등부 수련회의 따뜻하고 친근한 안내자야. 한 학생을 수련회로 초대하는 음성용 짧은 초대장 메시지를 작성해야 해.');
+    lines.push('');
+    lines.push('학생 정보:');
+    lines.push('- 이름: ' + (d.name || '(미입력)'));
+    lines.push('- 나이: ' + (d.age ? d.age + '세' : '(미입력)'));
+    lines.push('- 소속 교회: ' + (d.church || '(미입력)'));
+    if (d.worry) lines.push('- 요즘 마음의 고민: ' + d.worry);
+    if (d.extra) lines.push('- 본인이 하고 싶은 말: ' + d.extra);
+    lines.push('');
+    lines.push('작성 지침:');
+    lines.push('1) 반드시 학생의 이름을 첫머리에 또렷하게 부르며 시작해. (예: "지민아," / "지민이에게,")');
+    lines.push('2) 학생의 고민이나 본인의 말이 있다면 그 마음을 살짝 헤아려주는 한두 문장 포함. 단정하거나 평가하지 말고 따뜻하게.');
+    lines.push('3) 수련회는 단순한 행사가 아니라 하나님 앞에서 자기 마음을 만나고 새로워지는 시간이라는 의미를 자연스럽게 담아.');
+    lines.push('4) 친구처럼 반말로, 그러나 정중하고 진심이 느껴지는 톤으로. 청소년이 들었을 때 부담스럽지 않게.');
+    lines.push('5) 음성으로 들을 거니까 너무 길면 안 돼. 220자 이내, 4~6문장 정도.');
+    lines.push('6) 성경구절을 직접 인용하지는 말고, 신앙적 분위기만 자연스럽게 녹여.');
+    lines.push('7) 마지막에는 따뜻한 마무리 (예: "거기서 만나자." / "꼭 와줘. 기다릴게.").');
+    lines.push('8) 별표(*), 따옴표 외 특수기호, 마크다운 표시는 절대 쓰지 마. 음성으로 읽힐 거야.');
+    lines.push('');
+    lines.push('출력 형식: 반드시 아래 JSON만 출력. 그 외 설명·머리말·코드블록 마커 일절 금지.');
+    lines.push('{"message": "초대장 본문 (학생의 이름이 첫머리에 들어간 따뜻한 메시지)"}');
+    return lines.join('\n');
+  }
+
+  // === Call Claude (env-aware) ===
+  async function callClaude(prompt, apiKey) {
+    // Guard against non-ASCII chars in key (would cause "non ISO-8859-1" header error)
+    if (apiKey && !isHeaderSafe(apiKey)) {
+      throw new Error('API 키에 사용할 수 없는 문자(한글 등)가 섞여 있어요. 키 칸을 비우거나 다시 입력해 주세요.');
+    }
+
+    let timeoutHandle;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutHandle = setTimeout(() => reject(new Error('__TIMEOUT__')), 60000);
+    });
+
+    let headers, body;
+    if (apiKey) {
+      headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      };
+      body = JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      });
+    } else {
+      headers = { 'Content-Type': 'application/json' };
+      body = JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      });
+    }
+
+    const fetchPromise = fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: headers,
+      body: body
+    });
+
+    try {
+      const res = await Promise.race([fetchPromise, timeoutPromise]);
+      clearTimeout(timeoutHandle);
+      if (res.status === 401 || res.status === 403) {
+        throw new Error('API 키가 유효하지 않거나 권한이 없습니다. 키를 확인해 주세요.');
+      }
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error('서버 오류 (' + res.status + '). ' + errText.slice(0,120));
+      }
+      const data = await res.json();
+      const text = (data.content || []).map(b => b.text || '').join('').trim();
+      if (!text) throw new Error('AI 응답이 비어있습니다.');
+      return text;
+    } catch (err) {
+      clearTimeout(timeoutHandle);
+      if (err && err.message === '__TIMEOUT__') {
+        throw new Error('요청 시간이 초과되었습니다 (60초). 다시 시도해 주세요.');
+      }
+      throw err;
+    }
+  }
+
+  function parseResult(text) {
+    let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    const s = cleaned.indexOf('{');
+    const e = cleaned.lastIndexOf('}');
+    if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);
+    try {
+      const obj = JSON.parse(cleaned);
+      return { message: (obj.message || '').trim() };
+    } catch (err) {
+      return { message: cleaned };
+    }
+  }
+
+  // === Generate flow ===
+  generateBtn.addEventListener('click', async () => {
+    const apiKey = apiKeyEl.value.trim();
+    const data = getFormData();
+
+    if (!data.name) {
+      statusEl.textContent = '이름은 꼭 입력해 줘.';
+      statusEl.className = 'status error';
+      $('f-name').focus();
+      return;
+    }
+    if (!data.age) {
+      statusEl.textContent = '나이도 입력해 줘.';
+      statusEl.className = 'status error';
+      $('f-age').focus();
+      return;
+    }
+    if (!data.church) {
+      statusEl.textContent = '소속 교회도 입력해 줘.';
+      statusEl.className = 'status error';
+      $('f-church').focus();
+      return;
+    }
+
+    generateBtn.disabled = true;
+    generateBtn.textContent = '준비 중...';
+    statusEl.innerHTML = '<span class="spinner"></span>너만을 위한 초대장을 작성하고 있어...';
+    statusEl.className = 'status';
+
+    try {
+      const prompt = buildPrompt(data);
+      const raw = await callClaude(prompt, apiKey);
+      const parsed = parseResult(raw);
+
+      const card = {
+        createdAt: Date.now(),
+        input: data,
+        message: parsed.message
+      };
+      currentInvite = card;
+      localStorage.setItem(KEY_CARD, JSON.stringify(card));
+
+      showInvitation(card);
+      clearDraft();
+      statusEl.textContent = '';
+    } catch (err) {
+      statusEl.textContent = '⚠ ' + err.message;
+      statusEl.className = 'status error';
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = '초대장 받기';
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('입력한 내용을 모두 지울까요?')) return;
+    setFormData({});
+    clearDraft();
+    statusEl.textContent = '';
+  });
+
+  newInviteBtn.addEventListener('click', () => {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    isSpeaking = false;
+    speakBtn.classList.remove('playing');
+    speakBtnText.textContent = '내 이름 들어보기';
+    inviteCard.classList.remove('show');
+    setFormData({});
+    clearDraft();
+    localStorage.removeItem(KEY_CARD);
+    statusEl.textContent = '';
+    currentInvite = null;
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  function showInvitation(card) {
+    inviteNameEl.textContent = card.input.name + '에게';
+    const meta = [card.input.age ? card.input.age + '세' : '', card.input.church].filter(Boolean).join(' · ');
+    inviteMetaEl.textContent = meta;
+    inviteMessageEl.value = card.message;
+    inviteCard.classList.add('show');
+    setTimeout(() => inviteCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  // Live edit autosave for invitation message
+  inviteMessageEl.addEventListener('input', () => {
+    if (!currentInvite) return;
+    clearTimeout(inviteMessageEl._t);
+    inviteMessageEl._t = setTimeout(() => {
+      currentInvite.message = inviteMessageEl.value;
+      localStorage.setItem(KEY_CARD, JSON.stringify(currentInvite));
+      savedMark.classList.add('show');
+      clearTimeout(savedMark._t);
+      savedMark._t = setTimeout(() => savedMark.classList.remove('show'), 1500);
+    }, 500);
+  });
+
+  // === Voice / TTS ===
+  function speak() {
+    if (!window.speechSynthesis) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      isSpeaking = false;
+      speakBtn.classList.remove('playing');
+      speakBtnText.textContent = '다시 들어보기';
+      return;
+    }
+
+    const text = inviteMessageEl.value.trim();
+    if (!text) return;
+
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ko-KR';
+    utter.rate = parseFloat(rateSlider.value) || 0.95;
+    utter.pitch = 1.05;
+    utter.volume = 1;
+
+    if (selectedVoice) utter.voice = selectedVoice;
+
+    utter.onstart = () => {
+      isSpeaking = true;
+      speakBtn.classList.add('playing');
+      speakBtnText.textContent = '재생 중... (다시 누르면 멈춤)';
+    };
+    utter.onend = () => {
+      isSpeaking = false;
+      speakBtn.classList.remove('playing');
+      speakBtnText.textContent = '다시 들어보기';
+    };
+    utter.onerror = () => {
+      isSpeaking = false;
+      speakBtn.classList.remove('playing');
+      speakBtnText.textContent = '내 이름 들어보기';
+    };
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  speakBtn.addEventListener('click', speak);
+
+  // Stop speech on page hide/unload (prevent leftover audio)
+  window.addEventListener('pagehide', () => {
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+  });
+
+  // === Init ===
+  loadApiKey();
+
+  // Try to load saved card; otherwise load draft
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY_CARD) || 'null');
+    if (saved && saved.message) {
+      currentInvite = saved;
+      setFormData(saved.input || {});
+      showInvitation(saved);
+    } else {
+      loadDraft();
+    }
+  } catch (e) {
+    loadDraft();
+  }
+})();
+</script>
+</body>
+</html>

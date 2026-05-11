@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+<title>나만의 수련회 기대 리스트</title>
+<style>
+  /* ===== AK-47: 시스템 폰트, 외부 의존성 0 ===== */
+  :root {
+    --bg: #FFF4E8;
+    --text: #3D2817;
+    --muted: #8B6F5C;
+    --border: #F0DBC8;
+    --accent: #E8896C;
+    --accent-light: #FCE4D8;
+    --accent-deep: #C56B4F;
+    --button: #C56B4F;
+    --button-hover: #A55538;
+    --card-bg: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    padding: 20px 16px 60px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 90% 0%, rgba(232,137,108,0.08) 0%, transparent 45%),
+      radial-gradient(circle at 0% 100%, rgba(252,228,216,0.6) 0%, transparent 55%);
+  }
+
+  .container { max-width: 600px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 24px; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+
+  /* ===== 입력 바 ===== */
+  .input-bar { display: flex; gap: 8px; margin-bottom: 8px; }
+  .input-bar input[type="text"] {
+    flex: 1; padding: 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: inherit; font-size: 1rem;
+    background: var(--card-bg); color: var(--text);
+    -webkit-appearance: none; appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input-bar input[type="text"]:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,137,108,0.15);
+  }
+  .btn-add {
+    padding: 12px 20px;
+    background: var(--button); color: #FFFFFF;
+    border: none; border-radius: 8px;
+    font-family: inherit; font-size: 1rem; font-weight: 600;
+    cursor: pointer; flex-shrink: 0;
+    transition: background 0.12s;
+  }
+  .btn-add:hover:not(:disabled) { background: var(--button-hover); }
+  .btn-add:disabled { background: #B89E8C; cursor: not-allowed; }
+
+  .input-hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 16px; }
+
+  /* ===== 에러 박스 ===== */
+  .err {
+    background: #FEE2E2; border: 1px solid #FCA5A5;
+    color: #991B1B; padding: 14px 16px; border-radius: 8px;
+    margin-bottom: 14px; font-size: 0.95rem;
+  }
+  .err-btn {
+    margin-top: 0; padding: 9px 14px;
+    background: #991B1B; color: #FFFFFF; font-size: 0.9rem;
+    border: none; border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-weight: 600;
+  }
+
+  /* ===== 리스트 ===== */
+  .list-header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 24px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px dashed var(--border);
+  }
+  .list-title { font-size: 1rem; font-weight: 700; color: var(--accent-deep); }
+  .list-count { font-size: 0.85rem; color: var(--muted); }
+
+  .empty {
+    text-align: center; padding: 36px 16px;
+    color: var(--muted); font-size: 0.95rem;
+  }
+  .empty-icon { font-size: 2.5rem; display: block; margin-bottom: 8px; opacity: 0.6; }
+
+  /* ===== 카드 ===== */
+  .item-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(60,40,23,0.04);
+    animation: slideIn 0.3s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .item-card.error { border-left-color: #DC2626; }
+
+  .item-text-wrap {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .item-pin { font-size: 1.05rem; flex-shrink: 0; padding-top: 2px; }
+  .item-text {
+    flex: 1; border: none; padding: 0;
+    font-family: inherit; font-size: 1rem;
+    background: transparent; color: var(--text);
+    font-weight: 600;
+    resize: none; overflow: hidden;
+    line-height: 1.5;
+  }
+  .item-text:focus { outline: none; }
+
+  .item-response-wrap {
+    background: var(--accent-light);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-left: 24px;
+    margin-bottom: 10px;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .item-response-icon { font-size: 1rem; flex-shrink: 0; padding-top: 1px; }
+  .item-response {
+    flex: 1; border: none; padding: 0;
+    font-family: inherit; font-size: 0.92rem;
+    background: transparent; color: var(--accent-deep);
+    resize: none; overflow: hidden;
+    line-height: 1.6; min-height: 1.5em;
+  }
+  .item-response:focus { outline: none; }
+
+  .item-pending {
+    margin-left: 24px;
+    padding: 10px 12px;
+    color: var(--muted); font-size: 0.92rem; font-style: italic;
+    margin-bottom: 8px;
+  }
+  .item-error-msg {
+    margin-left: 24px;
+    padding: 10px 12px;
+    background: #FEF2F2;
+    border-radius: 6px;
+    color: #991B1B; font-size: 0.88rem;
+    margin-bottom: 10px;
+  }
+
+  .item-actions {
+    display: flex; justify-content: flex-end; gap: 6px;
+    margin-left: 24px;
+  }
+  .item-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: inherit; font-size: 0.82rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .item-btn:hover {
+    background: var(--accent-light); color: var(--accent-deep);
+    border-color: var(--accent);
+  }
+  .item-btn.danger:hover {
+    background: #FEE2E2; color: #991B1B; border-color: #FCA5A5;
+  }
+
+  .hidden { display: none !important; }
+
+  /* ===== 인쇄 ===== */
+  @media print {
+    body { background: #FFFFFF; padding: 0; }
+    .no-print { display: none !important; }
+    header { display: none; }
+    .item-card {
+      box-shadow: none; border: 1px solid #999;
+      page-break-inside: avoid;
+    }
+    .item-actions { display: none; }
+  }
+
+  /* ===== 모바일 ===== */
+  @media (max-width: 480px) {
+    body { padding: 16px 14px 50px; }
+    h1 { font-size: 1.3rem; }
+    .input-bar input[type="text"], .item-text, .item-response { font-size: 16px; }
+    .input-bar { flex-direction: column; }
+    .btn-add { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="no-print">
+    <h1>📝 나만의 수련회 기대 리스트</h1>
+    <div class="sub">궁금한 거·기대되는 거를 한 줄씩 모아봐요</div>
+  </header>
+
+  <div class="input-bar no-print">
+    <input type="text" id="newItemInput" placeholder="예: 잠자리가 어떻게 될지 궁금해" maxlength="100" autocomplete="off">
+    <button class="btn-add" id="addBtn" type="button">+ 추가</button>
+  </div>
+  <div class="input-hint no-print">엔터 키로도 추가 가능 · 최대 50개</div>
+
+  <div id="errBox" class="hidden no-print"></div>
+
+  <div class="list-header no-print">
+    <div class="list-title">📋 내 리스트</div>
+    <div class="list-count" id="listCount"></div>
+  </div>
+
+  <div id="listArea"></div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'wishlist_items';
+  var API_KEY_STORAGE = 'retreat_api_key';
+  var ITEM_LIMIT = 50;
+
+  var $ = function(id) { return document.getElementById(id); };
+  var inputEl = $('newItemInput'),
+      addBtn = $('addBtn'),
+      errBox = $('errBox'),
+      listArea = $('listArea'),
+      listCount = $('listCount');
+
+  var items = [];
+  var errMode = null;
+  var briefTimer = null;
+
+  // ===== STORAGE =====
+  function loadItems() {
+    try {
+      items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch(e) { items = []; }
+    // 이전 세션에서 끊긴 pending → error로 변환
+    var changed = false;
+    items.forEach(function(item) {
+      if (item.status === 'pending') {
+        item.status = 'error';
+        item.error = '이전 세션에서 중단됨';
+        changed = true;
+      }
+    });
+    if (changed) saveItems();
+    renderList();
+  }
+  function saveItems() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+    catch(e) { console.error('Save error:', e); }
+  }
+
+  // ===== HTML ESCAPE =====
+  function escapeHtml(str) {
+    if (str == null) return '';
+    var div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+  }
+
+  // ===== RENDER =====
+  function renderList() {
+    listCount.textContent = items.length + ' / ' + ITEM_LIMIT;
+
+    if (!items.length) {
+      listArea.innerHTML =
+        '<div class="empty">' +
+          '<span class="empty-icon">📝</span>' +
+          '아직 항목이 없어요.<br>' +
+          '기대되는 거나 궁금한 걸 한 줄 적어보세요!' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    items.forEach(function(item) { html += buildCardHtml(item); });
+    listArea.innerHTML = html;
+
+    items.forEach(attachCardEvents);
+  }
+
+  function buildCardHtml(item) {
+    var safeText = escapeHtml(item.text || '');
+    var safeResponse = escapeHtml(item.response || '');
+    var safeError = escapeHtml(item.error || '답변 받기 실패');
+    var classes = 'item-card' + (item.status === 'error' ? ' error' : '');
+
+    var middle = '';
+    var actions = '';
+    var deleteBtn = '<button class="item-btn danger" data-action="delete" data-id="' + item.id + '">🗑 삭제</button>';
+
+    if (item.status === 'pending') {
+      middle = '<div class="item-pending">🤔 답변 준비 중...</div>';
+      actions = deleteBtn;
+    } else if (item.status === 'error') {
+      middle = '<div class="item-error-msg">⚠️ ' + safeError + '</div>';
+      actions =
+        '<button class="item-btn" data-action="retry" data-id="' + item.id + '">🔄 다시 시도</button>' +
+        deleteBtn;
+    } else { // 'done'
+      middle =
+        '<div class="item-response-wrap">' +
+          '<span class="item-response-icon">💭</span>' +
+          '<textarea class="item-response" data-id="' + item.id + '" rows="2">' + safeResponse + '</textarea>' +
+        '</div>';
+      actions = deleteBtn;
+    }
+
+    return (
+      '<div class="' + classes + '" data-id="' + item.id + '">' +
+        '<div class="item-text-wrap">' +
+          '<span class="item-pin">📌</span>' +
+          '<textarea class="item-text" data-id="' + item.id + '" rows="1">' + safeText + '</textarea>' +
+        '</div>' +
+        middle +
+        '<div class="item-actions">' + actions + '</div>' +
+      '</div>'
+    );
+  }
+
+  function attachCardEvents(item) {
+    var card = listArea.querySelector('.item-card[data-id="' + item.id + '"]');
+    if (!card) return;
+
+    // 텍스트 영역 자동 크기 조정 + 편집 저장
+    card.querySelectorAll('textarea').forEach(function(ta) {
+      autoSize(ta);
+      ta.addEventListener('input', function() {
+        autoSize(ta);
+        if (ta.classList.contains('item-text')) {
+          item.text = ta.value;
+          saveItems();
+        } else if (ta.classList.contains('item-response')) {
+          item.response = ta.value;
+          saveItems();
+        }
+      });
+    });
+
+    // 액션 버튼
+    card.querySelectorAll('.item-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var action = btn.getAttribute('data-action');
+        var id = btn.getAttribute('data-id');
+        if (action === 'delete') deleteItem(id);
+        else if (action === 'retry') retryItem(id);
+      });
+    });
+  }
+
+  function autoSize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = (ta.scrollHeight + 2) + 'px';
+  }
+
+  // ===== ACTIONS =====
+  function addItem() {
+    var text = inputEl.value.trim();
+    if (!text) {
+      showBriefError('한 줄 적어주세요.');
+      return;
+    }
+    if (items.length >= ITEM_LIMIT) {
+      showBriefError('최대 ' + ITEM_LIMIT + '개까지만 추가할 수 있어요.');
+      return;
+    }
+
+    var apiKey = localStorage.getItem(API_KEY_STORAGE) || '';
+
+    var item = {
+      id: 'i_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      text: text,
+      response: '',
+      status: 'pending',
+      error: ''
+    };
+    items.unshift(item); // 최신이 위
+    saveItems();
+    renderList();
+    inputEl.value = '';
+    inputEl.focus();
+
+    if (!apiKey) {
+      // 키 없음 → 항목은 살리되 error 상태로
+      item.status = 'error';
+      item.error = 'API 키 미등록';
+      saveItems();
+      renderList();
+      showKeyPrompt();
+      return;
+    }
+
+    fetchResponseFor(item.id, apiKey);
+  }
+
+  function deleteItem(itemId) {
+    items = items.filter(function(i) { return i.id !== itemId; });
+    saveItems();
+    renderList();
+  }
+
+  function retryItem(itemId) {
+    var item = items.find(function(i) { return i.id === itemId; });
+    if (!item) return;
+
+    var apiKey = localStorage.getItem(API_KEY_STORAGE) || '';
+    if (!apiKey) {
+      showKeyPrompt();
+      return;
+    }
+
+    item.status = 'pending';
+    item.error = '';
+    saveItems();
+    renderList();
+    fetchResponseFor(itemId, apiKey);
+  }
+
+  async function fetchResponseFor(itemId, apiKey) {
+    try {
+      var item = items.find(function(i) { return i.id === itemId; });
+      if (!item) return;
+      var text = item.text;
+
+      var response = await callClaude(text, apiKey);
+
+      // 다시 찾기 (그동안 삭제됐을 수 있음)
+      item = items.find(function(i) { return i.id === itemId; });
+      if (!item) return;
+      item.response = response;
+      item.status = 'done';
+      item.error = '';
+      saveItems();
+      renderList();
+    } catch (e) {
+      var item = items.find(function(i) { return i.id === itemId; });
+      if (!item) return;
+
+      var msg = (e && e.message) ? e.message : String(e);
+      var isAuthErr = (e && (e.status === 401 || e.status === 403));
+
+      item.status = 'error';
+      item.error = msg;
+      saveItems();
+      renderList();
+
+      if (isAuthErr) {
+        localStorage.removeItem(API_KEY_STORAGE);
+        showKeyPrompt(true);
+      }
+    }
+  }
+
+  async function callClaude(text, apiKey) {
+    var prompt =
+      '당신은 한국 교회 중학생 여름수련회 프로그램을 돕는 AI입니다.\n' +
+      '중학생이 수련회를 앞두고 자기 "기대 리스트"에 한 줄을 적었습니다.\n' +
+      '이건 기대되는 일일 수도, 궁금한 점일 수도, 살짝 걱정일 수도 있어요.\n\n' +
+      '학생이 적은 한 줄: "' + text + '"\n\n' +
+      '따뜻하게 2~3문장으로 답해주세요.\n' +
+      '- 일반적인 상식·경험 기반\n' +
+      '- 너무 무겁지 않게, 친근한 톤\n' +
+      '- 신앙적 색채는 자연스럽게 (강요 X, 없어도 됨)\n' +
+      '- 구체적인 일정·준비물 정보는 모르므로 일반론으로\n\n' +
+      '답변만 적어주세요. 다른 인사말이나 설명 없이.';
+
+    var controller = new AbortController();
+    var timer = setTimeout(function() { controller.abort(); }, 30000);
+
+    var res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          // 모델 변경 시: claude-sonnet-4-5 / claude-sonnet-4-6 등으로 바꾸면 됨
+          max_tokens: 500,
+          messages: [{ role: 'user', content: prompt }]
+        }),
+        signal: controller.signal
+      });
+    } catch(e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') throw new Error('시간 초과 (30초)');
+      console.error('[wishlist] fetch 실패:', e);
+      var detail = e.message || e.name || String(e);
+      var hint = '';
+      if (e instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(detail)) {
+        hint = ' (CORS·브라우저 차단·오프라인 가능성)';
+      }
+      throw new Error('네트워크 오류: ' + detail + hint);
+    }
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      var statusErr = new Error('서버 응답 ' + res.status);
+      statusErr.status = res.status;
+      throw statusErr;
+    }
+
+    var data = await res.json();
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      throw new Error('응답 형식 오류');
+    }
+    return data.content[0].text.trim();
+  }
+
+  // ===== KEY 프롬프트 =====
+  function showKeyPrompt(isAuthFailure) {
+    errMode = 'key';
+    if (briefTimer) { clearTimeout(briefTimer); briefTimer = null; }
+
+    var headline = isAuthFailure
+      ? '<strong>API 키가 거부됐어요.</strong><br>새 키를 입력해주세요.'
+      : '<strong>AI 키 등록이 필요해요.</strong><br>키를 등록하면 답변을 받을 수 있어요.';
+
+    errBox.className = 'err';
+    errBox.innerHTML = headline +
+      '<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">' +
+        '<input type="password" id="inlineKey" placeholder="sk-ant-..." style="flex:1;min-width:180px;padding:9px 12px;border:1.5px solid #FCA5A5;border-radius:6px;font-family:inherit;font-size:0.95rem;background:#FFFFFF;color:#3D2817" autocomplete="off">' +
+        '<button class="err-btn" id="saveKeyBtn">저장하고 시도</button>' +
+      '</div>' +
+      '<div style="margin-top:8px;font-size:0.82rem;color:#8B6F5C">키는 이 브라우저에만 저장돼요. console.anthropic.com에서 발급 가능.</div>';
+    errBox.classList.remove('hidden');
+
+    var saveBtn = document.getElementById('saveKeyBtn');
+    var inp = document.getElementById('inlineKey');
+    saveBtn.addEventListener('click', function() {
+      var v = inp.value.trim();
+      if (!v) { inp.focus(); return; }
+      localStorage.setItem(API_KEY_STORAGE, v);
+      hideError();
+      // error 상태인 모든 항목 자동 재시도
+      items.forEach(function(it) {
+        if (it.status === 'error') retryItem(it.id);
+      });
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') saveBtn.click();
+    });
+    inp.focus();
+  }
+
+  function showBriefError(msg) {
+    errMode = 'brief';
+    if (briefTimer) clearTimeout(briefTimer);
+    errBox.className = 'err';
+    errBox.textContent = msg;
+    errBox.classList.remove('hidden');
+    briefTimer = setTimeout(function() {
+      if (errMode === 'brief') hideError();
+    }, 3000);
+  }
+
+  function hideError() {
+    errBox.classList.add('hidden');
+    errBox.innerHTML = '';
+    errMode = null;
+  }
+
+  // ===== 이벤트 =====
+  addBtn.addEventListener('click', addItem);
+  inputEl.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addItem();
+    }
+  });
+
+  // ===== INIT =====
+  loadItems();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리 아이 마음 열기 롤플레잉</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-1: #f8f3ea;
+    --bg-2: #ede2cc;
+    --card: #fffaf0;
+    --card-soft: #faf3e3;
+    --border: #e8d9bf;
+    --border-soft: #f0e4ce;
+    --text: #3d2f1f;
+    --text-soft: #6b5840;
+    --text-mute: #94815f;
+    --accent: #a07a3d;
+    --accent-hover: #87642e;
+    --accent-soft: #ddc59d;
+    --error: #b04a3a;
+    --success: #5d7a3a;
+    --shadow: 0 4px 16px rgba(120, 90, 50, 0.08);
+    --shadow-sm: 0 2px 6px rgba(120, 90, 50, 0.06);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    min-height: 100vh;
+    color: var(--text);
+    line-height: 1.65;
+    padding: 24px 16px 60px;
+  }
+
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 28px; padding: 0 8px; }
+  .header .badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    background: rgba(160, 122, 61, 0.08);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .header p { font-size: 14px; color: var(--text-soft); }
+
+  .keybar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+  }
+  .keybar label { font-size: 13px; font-weight: 600; color: var(--text-soft); flex-shrink: 0; }
+  .keybar input {
+    flex: 1; min-width: 200px;
+    border: 1px solid var(--border);
+    background: var(--card-soft);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: monospace;
+    letter-spacing: 0.5px;
+  }
+  .keybar input:focus { outline: none; border-color: var(--accent); }
+  .keybar .key-status { font-size: 12px; color: var(--text-mute); }
+  .keybar .key-status.ok { color: var(--success); }
+  .keybar .key-status.bad { color: var(--error); }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 12px 18px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-mute);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    font-family: inherit;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--text-soft); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .count {
+    display: inline-block;
+    font-size: 11px;
+    background: var(--accent-soft);
+    color: var(--text);
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-left: 4px;
+    font-weight: 700;
+  }
+  .tab.active .count { background: var(--accent); color: white; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--text-mute);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .field input[type="text"],
+  .field textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card-soft);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+  .field input[type="text"]:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--card);
+  }
+  .field textarea { resize: vertical; min-height: 70px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; display: inline-block; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span {
+    display: block;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-soft);
+    background: var(--card-soft);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+  }
+  .chip:hover span { border-color: var(--accent-soft); }
+  .chip input:checked + span {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: white; flex: 1; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled { background: var(--text-mute); cursor: not-allowed; }
+  .btn-secondary { background: transparent; color: var(--text-soft); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--card-soft); border-color: var(--accent-soft); }
+  .btn-danger { background: transparent; color: var(--error); border: 1px solid var(--border); }
+  .btn-danger:hover { background: rgba(176, 74, 58, 0.06); border-color: var(--error); }
+
+  .status {
+    margin-top: 14px;
+    font-size: 13px;
+    text-align: center;
+    color: var(--text-soft);
+    min-height: 20px;
+  }
+  .status.error { color: var(--error); }
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--accent-soft);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result { display: none; }
+  .result.show { display: block; }
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .result-header h2 {
+    font-size: 18px;
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  .result-meta { font-size: 12px; color: var(--text-mute); }
+  .result-section { margin-bottom: 18px; }
+  .result-section h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .result-section textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--card-soft);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.75;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 160px;
+  }
+  .result-section textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--card);
+  }
+  .saved-mark {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--success);
+    margin-left: 6px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .saved-mark.show { opacity: 1; }
+
+  .empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-mute);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .student-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .student-info { flex: 1; min-width: 0; }
+  .student-info .name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .student-info .meta { font-size: 12px; color: var(--text-mute); }
+  .student-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .student-actions .btn { padding: 7px 12px; font-size: 12px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 40px; }
+    .header h1 { font-size: 22px; }
+    .card { padding: 18px; }
+    .actions { flex-direction: column; }
+    .btn-primary { width: 100%; }
+    .student-item { flex-direction: column; align-items: stretch; }
+    .student-actions { justify-content: flex-end; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="badge">교사 · 지도자용</div>
+    <h1>우리 아이 마음 열기 롤플레잉</h1>
+    <p>학생의 성향을 살피고, 신앙 안에서 다가가는 길을 함께 찾습니다</p>
+  </div>
+
+  <div class="keybar">
+    <label>API 키</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+    <span class="key-status" id="keyStatus">미입력</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="new">새 분석</button>
+    <button class="tab" data-tab="saved">저장된 학생 <span class="count" id="savedCount">0</span></button>
+  </div>
+
+  <div class="panel active" id="panel-new">
+
+    <div class="card" id="formCard">
+      <h2>학생 정보 입력</h2>
+
+      <div class="field">
+        <label>별명/이니셜 <span class="hint">(개인정보 보호용)</span></label>
+        <input type="text" id="f-nick" placeholder="예: J군, 미소, 강이">
+      </div>
+
+      <div class="field">
+        <label>학년</label>
+        <div class="chips">
+          <label class="chip"><input type="radio" name="grade" value="중1"><span>중1</span></label>
+          <label class="chip"><input type="radio" name="grade" value="중2"><span>중2</span></label>
+          <label class="chip"><input type="radio" name="grade" value="중3"><span>중3</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>관찰된 행동/태도</label>
+        <textarea id="f-behavior" placeholder="예: 평소 말이 거의 없고 눈을 잘 마주치지 않음. 단체 활동 시 뒤로 빠짐."></textarea>
+      </div>
+
+      <div class="field">
+        <label>알려진 고민 <span class="hint">(여러 개 선택 가능)</span></label>
+        <div class="chips" id="concerns">
+          <label class="chip"><input type="checkbox" value="신앙"><span>신앙</span></label>
+          <label class="chip"><input type="checkbox" value="가정"><span>가정</span></label>
+          <label class="chip"><input type="checkbox" value="친구"><span>친구</span></label>
+          <label class="chip"><input type="checkbox" value="학업"><span>학업</span></label>
+          <label class="chip"><input type="checkbox" value="진로"><span>진로</span></label>
+          <label class="chip"><input type="checkbox" value="정체성"><span>정체성</span></label>
+          <label class="chip"><input type="checkbox" value="이성"><span>이성</span></label>
+          <label class="chip"><input type="checkbox" value="기타"><span>기타</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>신앙 상태</label>
+        <textarea id="f-faith" placeholder="예: 모태신앙, 매주 출석. 기도 거의 안 함. 최근 예배 중 무관심해 보임." style="min-height:60px"></textarea>
+      </div>
+
+      <div class="field">
+        <label>자유 서술 <span class="hint">(교사가 알고 있는 추가 맥락)</span></label>
+        <textarea id="f-extra" placeholder="예: 부모님이 작년에 이혼. 형이 같은 교회 청년부에 있음. 작년 수련회 때 한 번 운 적 있음."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="analyzeBtn">분석 시작</button>
+        <button class="btn btn-secondary" id="resetBtn">초기화</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="card result" id="resultCard">
+      <div class="result-header">
+        <h2 id="resultName">분석 결과</h2>
+        <span class="result-meta" id="resultMeta"></span>
+      </div>
+
+      <div class="result-section">
+        <h3>추천 상담 접근법 <span class="saved-mark" id="savedMark1">✓ 저장됨</span></h3>
+        <textarea id="r-approach" data-key="approach"></textarea>
+      </div>
+
+      <div class="result-section">
+        <h3>적용 성경구절 / 말씀 <span class="saved-mark" id="savedMark2">✓ 저장됨</span></h3>
+        <textarea id="r-scripture" data-key="scripture"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-secondary" id="newOneBtn">다른 학생 분석하기</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel" id="panel-saved">
+    <div id="savedList"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  const KEY_API = 'retreat_api_key';
+  const KEY_DRAFT = 'roleplay_draft';
+  const KEY_STUDENTS = 'roleplay_students';
+
+  const $ = (id) => document.getElementById(id);
+  const apiKeyEl = $('apiKey');
+  const keyStatusEl = $('keyStatus');
+  const statusEl = $('status');
+  const analyzeBtn = $('analyzeBtn');
+  const resetBtn = $('resetBtn');
+  const newOneBtn = $('newOneBtn');
+  const formCard = $('formCard');
+  const resultCard = $('resultCard');
+  const savedListEl = $('savedList');
+  const savedCountEl = $('savedCount');
+
+  let currentStudentId = null;
+  let saveTimer = null;
+
+  function uid() {
+    return 's_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  }
+
+  function readStudents() {
+    try { return JSON.parse(localStorage.getItem(KEY_STUDENTS) || '[]'); }
+    catch (e) { return []; }
+  }
+  function writeStudents(arr) {
+    localStorage.setItem(KEY_STUDENTS, JSON.stringify(arr));
+    renderSavedCount();
+  }
+  function renderSavedCount() {
+    savedCountEl.textContent = readStudents().length;
+  }
+
+  function loadApiKey() {
+    apiKeyEl.value = localStorage.getItem(KEY_API) || '';
+    updateKeyStatus();
+  }
+  function updateKeyStatus() {
+    const k = apiKeyEl.value.trim();
+    if (!k) { keyStatusEl.textContent = '미입력'; keyStatusEl.className = 'key-status'; }
+    else if (k.startsWith('sk-ant-')) { keyStatusEl.textContent = '입력됨'; keyStatusEl.className = 'key-status ok'; }
+    else { keyStatusEl.textContent = '형식 확인'; keyStatusEl.className = 'key-status bad'; }
+  }
+  apiKeyEl.addEventListener('input', () => {
+    localStorage.setItem(KEY_API, apiKeyEl.value.trim());
+    updateKeyStatus();
+  });
+
+  function getFormData() {
+    const concerns = Array.from(document.querySelectorAll('#concerns input:checked')).map(i => i.value);
+    const grade = (document.querySelector('input[name="grade"]:checked') || {}).value || '';
+    return {
+      nick: $('f-nick').value.trim(),
+      grade: grade,
+      behavior: $('f-behavior').value.trim(),
+      concerns: concerns,
+      faith: $('f-faith').value.trim(),
+      extra: $('f-extra').value.trim()
+    };
+  }
+  function setFormData(d) {
+    d = d || {};
+    $('f-nick').value = d.nick || '';
+    $('f-behavior').value = d.behavior || '';
+    $('f-faith').value = d.faith || '';
+    $('f-extra').value = d.extra || '';
+    document.querySelectorAll('input[name="grade"]').forEach(i => { i.checked = (i.value === d.grade); });
+    document.querySelectorAll('#concerns input').forEach(i => { i.checked = (d.concerns || []).includes(i.value); });
+  }
+  function saveDraft() { localStorage.setItem(KEY_DRAFT, JSON.stringify(getFormData())); }
+  function loadDraft() {
+    try { setFormData(JSON.parse(localStorage.getItem(KEY_DRAFT) || '{}')); } catch (e) {}
+  }
+  function clearDraft() { localStorage.removeItem(KEY_DRAFT); }
+
+  formCard.addEventListener('input', () => {
+    if (currentStudentId) return; // editing existing record uses different save path
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 400);
+  });
+  formCard.addEventListener('change', () => {
+    if (currentStudentId) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 400);
+  });
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      const target = t.dataset.tab;
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      $('panel-' + target).classList.add('active');
+      if (target === 'saved') renderSavedList();
+    });
+  });
+
+  function buildPrompt(d) {
+    const lines = [];
+    lines.push('아래는 교회 중등부 수련회를 앞두고 한 학생에 대해 교사가 정리한 정보입니다.');
+    lines.push('');
+    lines.push('별명/이니셜: ' + (d.nick || '(미입력)'));
+    lines.push('학년: ' + (d.grade || '(미입력)'));
+    lines.push('관찰된 행동/태도: ' + (d.behavior || '(미입력)'));
+    lines.push('알려진 고민 영역: ' + ((d.concerns||[]).join(', ') || '(미입력)'));
+    lines.push('신앙 상태: ' + (d.faith || '(미입력)'));
+    lines.push('추가 맥락: ' + (d.extra || '(없음)'));
+    lines.push('');
+    lines.push('이 학생에 대해 다음 두 항목을 한국어로 작성해 주세요. 반드시 아래 JSON 형식만 출력하고, 그 외의 설명·머리말·코드 블록 마커는 일절 포함하지 마세요.');
+    lines.push('');
+    lines.push('1) approach (추천 상담 접근법): "이런 아이는 이렇게 다가가세요" 형태의 실용적 가이드.');
+    lines.push('   다음을 포함하세요 — (a) 첫 만남에서의 자세와 분위기, (b) 마음을 여는 데 도움이 되는 질문/대화 방식 (구체적 예시 1~2개), (c) 피해야 할 말이나 태도, (d) 신앙적 차원에서 어떻게 동행할지. 사춘기/정체성/관계도 함께 고려해서 입체적으로.');
+    lines.push('');
+    lines.push('2) scripture (적용 성경구절/말씀): 이 학생에게 적용할 수 있는 성경구절 2~4개.');
+    lines.push('   각 구절은 다음 형식 — [절 위치] "구절 본문" → 적용 (이 학생에게 어떤 의미로 다가갈 수 있는지 1~2문장)');
+    lines.push('');
+    lines.push('JSON 형식: {"approach": "...", "scripture": "..."}');
+    lines.push('');
+    lines.push('주의: 신학적으로는 개혁주의/복음주의 정통의 틀 안에서, 청소년의 발달 단계와 마음을 헤아리는 따뜻한 목회적 시선으로 작성해 주세요. 단정적인 진단이나 라벨링은 피하고, 교사가 학생을 더 잘 이해하고 다가갈 수 있도록 돕는 가이드로 써 주세요. 줄바꿈은 \\n 으로 표현하세요.');
+    return lines.join('\n');
+  }
+
+  async function callClaude(prompt, apiKey) {
+    let timeoutHandle;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutHandle = setTimeout(() => reject(new Error('__TIMEOUT__')), 60000);
+    });
+
+    let headers, body;
+    if (apiKey) {
+      // 배포 환경 (GitHub Pages 등): 사용자 키로 직접 호출
+      headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      };
+      body = JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      });
+    } else {
+      // 미리보기 환경 (Claude.ai artifact): 키 없이 호출, 시스템이 자동 처리
+      headers = { 'Content-Type': 'application/json' };
+      body = JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      });
+    }
+
+    const fetchPromise = fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: headers,
+      body: body
+    });
+
+    try {
+      const res = await Promise.race([fetchPromise, timeoutPromise]);
+      clearTimeout(timeoutHandle);
+      if (res.status === 401 || res.status === 403) {
+        throw new Error('API 키가 유효하지 않거나 권한이 없습니다. 키를 확인해 주세요.');
+      }
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error('서버 오류 (' + res.status + '). ' + errText.slice(0,120));
+      }
+      const data = await res.json();
+      const text = (data.content || []).map(b => b.text || '').join('').trim();
+      if (!text) throw new Error('AI 응답이 비어있습니다.');
+      return text;
+    } catch (err) {
+      clearTimeout(timeoutHandle);
+      if (err && err.message === '__TIMEOUT__') {
+        throw new Error('요청 시간이 초과되었습니다 (60초). 다시 시도해 주세요.');
+      }
+      throw err;
+    }
+  }
+
+  function parseResult(text) {
+    let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    const s = cleaned.indexOf('{');
+    const e = cleaned.lastIndexOf('}');
+    if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);
+    try {
+      const obj = JSON.parse(cleaned);
+      return {
+        approach: (obj.approach || '').trim(),
+        scripture: (obj.scripture || '').trim()
+      };
+    } catch (err) {
+      return {
+        approach: cleaned,
+        scripture: '(자동 파싱 실패. 위 내용을 수동으로 정리해 주세요.)'
+      };
+    }
+  }
+
+  analyzeBtn.addEventListener('click', async () => {
+    const apiKey = apiKeyEl.value.trim();
+    const data = getFormData();
+    if (!data.nick && !data.behavior && !data.faith && !data.extra) {
+      statusEl.textContent = '최소한 별명과 관찰된 행동 정도는 입력해 주세요.';
+      statusEl.className = 'status error';
+      return;
+    }
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = '분석 중...';
+    statusEl.innerHTML = '<span class="spinner"></span>AI가 학생의 마음을 살피고 있어요...';
+    statusEl.className = 'status';
+
+    try {
+      const prompt = buildPrompt(data);
+      const raw = await callClaude(prompt, apiKey);
+      const parsed = parseResult(raw);
+
+      const id = uid();
+      const record = {
+        id: id,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        input: data,
+        result: parsed
+      };
+      const list = readStudents();
+      list.unshift(record);
+      writeStudents(list);
+
+      currentStudentId = id;
+      showResult(record);
+      clearDraft();
+      statusEl.textContent = '';
+    } catch (err) {
+      statusEl.textContent = '⚠ ' + err.message;
+      statusEl.className = 'status error';
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = '분석 시작';
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('입력한 내용을 모두 지울까요?')) return;
+    setFormData({});
+    clearDraft();
+    statusEl.textContent = '';
+    resultCard.classList.remove('show');
+    currentStudentId = null;
+  });
+
+  newOneBtn.addEventListener('click', () => {
+    setFormData({});
+    clearDraft();
+    statusEl.textContent = '';
+    resultCard.classList.remove('show');
+    currentStudentId = null;
+    formCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  function showResult(record) {
+    $('resultName').textContent = (record.input.nick || '학생') + ' 분석 결과';
+    const dateStr = new Date(record.createdAt).toLocaleString('ko-KR', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const tags = [record.input.grade, ...(record.input.concerns||[])].filter(Boolean).join(' · ');
+    $('resultMeta').textContent = dateStr + (tags ? ' | ' + tags : '');
+    $('r-approach').value = record.result.approach || '';
+    $('r-scripture').value = record.result.scripture || '';
+    resultCard.classList.add('show');
+    setTimeout(() => resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  // Live edit autosave for result textareas
+  document.querySelectorAll('#resultCard textarea[data-key]').forEach(ta => {
+    ta.addEventListener('input', () => {
+      if (!currentStudentId) return;
+      clearTimeout(ta._t);
+      ta._t = setTimeout(() => {
+        const list = readStudents();
+        const idx = list.findIndex(s => s.id === currentStudentId);
+        if (idx === -1) return;
+        list[idx].result[ta.dataset.key] = ta.value;
+        list[idx].updatedAt = Date.now();
+        writeStudents(list);
+        const mark = ta.dataset.key === 'approach' ? $('savedMark1') : $('savedMark2');
+        mark.classList.add('show');
+        clearTimeout(mark._t);
+        mark._t = setTimeout(() => mark.classList.remove('show'), 1500);
+      }, 500);
+    });
+  });
+
+  function renderSavedList() {
+    const list = readStudents();
+    savedCountEl.textContent = list.length;
+    if (list.length === 0) {
+      savedListEl.innerHTML = '<div class="empty">아직 저장된 학생이 없어요.<br>새 분석 탭에서 첫 학생을 분석해 보세요.</div>';
+      return;
+    }
+    savedListEl.innerHTML = '';
+    list.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'student-item';
+      const dateStr = new Date(s.updatedAt || s.createdAt).toLocaleDateString('ko-KR');
+      const tags = [s.input.grade, ...(s.input.concerns||[])].filter(Boolean).join(' · ');
+      const info = document.createElement('div');
+      info.className = 'student-info';
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = s.input.nick || '(이름 미입력)';
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = dateStr + (tags ? ' · ' + tags : '');
+      info.appendChild(name);
+      info.appendChild(meta);
+      const acts = document.createElement('div');
+      acts.className = 'student-actions';
+      const openBtn = document.createElement('button');
+      openBtn.className = 'btn btn-secondary';
+      openBtn.textContent = '열기';
+      openBtn.addEventListener('click', () => openStudent(s.id));
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-danger';
+      delBtn.textContent = '삭제';
+      delBtn.addEventListener('click', () => deleteStudent(s.id));
+      acts.appendChild(openBtn);
+      acts.appendChild(delBtn);
+      div.appendChild(info);
+      div.appendChild(acts);
+      savedListEl.appendChild(div);
+    });
+  }
+
+  function openStudent(id) {
+    const list = readStudents();
+    const rec = list.find(s => s.id === id);
+    if (!rec) return;
+    currentStudentId = id;
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelector('.tab[data-tab="new"]').classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    $('panel-new').classList.add('active');
+    setFormData(rec.input);
+    showResult(rec);
+  }
+
+  function deleteStudent(id) {
+    const list = readStudents();
+    const rec = list.find(s => s.id === id);
+    const name = rec ? (rec.input.nick || '이 학생') : '이 학생';
+    if (!confirm('"' + name + '"의 분석 기록을 삭제할까요? 되돌릴 수 없습니다.')) return;
+    const newList = list.filter(s => s.id !== id);
+    writeStudents(newList);
+    if (currentStudentId === id) {
+      currentStudentId = null;
+      resultCard.classList.remove('show');
+    }
+    renderSavedList();
+  }
+
+  loadApiKey();
+  loadDraft();
+  renderSavedCount();
+})();
+</script>
+</body>
+</html>

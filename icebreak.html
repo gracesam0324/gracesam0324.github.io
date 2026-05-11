@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+<title>우리 조 맞춤 아이스브레이킹</title>
+<style>
+  /* ===== AK-47: 시스템 폰트, 외부 의존성 0 ===== */
+  :root {
+    --bg: #EFF7FB;
+    --text: #0F2238;
+    --muted: #5C6B7E;
+    --border: #C9DCE7;
+    --accent: #3B82C5;
+    --accent-light: #DCEBF5;
+    --accent-deep: #1B4870;
+    --button: #1A4670;
+    --button-hover: #2A5A88;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+                 "Malgun Gothic", "맑은 고딕", "Noto Sans KR", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    padding: 20px 16px 60px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(180,210,232,0.4) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(180,210,232,0.3) 0%, transparent 50%);
+  }
+
+  .container { max-width: 600px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 28px; }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+  .sub { color: var(--muted); font-size: 0.9rem; }
+
+  .field { margin-bottom: 20px; }
+  label {
+    display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px;
+  }
+  .hint { font-weight: 400; color: var(--muted); font-size: 0.85rem; margin-left: 4px; }
+
+  input[type="text"], textarea {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: inherit; font-size: 1rem;
+    background: #FFFFFF; color: var(--text);
+    -webkit-appearance: none; appearance: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input[type="text"]:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,197,0.12);
+  }
+  textarea { resize: vertical; min-height: 130px; line-height: 1.7; }
+
+  .count { font-size: 0.85rem; color: var(--muted); margin-top: 6px; text-align: right; }
+
+  button {
+    font-family: inherit; cursor: pointer; border: none;
+    border-radius: 8px; font-weight: 600;
+    transition: background 0.12s;
+  }
+
+  .btn-main {
+    width: 100%; padding: 16px; font-size: 1.1rem;
+    background: var(--button); color: #FFFFFF; margin-top: 4px;
+  }
+  .btn-main:hover:not(:disabled) { background: var(--button-hover); }
+  .btn-main:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+  .btn-sec {
+    flex: 1; min-width: 90px; padding: 12px;
+    background: #FFFFFF; color: var(--text);
+    border: 1.5px solid var(--border); font-size: 0.95rem;
+  }
+  .btn-sec:hover { background: var(--accent-light); }
+
+  .status {
+    text-align: center; padding: 14px;
+    color: var(--muted); font-size: 0.95rem;
+  }
+
+  .err {
+    background: #FEE2E2; border: 1px solid #FCA5A5;
+    color: #991B1B; padding: 14px 16px; border-radius: 8px;
+    margin-top: 14px; font-size: 0.95rem;
+  }
+  .err-btn {
+    margin-top: 10px; padding: 8px 14px;
+    background: #991B1B; color: #FFFFFF; font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  .result {
+    margin-top: 36px; padding-top: 28px;
+    border-top: 2px dashed var(--border);
+  }
+  .result-team {
+    text-align: center; font-size: 1.05rem; font-weight: 600;
+    color: var(--accent-deep); margin-bottom: 18px;
+  }
+
+  /* ===== ICE WALL ===== */
+  .ice-wall-wrap {
+    position: relative;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .ice-wall-svg {
+    width: 100%; height: auto; display: block;
+    filter: drop-shadow(0 4px 12px rgba(28,71,112,0.2));
+  }
+  .shard {
+    transform-origin: center;
+    will-change: transform, opacity;
+  }
+  .crack {
+    fill: none;
+    stroke: rgba(255,255,255,0.95);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));
+    stroke-dasharray: 800;
+    stroke-dashoffset: 800;
+  }
+  .ice-wall-wrap.cracks-on .crack { animation: drawCrack 0.5s ease-out forwards; }
+  .ice-wall-wrap.cracks-on .crack-2 { animation-delay: 0.10s; }
+  .ice-wall-wrap.cracks-on .crack-3 { animation-delay: 0.20s; }
+  .ice-wall-wrap.cracks-on .crack-4 { animation-delay: 0.30s; }
+
+  .shard.broken {
+    animation: shatterFall 0.9s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+  }
+  .shard.broken.s1 { --rot: -25deg; --tx: -25px; }
+  .shard.broken.s2 { --rot: 12deg; --tx: 5px; }
+  .shard.broken.s3 { --rot: 30deg; --tx: 30px; }
+  .shard.broken.s4 { --rot: -18deg; --tx: -15px; }
+  .shard.broken.s5 { --rot: 8deg; --tx: 0px; }
+  .shard.broken.s6 { --rot: 22deg; --tx: 20px; }
+  .shard.broken.s7 { --rot: -10deg; --tx: -30px; }
+  .shard.broken.s8 { --rot: 5deg; --tx: 5px; }
+  .shard.broken.s9 { --rot: 18deg; --tx: 15px; }
+
+  /* 인터랙티브 모드: 탭/클릭으로 깰 수 있음 */
+  .ice-wall-wrap.interactive {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .ice-wall-wrap.interactive:hover .shard:not(.broken) {
+    filter: brightness(1.08);
+  }
+  .ice-wall-wrap.interactive:active .ice-wall-svg {
+    transform: scale(0.99);
+    transition: transform 0.05s;
+  }
+
+  /* 아이들 펄스: 6초 안 누르면 "두드려" 힌트 */
+  .ice-wall-wrap.idle-hint .shard:not(.broken) {
+    animation: idlePulse 1.6s ease-in-out infinite;
+  }
+  @keyframes idlePulse {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.18) drop-shadow(0 0 6px rgba(255,255,255,0.7)); }
+  }
+
+  /* 힌트 텍스트 */
+  .ice-hint {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--accent-deep);
+    font-weight: 600;
+    margin-top: 10px;
+    min-height: 1.4em;
+  }
+
+  @keyframes drawCrack { to { stroke-dashoffset: 0; } }
+  @keyframes shatterFall {
+    to {
+      transform: translate(var(--tx, 0), 240px) rotate(var(--rot, 30deg)) scale(0.6);
+      opacity: 0;
+    }
+  }
+
+  /* 모션 민감 사용자: 단순 페이드 */
+  @media (prefers-reduced-motion: reduce) {
+    .ice-wall-wrap.cracks-on .crack,
+    .shard.broken,
+    .ice-wall-wrap.idle-hint .shard {
+      animation: simpleFade 0.4s ease-out forwards !important;
+    }
+    @keyframes simpleFade { to { opacity: 0; } }
+  }
+
+  /* 결과 카드 */
+  .game-card {
+    background: #FFFFFF;
+    border-left: 4px solid var(--accent);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(15,34,56,0.06);
+    border-radius: 0 8px 8px 0;
+  }
+  .game-num {
+    font-size: 0.82rem; color: var(--muted); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .game-name-input {
+    width: 100%; border: none; padding: 0;
+    font-family: inherit; font-size: 1.1rem; font-weight: 700;
+    background: transparent; color: var(--text);
+    margin-bottom: 12px;
+  }
+  .game-name-input:focus { outline: none; }
+  .game-steps {
+    min-height: 130px; font-size: 1rem; line-height: 1.7;
+    background: #F7FAFC;
+    border: 1px solid #E5EBF1;
+  }
+  .tip {
+    background: var(--accent-light); border: 1px solid #B0D4E8;
+    padding: 10px 14px; border-radius: 6px;
+    margin-top: 10px; font-size: 0.92rem; color: var(--accent-deep);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .tip-input {
+    flex: 1; border: none; padding: 0;
+    font-family: inherit; font-size: 0.92rem;
+    background: transparent; color: var(--accent-deep);
+  }
+  .tip-input:focus { outline: none; }
+
+  .hidden { display: none !important; }
+
+  /* 결과 등장 페이드 */
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 인쇄 */
+  @media print {
+    body { background: #FFFFFF; padding: 0; }
+    .no-print { display: none !important; }
+    header, .ice-wall-wrap { display: none !important; }
+    .result { margin-top: 0; padding-top: 0; border-top: none; }
+    .result-team { font-size: 1.4rem; color: var(--text); margin-bottom: 24px; }
+    .game-card {
+      border-left: 2px solid var(--text);
+      box-shadow: none;
+      page-break-inside: avoid;
+    }
+    .game-name-input, .game-steps, .tip-input {
+      background: transparent; border: none;
+    }
+    .tip { background: transparent; border: 1px dashed #999; color: var(--text); }
+  }
+
+  /* 모바일 */
+  @media (max-width: 480px) {
+    body { padding: 16px 14px 50px; }
+    h1 { font-size: 1.3rem; }
+    input[type="text"], textarea { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="no-print">
+    <h1>🧊 우리 조 맞춤 아이스브레이킹</h1>
+    <div class="sub">조원 MBTI를 모아 얼음을 깨고 게임을 받아요</div>
+  </header>
+
+  <div class="field no-print">
+    <label for="teamName">조 이름 <span class="hint">선택</span></label>
+    <input type="text" id="teamName" placeholder="예: 베드로조" maxlength="20" autocomplete="off">
+  </div>
+
+  <div class="field no-print">
+    <label for="mbtis">조원들의 MBTI <span class="hint">한 줄에 하나씩, 3명 이상</span></label>
+    <textarea id="mbtis" placeholder="ENFP&#10;ISFJ&#10;ESTJ&#10;INFP&#10;ENTJ"></textarea>
+    <div class="count" id="mbtiCount">0명</div>
+  </div>
+
+  <button class="btn-main no-print" id="genBtn" type="button">🧊 얼음 깨고 게임 받기</button>
+
+  <div id="errBox" class="hidden"></div>
+  <div id="statusBox" class="status hidden"></div>
+
+  <div id="resultSection" class="result hidden">
+    <div class="result-team" id="resultTeam"></div>
+
+    <!-- ICE WALL — 첫 호출 동안 깨지는 연출 -->
+    <div id="iceWallWrap" class="ice-wall-wrap">
+      <svg class="ice-wall-svg" viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="iceGradA" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#A4CFEE"/>
+            <stop offset="50%" stop-color="#5C9CCD"/>
+            <stop offset="100%" stop-color="#2C5F8D"/>
+          </linearGradient>
+          <linearGradient id="iceGradB" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#B5D8F0"/>
+            <stop offset="100%" stop-color="#3D78A6"/>
+          </linearGradient>
+        </defs>
+
+        <!-- 9개 조각 -->
+        <g>
+          <polygon class="shard s1" points="0,0 200,0 180,80 0,80"      fill="url(#iceGradA)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s2" points="200,0 420,0 400,90 180,80"  fill="url(#iceGradB)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s3" points="420,0 600,0 600,100 400,90" fill="url(#iceGradA)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s4" points="0,80 180,80 220,160 0,170"  fill="url(#iceGradB)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s5" points="180,80 400,90 420,170 220,160" fill="url(#iceGradA)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s6" points="400,90 600,100 600,180 420,170" fill="url(#iceGradB)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s7" points="0,170 220,160 180,240 0,240" fill="url(#iceGradA)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s8" points="220,160 420,170 380,240 180,240" fill="url(#iceGradB)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+          <polygon class="shard s9" points="420,170 600,180 600,240 380,240" fill="url(#iceGradA)" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+        </g>
+
+        <!-- 균열선 (애니메이션 시 그려짐) -->
+        <g>
+          <path class="crack crack-1" d="M200,0 L180,80 L0,80"/>
+          <path class="crack crack-2" d="M420,0 L400,90 L600,100 M180,80 L400,90"/>
+          <path class="crack crack-3" d="M0,170 L220,160 L420,170 L600,180 M180,80 L220,160 M400,90 L420,170"/>
+          <path class="crack crack-4" d="M220,160 L180,240 M420,170 L380,240"/>
+        </g>
+      </svg>
+      <div id="iceHint" class="ice-hint"></div>
+    </div>
+
+    <!-- 결과 카드 (얼음 깨진 후 등장) -->
+    <div id="resultContent" class="hidden">
+      <div class="game-card">
+        <div class="game-num">게임 1</div>
+        <input type="text" id="game1Name" class="game-name-input" placeholder="게임 이름" autocomplete="off">
+        <textarea id="game1Steps" class="game-steps" placeholder="진행 방법"></textarea>
+        <div class="tip">
+          <span>💡</span>
+          <input type="text" id="game1Tip" class="tip-input" placeholder="한 줄 팁" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="game-num">게임 2</div>
+        <input type="text" id="game2Name" class="game-name-input" placeholder="게임 이름" autocomplete="off">
+        <textarea id="game2Steps" class="game-steps" placeholder="진행 방법"></textarea>
+        <div class="tip">
+          <span>💡</span>
+          <input type="text" id="game2Tip" class="tip-input" placeholder="한 줄 팁" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="btn-row no-print">
+        <button class="btn-sec" id="regenBtn" type="button">🔄 다시 만들기</button>
+        <button class="btn-sec" id="copyBtn" type="button">📋 복사</button>
+        <button class="btn-sec" id="printBtn" type="button">🖨️ 인쇄</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var KEY = {
+    team: 'icebreak_team',
+    mbtis: 'icebreak_mbtis',
+    g1n: 'icebreak_g1_name', g1s: 'icebreak_g1_steps', g1t: 'icebreak_g1_tip',
+    g2n: 'icebreak_g2_name', g2s: 'icebreak_g2_steps', g2t: 'icebreak_g2_tip'
+  };
+  var API_KEY_STORAGE = 'retreat_api_key';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var teamEl = $('teamName'),
+      mbtiEl = $('mbtis'),
+      g1n = $('game1Name'), g1s = $('game1Steps'), g1t = $('game1Tip'),
+      g2n = $('game2Name'), g2s = $('game2Steps'), g2t = $('game2Tip'),
+      genBtn = $('genBtn'),
+      regenBtn = $('regenBtn'),
+      copyBtn = $('copyBtn'),
+      printBtn = $('printBtn'),
+      errBox = $('errBox'),
+      statusBox = $('statusBox'),
+      resultSection = $('resultSection'),
+      resultTeam = $('resultTeam'),
+      iceWall = $('iceWallWrap'),
+      resultContent = $('resultContent'),
+      mbtiCount = $('mbtiCount');
+
+  var hasGenerated = false; // 이미 한 번 깨져서 결과를 본 적이 있는가
+
+  // ===== RESTORE =====
+  function load() {
+    teamEl.value = localStorage.getItem(KEY.team) || '';
+    mbtiEl.value = localStorage.getItem(KEY.mbtis) || '';
+    var savedG1n = localStorage.getItem(KEY.g1n);
+    if (savedG1n !== null) {
+      g1n.value = savedG1n;
+      g1s.value = localStorage.getItem(KEY.g1s) || '';
+      g1t.value = localStorage.getItem(KEY.g1t) || '';
+      g2n.value = localStorage.getItem(KEY.g2n) || '';
+      g2s.value = localStorage.getItem(KEY.g2s) || '';
+      g2t.value = localStorage.getItem(KEY.g2t) || '';
+      // 저장된 결과 → 얼음 건너뛰고 결과 바로 표시
+      hasGenerated = true;
+      iceWall.classList.add('hidden');
+      resultContent.classList.remove('hidden');
+      showResult();
+    }
+    setGenBtnText();
+    updateCount();
+  }
+
+  function updateCount() {
+    var n = mbtiEl.value.split('\n').filter(function (s) {
+      return s.trim().length > 0;
+    }).length;
+    mbtiCount.textContent = n + '명';
+  }
+
+  function showResult() {
+    resultTeam.textContent = (teamEl.value.trim() || '우리 조') + ' 추천 게임';
+    resultSection.classList.remove('hidden');
+  }
+
+  function setGenBtnText() {
+    if (genBtn.disabled) return;
+    genBtn.textContent = hasGenerated ? '🔄 다시 게임 받기' : '🧊 얼음 깨고 게임 받기';
+  }
+
+  // ===== AUTO-SAVE =====
+  function bindSave(el, key) {
+    el.addEventListener('input', function () {
+      localStorage.setItem(key, el.value);
+    });
+  }
+  bindSave(teamEl, KEY.team);
+  teamEl.addEventListener('input', function () {
+    if (!resultSection.classList.contains('hidden')) {
+      resultTeam.textContent = (teamEl.value.trim() || '우리 조') + ' 추천 게임';
+    }
+  });
+  mbtiEl.addEventListener('input', function () {
+    localStorage.setItem(KEY.mbtis, mbtiEl.value);
+    updateCount();
+  });
+  bindSave(g1n, KEY.g1n);
+  bindSave(g1s, KEY.g1s);
+  bindSave(g1t, KEY.g1t);
+  bindSave(g2n, KEY.g2n);
+  bindSave(g2s, KEY.g2s);
+  bindSave(g2t, KEY.g2t);
+
+  // ===== ERRORS =====
+  function showError(html, isKey) {
+    errBox.className = 'err';
+    var inner = html;
+    if (isKey) {
+      inner +=
+        '<div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">' +
+          '<input type="password" id="inlineKey" placeholder="sk-ant-..." ' +
+                 'style="flex:1;min-width:180px;padding:9px 12px;border:1.5px solid #FCA5A5;' +
+                 'border-radius:6px;font-family:inherit;font-size:0.95rem;background:#FFFFFF;color:#0F2238" ' +
+                 'autocomplete="off">' +
+          '<button class="err-btn" type="button" id="saveKeyBtn" style="margin:0">저장하고 시도</button>' +
+        '</div>' +
+        '<div style="margin-top:8px;font-size:0.82rem;color:#5C6B7E">' +
+          '키는 이 브라우저에만 저장돼요. console.anthropic.com에서 발급 가능.' +
+        '</div>';
+    }
+    errBox.innerHTML = inner;
+    errBox.classList.remove('hidden');
+    if (isKey) {
+      var btn = document.getElementById('saveKeyBtn');
+      var inp = document.getElementById('inlineKey');
+      if (btn && inp) {
+        btn.addEventListener('click', function () {
+          var v = inp.value.trim();
+          if (!v) { inp.focus(); return; }
+          localStorage.setItem(API_KEY_STORAGE, v);
+          hideError();
+          generate();
+        });
+        inp.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') btn.click();
+        });
+        inp.focus();
+      }
+    }
+  }
+  function hideError() {
+    errBox.classList.add('hidden');
+    errBox.innerHTML = '';
+  }
+
+  // ===== INTERACTIVE ICE BREAK =====
+  var TOTAL_SHARDS = 9;
+  var IDLE_MS = 6000;       // 6초 안 누르면 안내 또는 자동
+  var FINAL_DELAY = 900;    // 마지막 조각 떨어진 후 결과 노출까지
+  var iceState = null;      // 활성 시 객체, 아니면 null
+  var apiDoneFlag = false;  // 자동 캐스케이드 판단용
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function setHint(text) {
+    var el = document.getElementById('iceHint');
+    if (el) el.textContent = text || '';
+  }
+
+  function startIceInteraction() {
+    return new Promise(function (resolve) {
+      // 상태 초기화
+      iceState = {
+        brokenCount: 0,
+        order: shuffle([1,2,3,4,5,6,7,8,9]),
+        idleTimer: null,
+        clickHandler: null,
+        resolveFn: resolve
+      };
+
+      // 조각 상태 초기화
+      var shards = iceWall.querySelectorAll('.shard');
+      shards.forEach(function (s) { s.classList.remove('broken'); });
+
+      // 화면 표시
+      iceWall.classList.remove('hidden', 'idle-hint', 'cracks-on', 'interactive');
+      resultContent.classList.add('hidden');
+      showResult();
+
+      // 다음 프레임에서 균열선 그리기 + 인터랙티브 활성
+      requestAnimationFrame(function () {
+        iceWall.classList.add('cracks-on');
+        // 균열선 그려진 후 클릭 가능하게
+        setTimeout(function () {
+          if (!iceState) return;
+          iceWall.classList.add('interactive');
+          setHint('🧊 얼음을 톡톡 두드려 깨주세요!');
+          iceState.clickHandler = onIceTap;
+          iceWall.addEventListener('click', iceState.clickHandler);
+          armIdleTimer();
+        }, 600); // 균열선 그려지는 시간 후
+      });
+    });
+  }
+
+  function onIceTap(e) {
+    if (e) e.preventDefault();
+    if (!iceState || iceState.brokenCount >= TOTAL_SHARDS) return;
+
+    // 다음 조각 떨어뜨리기
+    var num = iceState.order[iceState.brokenCount];
+    var shard = iceWall.querySelector('.s' + num);
+    if (shard) shard.classList.add('broken');
+    iceState.brokenCount++;
+
+    // 펄스 힌트 끄기
+    iceWall.classList.remove('idle-hint');
+
+    // 진행 표시
+    var rem = TOTAL_SHARDS - iceState.brokenCount;
+    if (rem === 0) {
+      setHint('💥 다 깨졌어요!');
+    } else if (rem === 1) {
+      setHint('🔥 한 번만 더!');
+    } else if (rem <= 3) {
+      setHint('💥 ' + rem + '번 더! 거의 다 됐어요!');
+    } else {
+      setHint('🧊 ' + rem + '번 더!');
+    }
+
+    // 아이들 타이머 재설정
+    armIdleTimer();
+
+    // 모두 깨졌으면 마무리
+    if (iceState.brokenCount >= TOTAL_SHARDS) {
+      finishIceBreak();
+    }
+  }
+
+  function armIdleTimer() {
+    if (!iceState) return;
+    clearTimeout(iceState.idleTimer);
+    iceState.idleTimer = setTimeout(function () {
+      if (!iceState) return;
+      if (iceState.brokenCount >= TOTAL_SHARDS) return;
+
+      if (apiDoneFlag) {
+        // AI 결과 도착 + 사용자 멈춤 → 자동 마무리 (안전망)
+        autoCascade();
+      } else {
+        // 아직 AI 도착 안함 → 펄스 힌트
+        iceWall.classList.add('idle-hint');
+        setHint('🧊 톡! 두드려보세요');
+        armIdleTimer(); // 6초 후 다시 체크 (혹시 AI 도착했으면 캐스케이드)
+      }
+    }, IDLE_MS);
+  }
+
+  function autoCascade() {
+    if (!iceState) return;
+    clearTimeout(iceState.idleTimer);
+    iceWall.classList.remove('idle-hint');
+    setHint('💥 무너집니다!');
+
+    var ticker = setInterval(function () {
+      if (!iceState || iceState.brokenCount >= TOTAL_SHARDS) {
+        clearInterval(ticker);
+        return;
+      }
+      var num = iceState.order[iceState.brokenCount];
+      var shard = iceWall.querySelector('.s' + num);
+      if (shard) shard.classList.add('broken');
+      iceState.brokenCount++;
+
+      if (iceState.brokenCount >= TOTAL_SHARDS) {
+        clearInterval(ticker);
+        finishIceBreak();
+      }
+    }, 220);
+  }
+
+  function finishIceBreak() {
+    if (!iceState) return;
+    var resolveFn = iceState.resolveFn;
+    var handler = iceState.clickHandler;
+
+    // 인터랙션 정리
+    iceWall.classList.remove('interactive', 'idle-hint');
+    if (handler) iceWall.removeEventListener('click', handler);
+    clearTimeout(iceState.idleTimer);
+    setHint('');
+
+    // 마지막 조각 애니메이션 끝까지 기다린 후 정리
+    setTimeout(function () {
+      iceWall.classList.add('hidden');
+      iceState = null;
+      if (resolveFn) resolveFn();
+    }, FINAL_DELAY);
+  }
+
+  function abortIceInteraction() {
+    if (!iceState) return;
+    if (iceState.clickHandler) iceWall.removeEventListener('click', iceState.clickHandler);
+    clearTimeout(iceState.idleTimer);
+    iceWall.classList.remove('interactive', 'idle-hint');
+    setHint('');
+    iceWall.classList.add('hidden');
+    iceState = null;
+  }
+
+  // ===== GENERATE =====
+  async function generate() {
+    hideError();
+
+    var team = teamEl.value.trim() || '우리 조';
+    var mbtis = mbtiEl.value.split('\n')
+      .map(function (s) { return s.trim().toUpperCase(); })
+      .filter(Boolean);
+
+    if (mbtis.length < 3) {
+      showError('조원 MBTI를 최소 3명 이상 입력해주세요.');
+      return;
+    }
+
+    var apiKey = localStorage.getItem(API_KEY_STORAGE) || '';
+    if (!apiKey) {
+      showError(
+        '<strong>AI 키 등록이 필요해요.</strong><br>' +
+        '아래에 Anthropic API 키를 붙여넣고 저장하면 바로 시도해요.',
+        true
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    // API 호출 시작 (백그라운드 실행, 사용자가 얼음 깨는 동안 진행)
+    apiDoneFlag = false;
+    var apiPromise = callClaude(team, mbtis, apiKey);
+    apiPromise.then(
+      function () { apiDoneFlag = true; },
+      function () { apiDoneFlag = true; }
+    );
+
+    try {
+      // 첫 호출이면 사용자가 얼음 깨도록 대기
+      if (!hasGenerated) {
+        await startIceInteraction();
+      }
+
+      // 결과창 페이드인
+      resultContent.classList.remove('hidden');
+      resultContent.classList.add('fade-in');
+
+      // API 결과 기다림 (보통 이미 도착)
+      var result = await apiPromise;
+
+      g1n.value = result.g1.name; g1s.value = result.g1.steps; g1t.value = result.g1.tip;
+      g2n.value = result.g2.name; g2s.value = result.g2.steps; g2t.value = result.g2.tip;
+      localStorage.setItem(KEY.g1n, result.g1.name);
+      localStorage.setItem(KEY.g1s, result.g1.steps);
+      localStorage.setItem(KEY.g1t, result.g1.tip);
+      localStorage.setItem(KEY.g2n, result.g2.name);
+      localStorage.setItem(KEY.g2s, result.g2.steps);
+      localStorage.setItem(KEY.g2t, result.g2.tip);
+      hasGenerated = true;
+    } catch (e) {
+      var msg = (e && e.message) ? e.message : String(e);
+      var isAuthErr = (e && (e.status === 401 || e.status === 403));
+
+      // 얼음 인터랙션 강제 종료 + 결과창 노출 (수동 작성 가능)
+      abortIceInteraction();
+      resultContent.classList.remove('hidden');
+
+      if (isAuthErr) {
+        localStorage.removeItem(API_KEY_STORAGE);
+        showError(
+          '<strong>API 키가 거부됐어요 (' + e.status + ').</strong><br>' +
+          '키가 잘못됐거나 만료됐을 수 있어요. 새 키를 입력해주세요.',
+          true
+        );
+      } else {
+        showError(
+          'AI 호출에 실패했어요: ' + msg + '<br>' +
+          '잠시 후 다시 시도하거나, 결과창을 직접 작성해도 돼요.'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function setLoading(on) {
+    genBtn.disabled = on;
+    if (regenBtn) regenBtn.disabled = on;
+    if (on) {
+      genBtn.textContent = '✏️ 만드는 중...';
+      statusBox.textContent = 'AI가 게임을 고르고 있어요... (최대 30초)';
+      statusBox.classList.remove('hidden');
+    } else {
+      setGenBtnText();
+      statusBox.classList.add('hidden');
+    }
+  }
+
+  async function callClaude(team, mbtis, apiKey) {
+    var prompt =
+      '당신은 한국 교회 중학생 여름수련회 프로그램을 돕는 AI입니다.\n' +
+      '아래 조원의 MBTI 조합에 맞춰 아이스브레이킹 게임 2개를 추천해주세요.\n\n' +
+      '조 이름: ' + team + '\n' +
+      '조원 MBTI: ' + mbtis.join(', ') + '\n\n' +
+      '요구사항:\n' +
+      '1. 외향(E)/내향(I) 비율을 보고 적절한 활동 강도 조절\n' +
+      '2. 중학생 눈높이, 첫 만남이라도 어색하지 않은 게임\n' +
+      '3. 준비물 최소 (가능하면 맨몸으로)\n' +
+      '4. 신앙적 색채는 자연스럽게 (강요 X, 없어도 됨)\n' +
+      '5. 진행 시간 5~10분\n\n' +
+      '아래 형식으로만 답해주세요. 다른 설명 없이:\n\n' +
+      '[게임1]\n' +
+      '이름: (게임 이름)\n' +
+      '진행: (4~6줄로 구체적인 진행 방법)\n' +
+      '팁: (한 줄 팁)\n\n' +
+      '[게임2]\n' +
+      '이름: (게임 이름)\n' +
+      '진행: (4~6줄로 구체적인 진행 방법)\n' +
+      '팁: (한 줄 팁)';
+
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 30000);
+
+    var res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          // 모델 변경 시: claude-sonnet-4-5 / claude-sonnet-4-6 등으로 바꾸면 됨
+          max_tokens: 1500,
+          messages: [{ role: 'user', content: prompt }]
+        }),
+        signal: controller.signal
+      });
+    } catch (e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') throw new Error('시간 초과 (30초)');
+
+      // 진단용: 실제 에러를 콘솔에 출력
+      console.error('[icebreak-v2] fetch 실패:', e);
+
+      // 사용자에게 구체 정보 노출
+      var detail = e.message || e.name || String(e);
+      var hint = '';
+      // TypeError는 보통 CORS / 오프라인 / 브라우저 차단
+      if (e instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(detail)) {
+        hint = ' (CORS·브라우저 차단·오프라인 중 하나일 가능성)';
+      }
+      throw new Error('네트워크 오류: ' + detail + hint);
+    }
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      var statusErr = new Error('서버 응답 ' + res.status);
+      statusErr.status = res.status;
+      throw statusErr;
+    }
+
+    var data = await res.json();
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      throw new Error('응답 형식 오류');
+    }
+
+    return parse(data.content[0].text);
+  }
+
+  function parse(text) {
+    function pickBlock(label) {
+      var re = new RegExp('\\[' + label + '\\]\\s*([\\s\\S]+?)(?=\\[게임|$)');
+      var m = text.match(re);
+      return m ? m[1] : '';
+    }
+    function pickField(block, label) {
+      var re = new RegExp(label + '\\s*:\\s*([\\s\\S]+?)(?=\\n\\s*(?:이름|진행|팁)\\s*:|$)');
+      var m = block.match(re);
+      return m ? m[1].trim() : '';
+    }
+    function parseOne(label) {
+      var block = pickBlock(label);
+      if (!block) return { name: '', steps: '', tip: '' };
+      return {
+        name: pickField(block, '이름') || '',
+        steps: pickField(block, '진행') || '',
+        tip: pickField(block, '팁') || ''
+      };
+    }
+    var g1 = parseOne('게임1');
+    var g2 = parseOne('게임2');
+    if (!g1.name && !g1.steps && !g2.name) {
+      g1 = { name: '직접 정해보세요', steps: text, tip: '' };
+      g2 = { name: '', steps: '', tip: '' };
+    }
+    return { g1: g1, g2: g2 };
+  }
+
+  function copy() {
+    var team = teamEl.value.trim() || '우리 조';
+    var text =
+      '[' + team + ' 추천 게임]\n\n' +
+      '🎯 게임 1: ' + g1n.value + '\n' +
+      g1s.value + '\n' +
+      '💡 ' + g1t.value + '\n\n' +
+      '🎯 게임 2: ' + g2n.value + '\n' +
+      g2s.value + '\n' +
+      '💡 ' + g2t.value;
+
+    var done = function () { alert('복사됐어요!'); };
+    var fail = function () {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert('복사됐어요!');
+      } catch (e) {
+        alert('복사에 실패했어요. 결과를 직접 선택해서 복사해주세요.');
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fail);
+    } else {
+      fail();
+    }
+  }
+
+  genBtn.addEventListener('click', generate);
+  regenBtn.addEventListener('click', generate);
+  copyBtn.addEventListener('click', copy);
+  printBtn.addEventListener('click', function () { window.print(); });
+
+  load();
+})();
+</script>
+</body>
+</html>

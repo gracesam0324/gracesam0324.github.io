@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>은혜 고민 상담소</title>
+<style>
+/* 한글 폰트 스택 - Windows/Mac/Android/iOS 모두 대응 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family:
+    'Apple SD Gothic Neo', /* Mac, iPhone */
+    '맑은 고딕', 'Malgun Gothic', /* Windows */
+    'Noto Sans KR', /* Android */
+    'Nanum Gothic',
+    sans-serif;
+}
+
+:root {
+  --bg: #0D0D1A;
+  --panel: #13132A;
+  --orange: #FF6B2B;
+  --yellow: #FFD23F;
+  --green: #39FF14;
+  --text: #FFFFFF;
+  --muted: rgba(255,255,255,0.45);
+  --border: rgba(255,107,43,0.2);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    linear-gradient(rgba(255,107,43,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,107,43,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ====== 페이지 시스템 - 단순 show/hide ====== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ====== 공통 ====== */
+.wrap { max-width: 600px; margin: 0 auto; padding: 20px 16px 60px; }
+
+.page-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(13,13,26,0.98);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.back-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  font-size: 18px; cursor: pointer;
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,107,43,0.15); border-color: var(--orange); }
+.top-title { font-size: 16px; font-weight: 800; flex: 1; }
+.top-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* 단계 표시 */
+.steps {
+  display: flex; gap: 4px;
+}
+.step {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.3s;
+}
+.step.on { background: var(--orange); }
+.step.done { background: var(--green); }
+
+/* ====== PAGE 0: 홈 ====== */
+.hero {
+  text-align: center;
+  padding: 36px 16px 28px;
+}
+.hero-icon { font-size: 60px; display: block; margin-bottom: 14px; }
+.hero-title {
+  font-size: 26px; font-weight: 900;
+  color: var(--yellow);
+  text-shadow: 3px 3px 0 var(--orange);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.hero-verse {
+  font-size: 13px; color: rgba(255,210,63,0.7);
+  font-style: italic; line-height: 1.9; margin-bottom: 12px;
+}
+.anon-badge {
+  display: inline-block;
+  background: rgba(57,255,20,0.08);
+  border: 1px solid rgba(57,255,20,0.25);
+  border-radius: 6px; padding: 5px 14px;
+  font-size: 12px; font-weight: 800;
+  color: var(--green); letter-spacing: 1px;
+}
+
+/* 시작 버튼 */
+.big-btn {
+  display: block; width: 100%;
+  background: var(--orange);
+  border: none; border-radius: 14px;
+  padding: 18px; margin: 20px 0 0;
+  font-size: 18px; font-weight: 900;
+  color: #fff; cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 0 #CC4A1A;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.big-btn:hover { background: #FF7D44; }
+.big-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #CC4A1A; }
+
+/* 기록 섹션 */
+.section-title {
+  font-size: 13px; font-weight: 800;
+  color: var(--muted); letter-spacing: 2px;
+  margin: 28px 0 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.text-btn {
+  background: none; border: 1px solid rgba(255,79,163,0.25);
+  border-radius: 6px; padding: 3px 10px;
+  font-size: 11px; font-weight: 800;
+  color: rgba(255,79,163,0.5); cursor: pointer;
+}
+.text-btn:hover { border-color: #FF4FA3; color: #FF4FA3; }
+
+.hist-item {
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px; padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.h-icon { font-size: 20px; flex-shrink: 0; }
+.h-info { flex: 1; min-width: 0; }
+.h-preview {
+  font-size: 13px; color: rgba(255,255,255,0.7);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.h-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.h-tag {
+  font-size: 11px; font-weight: 800; color: var(--orange);
+  background: rgba(255,107,43,0.1); border-radius: 6px; padding: 2px 8px;
+  flex-shrink: 0;
+}
+.del-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 15px; color: rgba(255,255,255,0.2);
+  padding: 4px; flex-shrink: 0;
+}
+.del-btn:hover { color: #FF4FA3; }
+.empty-box {
+  text-align: center; padding: 24px;
+  font-size: 13px; color: var(--muted); line-height: 1.9;
+  border: 1px dashed rgba(255,255,255,0.08); border-radius: 12px;
+}
+
+/* ====== PAGE 1: 메인 카테고리 ====== */
+.cat-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-top: 4px;
+}
+.cat-card {
+  background: var(--panel);
+  border: 2px solid rgba(255,255,255,0.07);
+  border-radius: 14px; padding: 18px 8px;
+  text-align: center; cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.cat-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-2px);
+}
+.cat-card:active { transform: scale(0.96); }
+.cat-icon { font-size: 30px; display: block; margin-bottom: 7px; }
+.cat-name {
+  font-size: 12px; font-weight: 800;
+  color: var(--muted); line-height: 1.4;
+}
+.cat-card:hover .cat-name { color: var(--orange); }
+
+/* ====== PAGE 2: 서브 카테고리 ====== */
+.main-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,107,43,0.08);
+  border: 1px solid rgba(255,107,43,0.2);
+  border-radius: 12px; padding: 12px 16px;
+  margin-bottom: 18px;
+}
+.banner-icon { font-size: 24px; }
+.banner-label { font-size: 15px; font-weight: 900; color: var(--orange); }
+
+.sub-list { display: flex; flex-direction: column; gap: 8px; }
+.sub-card {
+  background: var(--panel);
+  border: 1.5px solid rgba(255,255,255,0.07);
+  border-radius: 14px; padding: 15px 16px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: all 0.15s;
+}
+.sub-card:hover {
+  border-color: var(--orange);
+  background: rgba(255,107,43,0.07);
+  transform: translateX(4px);
+}
+.sub-card:active { transform: scale(0.97); }
+.sub-icon { font-size: 22px; flex-shrink: 0; }
+.sub-text { font-size: 14px; font-weight: 700; color: var(--muted); flex: 1; }
+.sub-card:hover .sub-text { color: var(--text); }
+.sub-arrow { font-size: 18px; color: rgba(255,107,43,0); transition: color 0.15s; }
+.sub-card:hover .sub-arrow { color: var(--orange); }
+
+/* ====== PAGE 3: 입력 ====== */
+.breadcrumb {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+.crumb {
+  background: rgba(255,107,43,0.1);
+  border: 1px solid rgba(255,107,43,0.25);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 12px; font-weight: 800; color: var(--orange);
+}
+.crumb.sub {
+  background: rgba(255,210,63,0.08);
+  border-color: rgba(255,210,63,0.25);
+  color: var(--yellow);
+}
+.crumb-sep { font-size: 12px; color: var(--muted); }
+
+.input-box {
+  background: var(--panel);
+  border: 2px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 16px; margin-bottom: 14px;
+}
+.input-box:focus-within { border-color: var(--orange); }
+.input-label { font-size: 14px; font-weight: 800; color: var(--orange); margin-bottom: 10px; }
+textarea {
+  width: 100%; background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 12px;
+  font-size: 14px; color: var(--text);
+  resize: none; height: 120px; outline: none; line-height: 1.8;
+}
+textarea:focus { border-color: rgba(255,107,43,0.4); }
+textarea::placeholder { color: var(--muted); }
+.char-count { text-align: right; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+.err-msg {
+  background: rgba(255,79,163,0.08);
+  border: 1px solid rgba(255,79,163,0.3);
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 13px; font-weight: 800; color: #FF4FA3;
+  margin-bottom: 12px; display: none;
+}
+
+/* ====== PAGE 4: 로딩 ====== */
+.loading-wrap {
+  text-align: center; padding: 80px 20px;
+}
+.loading-emoji { font-size: 56px; display: block; margin-bottom: 20px; }
+.loading-title { font-size: 20px; font-weight: 900; color: var(--orange); margin-bottom: 6px; }
+.loading-sub { font-size: 13px; color: var(--muted); line-height: 1.8; }
+.loading-bar-wrap {
+  width: 100%; max-width: 300px; height: 10px;
+  background: rgba(255,255,255,0.06); border-radius: 100px;
+  overflow: hidden; margin: 20px auto;
+  border: 1px solid rgba(255,107,43,0.15);
+}
+.loading-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--orange), var(--yellow));
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+
+/* ====== PAGE 5: 결과 ====== */
+.result-card {
+  border: 2px solid var(--orange);
+  border-radius: 16px; overflow: hidden;
+  margin-bottom: 16px;
+}
+.result-top {
+  background: rgba(255,107,43,0.1);
+  padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid rgba(255,107,43,0.2);
+}
+.result-avatar {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--orange), var(--yellow));
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.result-name { font-size: 15px; font-weight: 900; color: var(--yellow); }
+.result-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.emotion-row {
+  padding: 10px 18px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+}
+.emotion-label { font-size: 11px; font-weight: 800; color: var(--muted); }
+.emotion-chip {
+  background: rgba(255,107,43,0.12); border: 1px solid rgba(255,107,43,0.3);
+  border-radius: 6px; padding: 3px 10px;
+  font-size: 12px; font-weight: 800; color: var(--orange);
+}
+
+.empathy-block {
+  padding: 16px 18px; font-size: 14px; line-height: 1.9;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+}
+.tips-block {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+}
+.tips-title { font-size: 13px; font-weight: 900; color: var(--yellow); margin-bottom: 10px; }
+.tip-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 8px; padding: 10px 12px;
+  background: rgba(0,0,0,0.2); border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.tip-num {
+  width: 22px; height: 22px; background: var(--orange); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 900; color: #fff; flex-shrink: 0;
+}
+.tip-text { font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.8); }
+
+.cheer-block {
+  padding: 16px 18px; text-align: center;
+  background: rgba(255,107,43,0.06);
+}
+.cheer-text { font-size: 14px; font-weight: 800; color: var(--yellow); line-height: 1.8; }
+
+.outline-btn {
+  display: block; width: 100%;
+  background: none; border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 14px; margin-top: 8px;
+  font-size: 15px; font-weight: 800; color: var(--muted);
+  cursor: pointer; transition: all 0.2s;
+}
+.outline-btn:hover { border-color: var(--orange); color: var(--orange); }
+
+/* ====== API 키 바 (다크 톤) ====== */
+.keybar {
+  position: sticky; top: 0; z-index: 90;
+  background: rgba(13,13,26,0.96);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 16px;
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+  backdrop-filter: blur(8px);
+}
+.keybar label { font-size: 11px; font-weight: 800; color: var(--muted); flex-shrink: 0; letter-spacing: 1px; }
+.keybar input {
+  flex: 1; min-width: 160px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,107,43,0.25);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: monospace;
+  outline: none;
+}
+.keybar input:focus { border-color: var(--orange); }
+.keybar .key-status { font-size: 10px; color: var(--muted); font-weight: 800; letter-spacing: 1px; }
+.keybar .key-status.ok { color: var(--green); }
+.keybar .key-status.bad { color: #FF4FA3; }
+
+/* ====== AI 답변 출처 표시 ====== */
+.ai-mark {
+  display: inline-block;
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 1px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(57,255,20,0.1);
+  border: 1px solid rgba(57,255,20,0.3);
+  color: var(--green);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.ai-mark.fallback {
+  background: rgba(255,210,63,0.08);
+  border-color: rgba(255,210,63,0.3);
+  color: var(--yellow);
+}
+
+/* ====== 양 3마리 무리 — 화면 가로지름 ====== */
+.sheep-flock {
+  position: fixed;
+  bottom: 24px;
+  left: -560px;
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  animation: flockWalk 90s linear infinite;
+}
+.sheep-walker {
+  display: block;
+  animation: sheepBob 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.45));
+}
+.sheep-walker.s1 { width: 192px; height: 156px; animation-delay: 0s; }
+.sheep-walker.s2 { width: 150px; height: 126px; animation-delay: -0.5s; margin-bottom: 12px; }
+.sheep-walker.s3 { width: 168px; height: 138px; animation-delay: -1s; }
+
+@keyframes flockWalk {
+  0% { left: -560px; }
+  100% { left: calc(100% + 60px); }
+}
+@keyframes sheepBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* 인쇄 시 양 숨김 */
+@media print {
+  .keybar, .sheep-flock { display: none !important; }
+}
+
+/* 반응형 */
+@media (max-width: 400px) {
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .hero-title { font-size: 22px; }
+  .cat-icon { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- API 키바 (다른 v2 프로그램과 키 공유) -->
+<div class="keybar">
+  <label>API 키</label>
+  <input type="password" id="apiKey" placeholder="sk-ant-... (미리보기에선 비워둬도 OK)" autocomplete="off">
+  <span class="key-status" id="keyStatus">미리보기 모드</span>
+</div>
+
+<!-- PAGE 0: 홈 -->
+<div class="page active" id="page-0">
+  <div class="hero">
+    <span class="hero-icon">⛪</span>
+    <div class="hero-title">은혜 고민 상담소</div>
+    <div class="hero-verse">
+      "너희 염려를 다 주께 맡기라<br>이는 그가 너희를 돌보심이라"<br>
+      <span style="font-size:11px;opacity:0.7">— 베드로전서 5:7</span>
+    </div>
+    <div class="anon-badge">🔒 완전 익명 · 나만 볼 수 있음</div>
+    <button class="big-btn" onclick="showPage(1)">🔥 고민 상담 시작하기</button>
+  </div>
+
+  <div class="wrap" style="padding-top:0">
+    <div class="section-title">
+      📋 내 상담 기록
+      <button class="text-btn" onclick="clearAll()">전체 삭제</button>
+    </div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- PAGE 1: 메인 카테고리 -->
+<div class="page" id="page-1">
+  <div class="page-top">
+    <button class="back-btn" onclick="showPage(0)">←</button>
+    <div>
+      <div class="top-title">어떤 고민인가요?</div>
+      <div class="top-sub">카테고리를 선택해줘요</div>
+    </div>
+    <div class="steps">
+      <div class="step on"></div>
+      <div class="step"></div>
+      <div class="step"></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="cat-grid">
+      <div class="cat-card" onclick="selectMain('기도와 묵상','🙏')">
+        <span class="cat-icon">🙏</span><div class="cat-name">기도와 묵상</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('예배와 찬양','🎵')">
+        <span class="cat-icon">🎵</span><div class="cat-name">예배와 찬양</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('말씀과 신앙','📖')">
+        <span class="cat-icon">📖</span><div class="cat-name">말씀과 신앙</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('공동체와 관계','🤝')">
+        <span class="cat-icon">🤝</span><div class="cat-name">공동체와 관계</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('은혜 체험','✨')">
+        <span class="cat-icon">✨</span><div class="cat-name">은혜 체험</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('사명과 헌신','🔥')">
+        <span class="cat-icon">🔥</span><div class="cat-name">사명과 헌신</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('수련회 적응','🏕')">
+        <span class="cat-icon">🏕</span><div class="cat-name">수련회 적응</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('신앙 의심','💭')">
+        <span class="cat-icon">💭</span><div class="cat-name">신앙 의심</div>
+      </div>
+      <div class="cat-card" onclick="selectMain('기타 고민','✏️')">
+        <span class="cat-icon">✏️</span><div class="cat-name">기타 고민</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: 서브 카테고리 -->
+<div class="page" id="page-2">
+  <div class="page-top">
+    <button class="back-btn" onclick="showPage(1)">←</button>
+    <div>
+      <div class="top-title" id="sub-title">세부 선택</div>
+      <div class="top-sub">어떤 부분이 걱정되나요?</div>
+    </div>
+    <div class="steps">
+      <div class="step done"></div>
+      <div class="step on"></div>
+      <div class="step"></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="main-banner">
+      <span class="banner-icon" id="banner-icon">🙏</span>
+      <span class="banner-label" id="banner-label">기도와 묵상</span>
+    </div>
+    <div class="sub-list" id="sub-list"></div>
+  </div>
+</div>
+
+<!-- PAGE 3: 입력 -->
+<div class="page" id="page-3">
+  <div class="page-top">
+    <button class="back-btn" onclick="showPage(2)">←</button>
+    <div>
+      <div class="top-title">고민 털어놓기</div>
+      <div class="top-sub">아무도 모르게 상담받을 수 있어요</div>
+    </div>
+    <div class="steps">
+      <div class="step done"></div>
+      <div class="step done"></div>
+      <div class="step on"></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="breadcrumb">
+      <div class="crumb" id="crumb-main"></div>
+      <div class="crumb-sep">›</div>
+      <div class="crumb sub" id="crumb-sub"></div>
+    </div>
+    <div class="input-box">
+      <div class="input-label">💬 어떤 걱정인지 말해줘요</div>
+      <textarea id="worry-input" placeholder="아무도 모르게 털어놓을 수 있어요. 어떤 걱정이든 괜찮아요..." maxlength="300" oninput="updateChar()"></textarea>
+      <div class="char-count"><span id="char-num">0</span>/300</div>
+    </div>
+    <div class="err-msg" id="err-msg"></div>
+    <button class="big-btn" onclick="submitWorry()">🔥 상담 받기!</button>
+  </div>
+</div>
+
+<!-- PAGE 4: 로딩 -->
+<div class="page" id="page-4">
+  <div class="loading-wrap">
+    <span class="loading-emoji">🤔</span>
+    <div class="loading-title">고민 분석 중...</div>
+    <div class="loading-bar-wrap">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+    <div class="loading-sub">따뜻한 답변을 준비하고 있어요 ✨<br>잠시만 기다려줘요</div>
+  </div>
+</div>
+
+<!-- PAGE 5: 결과 -->
+<div class="page" id="page-5">
+  <div class="page-top">
+    <button class="back-btn" onclick="showPage(0)">🏠</button>
+    <div>
+      <div class="top-title">상담 결과</div>
+      <div class="top-sub">은혜 상담사의 답변이에요</div>
+    </div>
+    <div class="steps">
+      <div class="step done"></div>
+      <div class="step done"></div>
+      <div class="step done"></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div id="result-content"></div>
+    <button class="outline-btn" onclick="showPage(0)">↩ 처음으로 돌아가기</button>
+  </div>
+</div>
+
+<!-- 양 3마리 무리 — 천천히 화면 가로지름 -->
+<div class="sheep-flock" aria-hidden="true">
+  <svg class="sheep-walker s1" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="76" rx="32" ry="3" fill="rgba(0,0,0,0.3)"/>
+    <circle cx="28" cy="42" r="11" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="40" cy="32" r="12" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="60" cy="32" r="12" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="72" cy="42" r="11" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <ellipse cx="50" cy="50" rx="28" ry="18" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <ellipse cx="50" cy="52" rx="13" ry="11" fill="#3a2818"/>
+    <ellipse cx="44" cy="54" rx="2" ry="1.5" fill="#3a2818" transform="rotate(-30 44 54)"/>
+    <ellipse cx="56" cy="54" rx="2" ry="1.5" fill="#3a2818" transform="rotate(30 56 54)"/>
+    <circle cx="45" cy="49" r="2" fill="#fff"/>
+    <circle cx="55" cy="49" r="2" fill="#fff"/>
+    <circle cx="45.5" cy="49" r="1" fill="#000"/>
+    <circle cx="55.5" cy="49" r="1" fill="#000"/>
+    <ellipse cx="50" cy="57" rx="2.5" ry="1.5" fill="#e8a8a0"/>
+    <rect x="38" y="65" width="4" height="9" rx="1" fill="#3a2818"/>
+    <rect x="58" y="65" width="4" height="9" rx="1" fill="#3a2818"/>
+  </svg>
+  <svg class="sheep-walker s2" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="76" rx="28" ry="3" fill="rgba(0,0,0,0.3)"/>
+    <circle cx="32" cy="44" r="9" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="44" cy="36" r="10" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="56" cy="36" r="10" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="68" cy="44" r="9" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <ellipse cx="50" cy="50" rx="24" ry="15" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <ellipse cx="50" cy="52" rx="11" ry="9" fill="#3a2818"/>
+    <ellipse cx="45" cy="54" rx="1.7" ry="1.2" fill="#3a2818" transform="rotate(-30 45 54)"/>
+    <ellipse cx="55" cy="54" rx="1.7" ry="1.2" fill="#3a2818" transform="rotate(30 55 54)"/>
+    <circle cx="46" cy="50" r="1.6" fill="#fff"/>
+    <circle cx="54" cy="50" r="1.6" fill="#fff"/>
+    <circle cx="46.4" cy="50" r="0.8" fill="#000"/>
+    <circle cx="54.4" cy="50" r="0.8" fill="#000"/>
+    <ellipse cx="50" cy="56" rx="2" ry="1.2" fill="#e8a8a0"/>
+    <rect x="40" y="64" width="3" height="8" rx="1" fill="#3a2818"/>
+    <rect x="57" y="64" width="3" height="8" rx="1" fill="#3a2818"/>
+  </svg>
+  <svg class="sheep-walker s3" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="76" rx="30" ry="3" fill="rgba(0,0,0,0.3)"/>
+    <circle cx="30" cy="43" r="10" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="42" cy="34" r="11" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="58" cy="34" r="11" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <circle cx="70" cy="43" r="10" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <ellipse cx="50" cy="50" rx="26" ry="16" fill="#fff8e8" stroke="#c8b890" stroke-width="1"/>
+    <ellipse cx="50" cy="52" rx="12" ry="10" fill="#3a2818"/>
+    <ellipse cx="44" cy="54" rx="1.8" ry="1.3" fill="#3a2818" transform="rotate(-30 44 54)"/>
+    <ellipse cx="56" cy="54" rx="1.8" ry="1.3" fill="#3a2818" transform="rotate(30 56 54)"/>
+    <circle cx="46" cy="50" r="1.8" fill="#fff"/>
+    <circle cx="54" cy="50" r="1.8" fill="#fff"/>
+    <circle cx="46.4" cy="50" r="0.9" fill="#000"/>
+    <circle cx="54.4" cy="50" r="0.9" fill="#000"/>
+    <ellipse cx="50" cy="56" rx="2.2" ry="1.3" fill="#e8a8a0"/>
+    <rect x="39" y="65" width="3.5" height="8" rx="1" fill="#3a2818"/>
+    <rect x="57" y="65" width="3.5" height="8" rx="1" fill="#3a2818"/>
+  </svg>
+</div>
+
+<script>
+// ====== 데이터 ======
+const SUB_NODES = {
+  '기도와 묵상': [
+    {icon:'😶', text:'기도할 때 집중이 안 돼요'},
+    {icon:'❓', text:'뭘 기도해야 할지 모르겠어요'},
+    {icon:'🔊', text:'소리 내어 기도하기가 어색해요'},
+    {icon:'⏰', text:'기도 시간이 너무 길어요'},
+    {icon:'📖', text:'묵상을 어떻게 해야 할지 몰라요'},
+  ],
+  '예배와 찬양': [
+    {icon:'🎤', text:'찬양 인도가 너무 떨려요'},
+    {icon:'🎵', text:'찬양 가사를 잊을 것 같아요'},
+    {icon:'🙏', text:'예배에 집중이 잘 안 돼요'},
+    {icon:'👀', text:'사람들 시선이 부담돼요'},
+    {icon:'😐', text:'은혜가 느껴지지 않아요'},
+  ],
+  '말씀과 신앙': [
+    {icon:'📖', text:'성경이 이해가 안 돼요'},
+    {icon:'💭', text:'말씀이 내 삶에 와닿지 않아요'},
+    {icon:'🧠', text:'설교를 집중해서 듣기 어려워요'},
+    {icon:'📝', text:'말씀을 기억하고 적용하기 어려워요'},
+    {icon:'❤️', text:'신앙이 형식적으로 느껴져요'},
+  ],
+  '공동체와 관계': [
+    {icon:'😶', text:'친구들이 서먹하고 어색해요'},
+    {icon:'🗣️', text:'먼저 말 걸기가 무서워요'},
+    {icon:'😞', text:'무리에 끼기가 어려워요'},
+    {icon:'😤', text:'팀원이랑 갈등이 있어요'},
+    {icon:'🤍', text:'리더 선생님이 무서워요'},
+  ],
+  '은혜 체험': [
+    {icon:'😕', text:'은혜가 느껴지지 않아요'},
+    {icon:'😢', text:'눈물이 나는데 이유를 모르겠어요'},
+    {icon:'💫', text:'체험인지 감정인지 모르겠어요'},
+    {icon:'🌊', text:'성령 체험이 두려워요'},
+    {icon:'🤔', text:'나만 아무것도 못 느끼는 것 같아요'},
+  ],
+  '사명과 헌신': [
+    {icon:'❓', text:'내 사명을 모르겠어요'},
+    {icon:'😰', text:'헌신하고 싶은데 두려워요'},
+    {icon:'🙇', text:'봉사 섬김이 부담돼요'},
+    {icon:'🔥', text:'열정이 식은 것 같아요'},
+    {icon:'🏃', text:'신앙과 일상 사이에서 지쳐요'},
+  ],
+  '수련회 적응': [
+    {icon:'🛏', text:'잠자리가 불편해요'},
+    {icon:'🏕', text:'낯선 환경이 무서워요'},
+    {icon:'🏠', text:'집이 너무 그리울 것 같아요'},
+    {icon:'🍱', text:'음식이 걱정돼요'},
+    {icon:'📵', text:'폰 사용 제한이 힘들어요'},
+  ],
+  '신앙 의심': [
+    {icon:'❓', text:'하나님이 정말 계신지 모르겠어요'},
+    {icon:'😔', text:'기도해도 응답이 없어요'},
+    {icon:'😢', text:'교회가 억지로 다니는 것 같아요'},
+    {icon:'💔', text:'신앙이 삶에 의미 없게 느껴져요'},
+    {icon:'🤐', text:'믿음이 약한 게 창피해요'},
+  ],
+  '기타 고민': [
+    {icon:'😩', text:'전반적으로 다 걱정돼요'},
+    {icon:'💪', text:'체력이 걱정돼요'},
+    {icon:'😴', text:'일정이 너무 빡빡해요'},
+    {icon:'😕', text:'수련회에 기대가 없어요'},
+    {icon:'✏️', text:'직접 입력할게요'},
+  ],
+};
+
+const RESPONSES = {
+  '기도와 묵상': {
+    emotions:['막막함','어색함','부담감'],
+    empathy:'기도가 어색하고 집중이 안 되는 건 정말 솔직한 고민이에요. "잘 해야 한다"는 부담 때문에 오히려 더 힘들어지는 거거든요. 그 마음 충분히 이해해요.',
+    tips:['기도는 문법이 없어요 — 그냥 하고 싶은 말을 하면 돼요','\"하나님 잘 모르겠어요\"도 훌륭한 기도예요','눈 감고 조용히 앉아 있는 것만으로도 충분해요','짧게 한 문장만 기도해봐요 — 길이보다 진심이 중요해요'],
+    cheer:'기도는 잘하는 사람이 따로 있는 게 아니에요.\n솔직한 마음이 가장 좋은 기도예요 🙏'
+  },
+  '예배와 찬양': {
+    emotions:['두려움','긴장','부담감'],
+    empathy:'예배 중에 집중이 안 되거나 찬양이 부담스러운 건 자연스러운 감정이에요. 하나님은 완벽한 퍼포먼스가 아닌 진심 어린 마음을 보세요.',
+    tips:['떨려도 일어나서 한 그 용기 자체가 예배예요','가사 하나에만 집중해봐요 — 의미가 마음에 들어와요','주변 시선보다 하나님을 향한 내 마음에 집중해봐요','틀려도 괜찮아요 — 하나님 앞에서 실수는 없어요'],
+    cheer:'떨려도 마음을 드린 그 예배,\n하나님이 기뻐 받으세요 🎵'
+  },
+  '말씀과 신앙': {
+    emotions:['답답함','막막함','건조함'],
+    empathy:'성경이 어렵고 말씀이 잘 와닿지 않는 느낌, 신앙이 형식적으로 느껴지는 것... 이건 많은 사람이 겪는 진짜 고민이에요. 혼자가 아니에요.',
+    tips:['한 구절씩만 읽고 \"이게 내 얘기다\" 생각해봐요','설교 중 단 한 문장이라도 마음에 남기면 성공이에요','신앙은 감정이 아니라 관계예요 — 느낌이 없어도 괜찮아요','모르는 건 선생님이나 목사님께 솔직하게 여쭤봐도 돼요'],
+    cheer:'말씀이 잘 안 들어오는 시기도 신앙의 일부예요.\n지금 여기 있는 것 자체가 이미 대단해요 📖'
+  },
+  '공동체와 관계': {
+    emotions:['긴장','어색함','외로움'],
+    empathy:'아는 친구가 없거나 무리에 끼기 어려운 건 정말 힘든 경험이죠. 주변 친구들도 속으로는 다들 같은 마음이에요. 겉으로 안 보일 뿐이지.',
+    tips:['\"나도 사실 엄청 긴장했어\" 한마디가 벽을 허물어요','상대방 이름을 불러주는 것만으로도 훨씬 가까워져요','먼저 웃어주세요 — 먼저 웃는 사람이 분위기를 만들어요','한 명만 잘 사귀어도 충분해요 — 욕심 내지 않아도 돼요'],
+    cheer:'수련회에서 사귄 친구가 평생 친구가 되기도 해요.\n지금의 어색함이 나중엔 웃픈 추억이 돼요 🤝'
+  },
+  '은혜 체험': {
+    emotions:['의아함','불안','갈망'],
+    empathy:'나만 아무것도 못 느끼는 것 같아서 불안하죠? 체험한 게 진짜인지 감정인지 혼란스럽기도 하고요. 그 고민 정말 소중한 거예요.',
+    tips:['은혜는 눈물과 떨림만이 아니에요 — 작은 평안함도 은혜예요','체험 여부보다 하나님과의 관계가 더 중요해요','다른 사람의 체험과 비교하지 않아도 돼요','\"오늘 무엇을 배웠지?\"를 스스로에게 물어봐요'],
+    cheer:'하나님은 모든 사람에게 다른 방식으로 다가오세요.\n나만의 방식이 있어요 ✨'
+  },
+  '사명과 헌신': {
+    emotions:['부담감','막막함','두려움'],
+    empathy:'사명을 모르겠거나 헌신이 두렵고 지치는 건 정말 솔직한 고민이에요. 하나님을 사랑하기 때문에 고민하는 거잖아요.',
+    tips:['사명은 갑자기 내려오는 게 아니에요 — 지금 할 수 있는 것부터','섬김에 부담을 느끼면 솔직하게 말해도 괜찮아요','열정이 식었다면 쉬어가도 돼요 — 신앙은 장거리 달리기예요','내가 기쁜 일이 사명의 힌트일 수 있어요'],
+    cheer:'지금 이 자리에서 최선을 다하는 것,\n그게 이미 사명이에요 🔥'
+  },
+  '수련회 적응': {
+    emotions:['불안','걱정','낯섦'],
+    empathy:'처음 가는 수련회가 걱정되는 건 당연해요. 잠자리, 음식, 낯선 환경... 한꺼번에 낯선 것들이 몰려오면 불안하죠. 그 마음 충분히 이해해요.',
+    tips:['첫날만 넘기면 신기하게 적응돼요 — 다들 그래요','도착하자마자 화장실 위치부터 파악해요!','비상용 간식을 챙겨가면 마음이 훨씬 든든해요','선생님이나 리더에게 솔직하게 말하면 도와줄 거예요'],
+    cheer:'수련회 마지막 날엔 집 가기 싫다고 할지도 몰라요.\n첫날 밤만 넘겨봐요 🏕'
+  },
+  '신앙 의심': {
+    emotions:['혼란','두려움','솔직함'],
+    empathy:'하나님이 정말 계신지, 기도가 의미 있는지 의심이 드는 건 사실 신앙이 살아있다는 증거예요. 아무 생각 없이 다니는 것보다 훨씬 진지한 거예요.',
+    tips:['의심을 하나님께 솔직하게 털어놓아봐요 — 그것도 기도예요','믿음이 약한 게 창피한 게 아니에요 — 모두 그런 시기가 있어요','신뢰할 수 있는 어른에게 솔직하게 물어봐도 좋아요','지금 당장 결론 내지 않아도 괜찮아요 — 질문을 품고 가도 돼요'],
+    cheer:'의심하면서도 여기 있는 당신,\n그게 이미 용기 있는 믿음이에요 💭'
+  },
+  '기타 고민': {
+    emotions:['걱정','복잡함'],
+    empathy:'말로 딱 떨어지지 않는 걱정들이 있죠. 이것도 저것도 다 불안하고, 뭔가 찜찜한 느낌... 그 마음 충분히 이해해요.',
+    tips:['걱정의 90%는 실제로 일어나지 않아요!','지금 할 수 있는 준비 하나만 해보세요','하나씩 해결하면 돼요 — 한꺼번에 다 안 해도 돼요','언제든 선생님이나 친구에게 솔직하게 말해도 돼요'],
+    cheer:'완벽한 수련회가 아니어도 괜찮아요.\n작은 순간들이 모여서 소중한 추억이 돼요 ✨'
+  },
+};
+
+const CAT_ICONS = {
+  '기도와 묵상':'🙏','예배와 찬양':'🎵','말씀과 신앙':'📖','공동체와 관계':'🤝',
+  '은혜 체험':'✨','사명과 헌신':'🔥','수련회 적응':'🏕','신앙 의심':'💭','기타 고민':'✏️'
+};
+
+let selectedMain = '';
+let selectedSub = '';
+let history = JSON.parse(localStorage.getItem('grace_counsel') || '[]');
+
+// ====== API 키 (다른 v2 프로그램과 공유) ======
+const KEY_API = 'retreat_api_key';
+
+function isHeaderSafe(s) {
+  return typeof s === 'string' && /^[\x20-\x7E]*$/.test(s);
+}
+
+function loadApiKey() {
+  let k = localStorage.getItem(KEY_API) || '';
+  if (k && !isHeaderSafe(k)) {
+    k = '';
+    localStorage.removeItem(KEY_API);
+  }
+  document.getElementById('apiKey').value = k;
+  updateKeyStatus();
+}
+
+function updateKeyStatus() {
+  const el = document.getElementById('apiKey');
+  const status = document.getElementById('keyStatus');
+  const k = el.value.trim();
+  if (!k) { status.textContent = '미리보기 모드'; status.className = 'key-status'; }
+  else if (!isHeaderSafe(k)) { status.textContent = '잘못된 문자'; status.className = 'key-status bad'; }
+  else if (k.indexOf('sk-ant-') === 0) { status.textContent = '입력됨'; status.className = 'key-status ok'; }
+  else { status.textContent = '형식 확인'; status.className = 'key-status bad'; }
+}
+
+document.getElementById('apiKey').addEventListener('input', function() {
+  const v = this.value.trim();
+  if (v && !isHeaderSafe(v)) {
+    localStorage.removeItem(KEY_API);
+  } else {
+    localStorage.setItem(KEY_API, v);
+  }
+  updateKeyStatus();
+});
+
+// ====== AI 호출 ======
+function buildPrompt(main, sub, userInput) {
+  const lines = [];
+  lines.push('당신은 한국 교회 중학생들의 익명 상담사입니다. 한 학생이 수련회를 앞두고 다음과 같은 고민을 적었습니다.');
+  lines.push('');
+  lines.push('[카테고리]: ' + main);
+  lines.push('[세부 고민]: ' + sub);
+  lines.push('[학생이 직접 적은 고민]:');
+  lines.push(userInput);
+  lines.push('');
+  lines.push('학생의 고민을 분석해서 다음 JSON 형식의 따뜻한 답변만 출력해 주세요. 다른 설명·머리말·코드블록 마커 일절 금지.');
+  lines.push('');
+  lines.push('{"emotions": ["감지된 감정 1~3개 — 단어, 짧게"], "empathy": "학생의 마음을 헤아리고 공감해주는 메시지 (2~4문장)", "tips": ["실제로 도움 될 만한 구체적 팁 4개 (각 1줄)"], "cheer": "마지막 응원 메시지 (1~2문장, 짧고 강하게)"}');
+  lines.push('');
+  lines.push('작성 지침:');
+  lines.push('1. 톤: 친한 형/누나처럼 반말로, 친근하고 진심 있는 목소리. 청소년이 부담스럽지 않게.');
+  lines.push('2. 신학적 배경: 개혁주의/복음주의 정통의 따뜻한 목회적 시선. 단정하지 않고 헤아려 주는 자세.');
+  lines.push('3. 학생이 직접 적은 고민의 디테일을 살려서 답할 것. 일반론·뻔한 위로 금지.');
+  lines.push('4. 평가나 설교 절대 금지. 공감이 우선.');
+  lines.push('5. 팁은 실제로 시도할 수 있는 작은 구체적 행동. 추상적 조언 금지.');
+  lines.push('6. 학생의 이름·정체성 추측 금지.');
+  lines.push('7. 성경구절은 직접 인용해도 되지만 1개를 넘지 말 것. 자연스러운 흐름 안에서만.');
+  lines.push('8. JSON 안의 줄바꿈은 \\n으로 표현.');
+  return lines.join('\n');
+}
+
+async function callClaude(prompt, apiKey) {
+  if (apiKey && !isHeaderSafe(apiKey)) {
+    throw new Error('API 키에 사용할 수 없는 문자가 섞여 있어요.');
+  }
+
+  let timeoutHandle;
+  const timeoutPromise = new Promise(function(_, reject) {
+    timeoutHandle = setTimeout(function() { reject(new Error('__TIMEOUT__')); }, 60000);
+  });
+
+  let headers, body;
+  if (apiKey) {
+    headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    };
+    body = JSON.stringify({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    });
+  } else {
+    headers = { 'Content-Type': 'application/json' };
+    body = JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    });
+  }
+
+  const fetchPromise = fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: headers,
+    body: body
+  });
+
+  try {
+    const res = await Promise.race([fetchPromise, timeoutPromise]);
+    clearTimeout(timeoutHandle);
+    if (res.status === 401 || res.status === 403) {
+      throw new Error('API 키 확인 필요');
+    }
+    if (!res.ok) {
+      throw new Error('서버 오류 ' + res.status);
+    }
+    const data = await res.json();
+    const text = (data.content || []).map(function(b){ return b.text || ''; }).join('').trim();
+    if (!text) throw new Error('빈 응답');
+    return text;
+  } catch (err) {
+    clearTimeout(timeoutHandle);
+    if (err && err.message === '__TIMEOUT__') {
+      throw new Error('시간 초과 (60초)');
+    }
+    throw err;
+  }
+}
+
+function parseAIResult(text) {
+  let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  const s = cleaned.indexOf('{');
+  const e = cleaned.lastIndexOf('}');
+  if (s !== -1 && e !== -1) cleaned = cleaned.slice(s, e + 1);
+  try {
+    const obj = JSON.parse(cleaned);
+    return {
+      emotions: Array.isArray(obj.emotions) ? obj.emotions.slice(0, 4) : [],
+      empathy: (obj.empathy || '').trim(),
+      tips: Array.isArray(obj.tips) ? obj.tips.slice(0, 6) : [],
+      cheer: (obj.cheer || '').trim()
+    };
+  } catch (err) {
+    return null;
+  }
+}
+
+// ====== 페이지 전환 — 단순 show/hide ======
+function showPage(n) {
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  var target = document.getElementById('page-' + n);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+}
+
+// ====== 메인 선택 ======
+function selectMain(cat, icon) {
+  selectedMain = cat;
+  document.getElementById('sub-title').textContent = cat;
+  document.getElementById('banner-icon').textContent = icon;
+  document.getElementById('banner-label').textContent = cat;
+
+  var subs = SUB_NODES[cat] || [];
+  document.getElementById('sub-list').innerHTML = subs.map(function(s) {
+    return '<div class="sub-card" onclick="selectSub(\'' + s.text.replace(/'/g, "\\'") + '\')">' +
+      '<div class="sub-icon">' + s.icon + '</div>' +
+      '<div class="sub-text">' + s.text + '</div>' +
+      '<div class="sub-arrow">›</div>' +
+      '</div>';
+  }).join('');
+
+  showPage(2);
+}
+
+// ====== 서브 선택 ======
+function selectSub(sub) {
+  selectedSub = sub;
+  document.getElementById('crumb-main').textContent = (CAT_ICONS[selectedMain] || '') + ' ' + selectedMain;
+  document.getElementById('crumb-sub').textContent = sub;
+  document.getElementById('worry-input').value = '';
+  document.getElementById('char-num').textContent = '0';
+  showPage(3);
+}
+
+function updateChar() {
+  var len = document.getElementById('worry-input').value.length;
+  document.getElementById('char-num').textContent = len;
+}
+
+// ====== 제출 ======
+async function submitWorry() {
+  var input = document.getElementById('worry-input').value.trim();
+  if (!input || input.length < 5) {
+    var err = document.getElementById('err-msg');
+    err.textContent = '⚠️ 고민을 조금 더 써줘요!';
+    err.style.display = 'block';
+    setTimeout(function() { err.style.display = 'none'; }, 2500);
+    return;
+  }
+
+  document.getElementById('err-msg').style.display = 'none';
+  showPage(4);
+
+  // 로딩바 — AI 호출 동안 천천히 채움
+  var bar = document.getElementById('loading-bar');
+  bar.style.width = '0%';
+  var pct = 0;
+  var timer = setInterval(function() {
+    pct += 2;
+    if (pct > 92) pct = 92;
+    bar.style.width = pct + '%';
+  }, 250);
+
+  var apiKey = document.getElementById('apiKey').value.trim();
+  var aiData = null;
+  var fellBack = false;
+
+  try {
+    var prompt = buildPrompt(selectedMain, selectedSub, input);
+    var raw = await callClaude(prompt, apiKey);
+    aiData = parseAIResult(raw);
+    if (!aiData || !aiData.empathy) {
+      throw new Error('파싱 실패');
+    }
+  } catch (e) {
+    // AI 실패 → 정적 응답으로 폴백
+    fellBack = true;
+    var fb = RESPONSES[selectedMain] || RESPONSES['기타 고민'];
+    aiData = {
+      emotions: fb.emotions,
+      empathy: fb.empathy,
+      tips: fb.tips,
+      cheer: fb.cheer
+    };
+  }
+
+  clearInterval(timer);
+  bar.style.width = '100%';
+  showResult(aiData, fellBack);
+  saveHistory(input, selectedMain, selectedSub, aiData, fellBack);
+  setTimeout(function() { showPage(5); }, 250);
+}
+
+// ====== 결과 ======
+function showResult(data, fellBack) {
+  var icon = CAT_ICONS[selectedMain] || '💬';
+  var tipsHtml = (data.tips || []).map(function(t, i) {
+    return '<div class="tip-item">' +
+      '<div class="tip-num">' + (i+1) + '</div>' +
+      '<div class="tip-text">' + escapeHtml(t) + '</div>' +
+      '</div>';
+  }).join('');
+  var emotionsHtml = (data.emotions || []).map(function(e) {
+    return '<div class="emotion-chip">' + escapeHtml(e) + '</div>';
+  }).join('');
+  var aiTag = fellBack
+    ? '<span class="ai-mark fallback">기본 응답</span>'
+    : '<span class="ai-mark">AI 분석</span>';
+
+  document.getElementById('result-content').innerHTML =
+    '<div class="result-card">' +
+      '<div class="result-top">' +
+        '<div class="result-avatar">' + icon + '</div>' +
+        '<div><div class="result-name">은혜 상담사' + aiTag + '</div>' +
+        '<div class="result-meta">익명 · 방금 전 · ' + escapeHtml(selectedMain) + '</div></div>' +
+      '</div>' +
+      '<div class="emotion-row"><div class="emotion-label">감지된 감정</div>' + emotionsHtml + '</div>' +
+      '<div class="empathy-block">' + escapeHtml(data.empathy || '').replace(/\n/g, '<br>') + '</div>' +
+      '<div class="tips-block"><div class="tips-title">💡 이렇게 해봐요!</div>' + tipsHtml + '</div>' +
+      '<div class="cheer-block"><div class="cheer-text">' + escapeHtml(data.cheer || '').replace(/\n/g, '<br>') + '</div></div>' +
+    '</div>';
+}
+
+function escapeHtml(s) {
+  s = String(s == null ? '' : s);
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ====== 기록 ======
+function saveHistory(input, main, sub, response, fellBack) {
+  history.unshift({
+    input: input,
+    category: main,
+    sub: sub,
+    time: new Date().toISOString(),
+    response: response || null,
+    fellBack: !!fellBack
+  });
+  if (history.length > 30) history = history.slice(0, 30);
+  localStorage.setItem('grace_counsel', JSON.stringify(history));
+  renderHistory();
+}
+
+function deleteHistory(i) {
+  history.splice(i, 1);
+  localStorage.setItem('grace_counsel', JSON.stringify(history));
+  renderHistory();
+}
+
+function clearAll() {
+  if (confirm('기록을 모두 삭제할까요?')) {
+    history = [];
+    localStorage.removeItem('grace_counsel');
+    renderHistory();
+  }
+}
+
+function renderHistory() {
+  var el = document.getElementById('history-list');
+  if (!history.length) {
+    el.innerHTML = '<div class="empty-box">🌟 아직 상담 기록이 없어요<br>고민을 털어놓으면 여기에 남아요</div>';
+    return;
+  }
+  el.innerHTML = history.map(function(h, i) {
+    var d = new Date(h.time);
+    var t = d.getFullYear() + '.' +
+      String(d.getMonth()+1).padStart(2,'0') + '.' +
+      String(d.getDate()).padStart(2,'0') + ' ' +
+      String(d.getHours()).padStart(2,'0') + ':' +
+      String(d.getMinutes()).padStart(2,'0');
+    return '<div class="hist-item">' +
+      '<div class="h-icon">' + (CAT_ICONS[h.category] || '✏️') + '</div>' +
+      '<div class="h-info">' +
+        '<div class="h-preview">' + h.input + '</div>' +
+        '<div class="h-time">' + t + (h.sub ? ' · ' + h.sub : '') + '</div>' +
+      '</div>' +
+      '<div class="h-tag">' + h.category + '</div>' +
+      '<button class="del-btn" onclick="deleteHistory(' + i + ')">✕</button>' +
+    '</div>';
+  }).join('');
+}
+
+loadApiKey();
+renderHistory();
+</script>
+</body>
+</html>
