@@ -448,7 +448,7 @@
     <p>너만을 위한 초대장이 곧 도착해.</p>
   </div>
 
-  <div class="keybar">
+  <div class="keybar" style="display:none">
     <label>API 키</label>
     <input type="password" id="apiKey" placeholder="sk-ant-... (미리보기에선 비워둬도 OK)" autocomplete="off">
     <span class="key-status" id="keyStatus">미리보기 모드</span>
@@ -948,5 +948,12 @@
   }
 })();
 </script>
+
+  // retreat_api_key 자동 로드
+  (function(){
+    var saved = localStorage.getItem('retreat_api_key') || '';
+    var inp = document.getElementById('apiKey');
+    if(inp && saved) inp.value = saved;
+  })();
 </body>
 </html>

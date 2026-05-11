@@ -344,7 +344,7 @@
     <p>학생의 성향을 살피고, 신앙 안에서 다가가는 길을 함께 찾습니다</p>
   </div>
 
-  <div class="keybar">
+  <div class="keybar" style="display:none">
     <label>API 키</label>
     <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
     <span class="key-status" id="keyStatus">미입력</span>
@@ -815,5 +815,12 @@
   renderSavedCount();
 })();
 </script>
+
+  // retreat_api_key 자동 로드
+  (function(){
+    var saved = localStorage.getItem('retreat_api_key') || '';
+    var inp = document.getElementById('apiKey');
+    if(inp && saved) inp.value = saved;
+  })();
 </body>
 </html>

@@ -459,7 +459,7 @@ textarea::placeholder { color: var(--muted); }
 
 
 <!-- API 키바 (다른 v2 프로그램과 키 공유) -->
-<div class="keybar">
+<div class="keybar" style="display:none">
   <label>API 키</label>
   <input type="password" id="apiKey" placeholder="sk-ant-... (미리보기에선 비워둬도 OK)" autocomplete="off">
   <span class="key-status" id="keyStatus">미리보기 모드</span>
@@ -809,7 +809,7 @@ const CAT_ICONS = {
 
 let selectedMain = '';
 let selectedSub = '';
-let history = JSON.parse(localStorage.getItem('grace_counsel') || '[]');
+let counselHistory = JSON.parse(localStorage.getItem('grace_counsel') || '[]');
 
 // ====== API 키 (다른 v2 프로그램과 공유) ======
 const KEY_API = 'retreat_api_key';
@@ -1089,7 +1089,7 @@ function escapeHtml(s) {
 
 // ====== 기록 ======
 function saveHistory(input, main, sub, response, fellBack) {
-  history.unshift({
+  counselHistory.unshift({
     input: input,
     category: main,
     sub: sub,
@@ -1097,14 +1097,14 @@ function saveHistory(input, main, sub, response, fellBack) {
     response: response || null,
     fellBack: !!fellBack
   });
-  if (chatHistory.length > 30) history = history.slice(0, 30);
-  localStorage.setItem('grace_counsel', JSON.stringify(history));
+  if (chatHistory.length > 30) counselHistory = counselHistory.slice(0, 30);
+  localStorage.setItem('grace_counsel', JSON.stringify(counselHistory));
   renderHistory();
 }
 
 function deleteHistory(i) {
-  history.splice(i, 1);
-  localStorage.setItem('grace_counsel', JSON.stringify(history));
+  counselHistory.splice(i, 1);
+  localStorage.setItem('grace_counsel', JSON.stringify(counselHistory));
   renderHistory();
 }
 
@@ -1122,7 +1122,7 @@ function renderHistory() {
     el.innerHTML = '<div class="empty-box">🌟 아직 상담 기록이 없어요<br>고민을 털어놓으면 여기에 남아요</div>';
     return;
   }
-  el.innerHTML = history.map(function(h, i) {
+  el.innerHTML = counselHistory.map(function(h, i) {
     var d = new Date(h.time);
     var t = d.getFullYear() + '.' +
       String(d.getMonth()+1).padStart(2,'0') + '.' +
@@ -1144,5 +1144,12 @@ function renderHistory() {
 loadApiKey();
 renderHistory();
 </script>
+
+  // retreat_api_key 자동 로드
+  (function(){
+    var saved = localStorage.getItem('retreat_api_key') || '';
+    var inp = document.getElementById('apiKey');
+    if(inp && saved) inp.value = saved;
+  })();
 </body>
 </html>

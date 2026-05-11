@@ -916,5 +916,12 @@
   load();
 })();
 </script>
+
+  // retreat_api_key 자동 로드
+  (function(){
+    var saved = localStorage.getItem('retreat_api_key') || '';
+    var inp = document.getElementById('apiKey');
+    if(inp && saved) inp.value = saved;
+  })();
 </body>
 </html>
