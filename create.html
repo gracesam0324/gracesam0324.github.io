@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>말씀을 담은 창작 활동</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F6F4FA;
+  --white:#FFFFFF;
+  --text:#12101E;
+  --sub:#7A7490;
+  --dim:#C4BEDD;
+  --border:rgba(0,0,0,.08);
+  --border2:rgba(0,0,0,.13);
+  --navy:#1E1840;
+  --violet:#5B4FCF;
+  --violet-bg:rgba(91,79,207,.08);
+  --violet-bd:rgba(91,79,207,.24);
+  --violet-dim:rgba(91,79,207,.15);
+}
+html,body{min-height:100%;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
+
+.bar{height:52px;display:flex;align-items:center;padding:0 18px;gap:12px;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(246,244,250,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border)}
+.back{width:34px;height:34px;border-radius:9px;background:rgba(0,0,0,.05);
+  border:none;display:flex;align-items:center;justify-content:center;
+  text-decoration:none;color:var(--text);font-size:.9rem;flex-shrink:0}
+.bar-mid{flex:1;text-align:center}
+.bar-title{font-size:.88rem;font-weight:700}
+.bar-sub{font-size:.62rem;color:var(--sub);margin-top:1px}
+
+.pgtrack{position:fixed;top:52px;left:0;right:0;height:2px;background:rgba(0,0,0,.06);z-index:199}
+.pgfill{height:100%;background:var(--violet);transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+.wrap{padding-top:54px;overflow:hidden}
+.deck{display:flex;transition:transform .42s cubic-bezier(.4,0,.2,1)}
+.screen{min-width:100vw;min-height:calc(100vh - 54px);display:flex;flex-direction:column}
+.inner{max-width:460px;margin:0 auto;padding:28px 20px 36px;flex:1;display:flex;flex-direction:column;width:100%}
+
+.eyebrow{font-size:.67rem;font-weight:700;letter-spacing:.12em;color:var(--violet);text-transform:uppercase;margin-bottom:10px}
+.headline{font-family:'Black Han Sans',sans-serif;font-size:1.55rem;line-height:1.2;color:var(--navy);margin-bottom:6px}
+.headline em{color:var(--violet);font-style:normal}
+.desc{font-size:.8rem;color:var(--sub);line-height:1.75;margin-bottom:22px}
+
+.dots{display:flex;gap:5px;margin-bottom:22px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.3s}
+.dot.on{background:var(--violet);width:16px;border-radius:3px}
+.dot.done{background:var(--violet-dim)}
+
+/* 폼 */
+.flabel{font-size:.68rem;font-weight:700;letter-spacing:.07em;color:var(--sub);text-transform:uppercase;margin-bottom:7px;display:block}
+.finput{width:100%;padding:13px 15px;background:var(--white);border:1px solid var(--border2);border-radius:10px;font-size:.88rem;font-family:'Noto Sans KR',sans-serif;color:var(--text);outline:none;transition:.18s}
+.finput::placeholder{color:var(--dim)}
+.finput:focus{border-color:var(--violet-bd)}
+.ftextarea{width:100%;padding:13px 15px;background:var(--white);border:1px solid var(--border2);border-radius:10px;font-size:.85rem;font-family:'Noto Sans KR',sans-serif;color:var(--text);outline:none;resize:none;line-height:1.8;transition:.18s}
+.ftextarea::placeholder{color:var(--dim)}
+.ftextarea:focus{border-color:var(--violet-bd)}
+
+/* 칩 */
+.chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 15px;border-radius:8px;border:1px solid var(--border2);background:var(--white);font-size:.78rem;font-weight:500;color:var(--sub);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.15s}
+.chip:hover{border-color:var(--violet-bd);color:var(--violet)}
+.chip.on{background:var(--violet);border-color:var(--violet);color:#FFF}
+
+/* 말씀 카드 */
+.verse-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.vcard{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:13px 15px;cursor:pointer;transition:.18s}
+.vcard:hover{border-color:var(--violet-bd)}
+.vcard.on{border-color:var(--violet);background:var(--violet-bg)}
+.vcard-txt{font-size:.82rem;line-height:1.7;color:var(--text);margin-bottom:4px}
+.vcard-ref{font-size:.68rem;color:var(--sub);font-weight:600}
+.vcard.on .vcard-ref{color:var(--violet)}
+
+/* 창작 유형 카드 */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:20px}
+.tcard{border-radius:13px;border:1px solid var(--border);background:var(--white);padding:16px 14px;cursor:pointer;transition:.18s;display:flex;flex-direction:column;gap:6px}
+.tcard:hover{border-color:var(--violet-bd);transform:translateY(-1px)}
+.tcard.on{border-color:var(--violet);background:var(--violet-bg)}
+.tcard-icon{font-size:1.5rem}
+.tcard-name{font-size:.82rem;font-weight:700;color:var(--text)}
+.tcard-desc{font-size:.68rem;color:var(--sub);line-height:1.4}
+.tcard.on .tcard-name{color:var(--violet)}
+.tcard-full{grid-column:1/-1}
+
+/* 로딩 */
+.loading-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px}
+.loader{width:44px;height:44px;margin:0 auto 24px;position:relative}
+.lr{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;animation:lspin linear infinite}
+.lr:nth-child(1){border-top-color:var(--violet);animation-duration:1.5s}
+.lr:nth-child(2){inset:9px;border-right-color:rgba(91,79,207,.4);animation-duration:2.2s;animation-direction:reverse}
+.lcore{position:absolute;inset:18px;border-radius:50%;background:var(--violet);opacity:.4;animation:lpulse 1.3s ease-in-out infinite}
+@keyframes lspin{to{transform:rotate(360deg)}}
+@keyframes lpulse{0%,100%{transform:scale(.8);opacity:.3}50%{transform:scale(1.1);opacity:.65}}
+.loading-t{font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--navy);margin-bottom:8px}
+.loading-d{font-size:.78rem;color:var(--sub);line-height:1.85}
+.loading-d strong{color:var(--violet);display:block;margin-bottom:3px}
+
+/* 창작물 결과 카드 */
+.result-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px}
+.result-card::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--violet),#9B7FE8)}
+.result-head{padding:16px 18px 12px;border-bottom:1px solid var(--border)}
+.result-type-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:4px;background:var(--violet-bg);border:1px solid var(--violet-bd);font-size:.65rem;font-weight:700;color:var(--violet);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px}
+.result-title{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:var(--navy)}
+
+.result-section{padding:16px 18px;border-bottom:1px solid var(--border)}
+.result-section:last-child{border-bottom:none}
+.rsec-label{font-size:.65rem;font-weight:700;letter-spacing:.09em;color:var(--dim);text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.rsec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* 말씀 박스 */
+.verse-box{background:var(--violet-bg);border:1px solid var(--violet-bd);border-radius:10px;padding:13px 15px;margin-bottom:0}
+.vbox-txt{font-family:'Noto Serif KR',serif;font-size:.82rem;line-height:1.85;color:var(--navy);margin-bottom:5px;font-style:italic}
+.vbox-ref{font-size:.67rem;font-weight:700;color:var(--violet);letter-spacing:.04em}
+
+/* 창작물 본문 */
+.creation-body{font-family:'Noto Serif KR',serif;font-size:.84rem;line-height:2;color:var(--text);white-space:pre-wrap;padding:4px 0}
+.prompt-body{font-size:.8rem;line-height:1.75;color:var(--text);white-space:pre-wrap;background:var(--bg);border-radius:9px;padding:13px 14px}
+
+/* 복사 버튼 */
+.copy-row{display:flex;justify-content:flex-end;margin-top:10px}
+.copy-chip{padding:6px 13px;border-radius:6px;border:1px solid var(--border2);background:var(--bg);color:var(--sub);font-size:.7rem;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.13s}
+.copy-chip:hover{color:var(--text);border-color:rgba(0,0,0,.2)}
+.copy-chip.ok{color:var(--violet);border-color:var(--violet-bd)}
+
+/* 갤러리 */
+.gallery-list{display:flex;flex-direction:column;gap:9px}
+.gallery-card{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:.15s;position:relative}
+.gallery-card:hover{border-color:var(--violet-bd);transform:translateY(-1px)}
+.gallery-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--violet);border-radius:3px 0 0 3px}
+.gc-head{padding:13px 15px 9px 18px;display:flex;align-items:center;gap:9px}
+.gc-icon{font-size:1.2rem;flex-shrink:0}
+.gc-info{flex:1;min-width:0}
+.gc-badge{font-size:.62rem;font-weight:700;letter-spacing:.06em;color:var(--violet);text-transform:uppercase;margin-bottom:2px}
+.gc-title{font-size:.83rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-preview{padding:0 15px 12px 18px;font-size:.77rem;line-height:1.65;color:var(--sub);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* 모달 */
+.modal-overlay{position:fixed;inset:0;background:rgba(18,16,30,.5);z-index:300;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;animation:slideUp .35s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--dim);margin:0 auto 20px}
+.modal-close{width:100%;padding:12px;border-radius:9px;background:var(--bg);border:none;font-size:.82rem;color:var(--sub);cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:14px}
+
+/* 버튼 */
+.btn-primary{width:100%;padding:15px;border-radius:10px;background:var(--navy);color:#FFF;font-size:.92rem;font-weight:700;font-family:'Black Han Sans',sans-serif;border:none;cursor:pointer;transition:.18s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-primary:hover{background:#2e2860}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed}
+.btn-ghost{width:100%;padding:15px;border-radius:10px;background:var(--white);color:var(--sub);font-size:.88rem;font-weight:600;border:1px solid var(--border2);cursor:pointer;transition:.18s;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-ghost:hover{color:var(--text);border-color:rgba(0,0,0,.2)}
+.btn-back{width:100%;padding:11px;border-radius:10px;background:none;border:none;font-size:.78rem;color:var(--sub);cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:8px}
+.btn-back:hover{color:var(--text)}
+
+.empty{text-align:center;padding:48px 20px;color:var(--sub)}
+.empty span{font-size:2rem;display:block;margin-bottom:10px;opacity:.5}
+.empty p{font-size:.81rem;line-height:1.7}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--navy);border-radius:50px;padding:10px 20px;font-size:.79rem;color:#FFF;z-index:999;transition:all .3s cubic-bezier(.34,1.56,.64,1);opacity:0;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.15)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#FFF;border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a class="back" href="javascript:void(0)" onclick="window.location.href='index.html'">←</a>
+  <div class="bar-mid">
+    <div class="bar-title">🎨 말씀을 담은 창작 활동</div>
+    <div class="bar-sub">말씀으로 시·이미지·영상을 만들어요</div>
+  </div>
+  <div style="width:34px"></div>
+</div>
+<div class="pgtrack"><div class="pgfill" id="pg" style="width:0%"></div></div>
+
+<div class="wrap">
+<div class="deck" id="deck">
+
+<!-- ══ S0: 내 정보 ══ -->
+<div class="screen" id="s0">
+<div class="inner">
+  <div class="eyebrow">STEP 1 · 내 정보</div>
+  <h1 class="headline">말씀으로<br><em>창작</em>을 시작해요</h1>
+  <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <p class="desc">말씀 기반 시·이미지 프롬프트·영상 스크립트를<br>AI와 함께 만들어봐요.</p>
+
+  <div style="margin-bottom:14px">
+    <label class="flabel">이름</label>
+    <input class="finput" id="f-name" type="text" placeholder="홍길동" maxlength="10">
+  </div>
+  <div style="margin-bottom:14px">
+    <label class="flabel">학년</label>
+    <div class="chip-row" id="gradeRow">
+      <button class="chip" onclick="pick('gradeRow',this)">중1</button>
+      <button class="chip" onclick="pick('gradeRow',this)">중2</button>
+      <button class="chip" onclick="pick('gradeRow',this)">중3</button>
+    </div>
+  </div>
+  <div style="margin-bottom:24px">
+    <label class="flabel">우리 조</label>
+    <div class="chip-row" id="teamRow">
+      <button class="chip" onclick="pick('teamRow',this)">베드로 조</button>
+      <button class="chip" onclick="pick('teamRow',this)">바울 조</button>
+      <button class="chip" onclick="pick('teamRow',this)">에스더 조</button>
+      <button class="chip" onclick="pick('teamRow',this)">다윗 조</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="toS1()">다음 →</button>
+</div>
+</div>
+
+<!-- ══ S1: 말씀 선택 ══ -->
+<div class="screen" id="s1">
+<div class="inner">
+  <div class="eyebrow">STEP 2 · 말씀 선택</div>
+  <h1 class="headline">어떤 <em>말씀</em>으로<br>창작할까요?</h1>
+  <div class="dots"><div class="dot done"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+  <p class="desc">추천 말씀을 고르거나 직접 입력해요</p>
+
+  <div class="verse-list">
+    <div class="vcard" onclick="pickVerse(this,'빛이 있으라 하시니 빛이 있었고 빛이 하나님이 보시기에 좋았더라','창세기 1:3-4')">
+      <div class="vcard-txt">빛이 있으라 하시니 빛이 있었고 빛이 하나님이 보시기에 좋았더라</div>
+      <div class="vcard-ref">창세기 1:3-4</div>
+    </div>
+    <div class="vcard" onclick="pickVerse(this,'여호와는 나의 목자시니 내게 부족함이 없으리로다','시편 23:1')">
+      <div class="vcard-txt">여호와는 나의 목자시니 내게 부족함이 없으리로다</div>
+      <div class="vcard-ref">시편 23:1</div>
+    </div>
+    <div class="vcard" onclick="pickVerse(this,'내가 세상 끝날까지 너희와 항상 함께 있으리라','마태복음 28:20')">
+      <div class="vcard-txt">내가 세상 끝날까지 너희와 항상 함께 있으리라</div>
+      <div class="vcard-ref">마태복음 28:20</div>
+    </div>
+    <div class="vcard" onclick="pickVerse(this,'사랑은 오래 참고 사랑은 온유하며 시기하지 아니하며','고린도전서 13:4')">
+      <div class="vcard-txt">사랑은 오래 참고 사랑은 온유하며 시기하지 아니하며</div>
+      <div class="vcard-ref">고린도전서 13:4</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px">
+    <label class="flabel">직접 입력 <span style="text-transform:none;font-weight:400;opacity:.6">(선택)</span></label>
+    <input class="finput" id="f-verse" type="text" placeholder="말씀을 입력해주세요…" oninput="clearVerseSelect()" style="margin-bottom:7px">
+    <input class="finput" id="f-ref" type="text" placeholder="출처 (예: 요한복음 3:16)" maxlength="20">
+  </div>
+
+  <button class="btn-primary" onclick="toS2()">다음 →</button>
+  <button class="btn-back" onclick="go(0)">← 이전</button>
+</div>
+</div>
+
+<!-- ══ S2: 창작 유형 ══ -->
+<div class="screen" id="s2">
+<div class="inner">
+  <div class="eyebrow">STEP 3 · 창작 유형</div>
+  <h1 class="headline">어떻게<br><em>표현</em>할까요?</h1>
+  <div class="dots"><div class="dot done"></div><div class="dot done"></div><div class="dot on"></div><div class="dot"></div></div>
+
+  <div class="type-grid">
+    <div class="tcard" onclick="pickType(this,'poem','✍️','시','말씀으로 쓰는 짧은 시')">
+      <div class="tcard-icon">✍️</div>
+      <div class="tcard-name">시 (詩)</div>
+      <div class="tcard-desc">말씀으로 쓰는 감성 시</div>
+    </div>
+    <div class="tcard" onclick="pickType(this,'essay','📝','묵상 에세이','말씀 묵상 짧은 글')">
+      <div class="tcard-icon">📝</div>
+      <div class="tcard-name">묵상 에세이</div>
+      <div class="tcard-desc">말씀을 삶으로 풀어쓰기</div>
+    </div>
+    <div class="tcard" onclick="pickType(this,'prayer','🙏','기도문','나만의 기도문')">
+      <div class="tcard-icon">🙏</div>
+      <div class="tcard-name">기도문</div>
+      <div class="tcard-desc">말씀에서 시작하는 기도</div>
+    </div>
+    <div class="tcard" onclick="pickType(this,'image','🖼️','이미지 프롬프트','DALL-E용 프롬프트')">
+      <div class="tcard-icon">🖼️</div>
+      <div class="tcard-name">이미지 프롬프트</div>
+      <div class="tcard-desc">DALL-E · Canva AI용</div>
+    </div>
+    <div class="tcard tcard-full" onclick="pickType(this,'video','🎬','영상 스크립트','숏폼 영상 대본')">
+      <div class="tcard-icon">🎬</div>
+      <div class="tcard-name">영상 스크립트</div>
+      <div class="tcard-desc">30초~1분 숏폼 영상 대본 (릴스·쇼츠)</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="makeBtn" onclick="runAI()" disabled>✦ AI로 창작하기</button>
+  <button class="btn-back" onclick="go(1)">← 이전</button>
+</div>
+</div>
+
+<!-- ══ S3: 로딩 ══ -->
+<div class="screen" id="s3">
+<div class="inner" style="justify-content:center">
+  <div class="loading-wrap">
+    <div class="loader">
+      <div class="lr"></div><div class="lr"></div>
+      <div class="lcore"></div>
+    </div>
+    <div class="loading-t">창작 중이에요</div>
+    <div class="loading-d">
+      <strong id="lmsg">말씀을 깊이 묵상하는 중…</strong>
+      말씀의 의미를 담아<br>창작물을 만들고 있어요 🎨
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ S4: 결과 ══ -->
+<div class="screen" id="s4">
+<div class="inner">
+  <div class="eyebrow">완성! · STEP 4</div>
+  <div class="dots" style="margin-bottom:16px">
+    <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot on"></div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-head">
+      <div class="result-type-badge" id="rTypeBadge"></div>
+      <div class="result-title" id="rTitle"></div>
+    </div>
+    <div class="result-section">
+      <div class="rsec-label">📖 바탕 말씀</div>
+      <div class="verse-box">
+        <div class="vbox-txt" id="rVerse"></div>
+        <div class="vbox-ref" id="rRef"></div>
+      </div>
+    </div>
+    <div class="result-section">
+      <div class="rsec-label" id="rBodyLabel">✍️ 창작물</div>
+      <div id="rBody"></div>
+      <div class="copy-row">
+        <button class="copy-chip" id="copyChip" onclick="copyCreation()">복사</button>
+      </div>
+    </div>
+    <div class="result-section" id="rTipSection">
+      <div class="rsec-label">💡 활용 팁</div>
+      <div style="font-size:.8rem;line-height:1.75;color:var(--sub)" id="rTip"></div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="saveWork()">📌 창작물 저장하기</button>
+  <button class="btn-ghost" style="margin-top:8px" onclick="go(5)">🎨 내 창작 갤러리</button>
+  <button class="btn-back" onclick="go(0)">← 새로 창작하기</button>
+</div>
+</div>
+
+<!-- ══ S5: 갤러리 ══ -->
+<div class="screen" id="s5">
+<div class="inner">
+  <div class="eyebrow">내 창작 갤러리</div>
+  <h1 class="headline">내가 만든<br><em>창작물들</em></h1>
+  <p class="desc" style="margin-bottom:18px">말씀으로 담아낸 나만의 작품이에요 🎨</p>
+  <div class="gallery-list" id="galleryList"></div>
+  <button class="btn-ghost" style="margin-top:16px" onclick="go(0)">+ 새 창작물 만들기</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- 상세 모달 -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="result-type-badge" id="mBadge" style="margin-bottom:8px"></div>
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:var(--navy);margin-bottom:14px" id="mTitle"></div>
+    <div class="verse-box" style="margin-bottom:14px">
+      <div class="vbox-txt" id="mVerse"></div>
+      <div class="vbox-ref" id="mRef"></div>
+    </div>
+    <div id="mBody"></div>
+    <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">닫기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='vbs_create1';
+const PG=[0,25,50,75,100,100];
+const MSGS=['말씀을 깊이 묵상하는 중…','창작 방향을 구성하는 중…','표현을 다듬는 중…','마무리 작업 중…'];
+const TYPE_INFO={
+  poem:{icon:'✍️',label:'시',bodyLabel:'✍️ 창작한 시'},
+  essay:{icon:'📝',label:'묵상 에세이',bodyLabel:'📝 에세이'},
+  prayer:{icon:'🙏',label:'기도문',bodyLabel:'🙏 기도문'},
+  image:{icon:'🖼️',label:'이미지 프롬프트',bodyLabel:'🖼️ DALL-E 프롬프트'},
+  video:{icon:'🎬',label:'영상 스크립트',bodyLabel:'🎬 영상 스크립트'},
+};
+
+let tmp={name:'',grade:'',team:'',verse:'',ref:'',type:'',result:null};
+let msgT;
+
+function D(){try{return JSON.parse(localStorage.getItem(KEY))||{works:[]}}catch(e){return{works:[]}}}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+
+function go(n){
+  document.getElementById('deck').style.transform=`translateX(-${n*100}vw)`;
+  document.getElementById('pg').style.width=(PG[n]||0)+'%';
+  window.scrollTo(0,0);
+  if(n===5) renderGallery();
+}
+
+function pick(rowId,btn){
+  document.querySelectorAll('#'+rowId+' .chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function toS1(){
+  tmp.name=document.getElementById('f-name').value.trim();
+  tmp.grade=document.querySelector('#gradeRow .chip.on')?.textContent||'';
+  tmp.team=document.querySelector('#teamRow .chip.on')?.textContent||'';
+  if(!tmp.name){toast('✍️ 이름을 입력해주세요');return}
+  if(!tmp.grade){toast('학년을 선택해주세요');return}
+  if(!tmp.team){toast('우리 조를 선택해주세요');return}
+  go(1);
+}
+
+function pickVerse(card,v,r){
+  document.querySelectorAll('.vcard').forEach(c=>c.classList.remove('on'));
+  card.classList.add('on');
+  document.getElementById('f-verse').value='';
+  document.getElementById('f-ref').value='';
+  tmp.verse=v; tmp.ref=r;
+}
+function clearVerseSelect(){
+  document.querySelectorAll('.vcard').forEach(c=>c.classList.remove('on'));
+  tmp.verse=''; tmp.ref='';
+}
+
+function toS2(){
+  const mv=document.getElementById('f-verse').value.trim();
+  const mr=document.getElementById('f-ref').value.trim();
+  if(mv){tmp.verse=mv;tmp.ref=mr||''}
+  if(!tmp.verse){toast('📖 말씀을 선택하거나 입력해주세요');return}
+  go(2);
+}
+
+function pickType(card,type){
+  document.querySelectorAll('.tcard').forEach(c=>c.classList.remove('on'));
+  card.classList.add('on');
+  tmp.type=type;
+  document.getElementById('makeBtn').disabled=false;
+}
+
+async function runAI(){
+  go(3);
+  let mi=0;
+  msgT=setInterval(()=>{mi=(mi+1)%MSGS.length;document.getElementById('lmsg').textContent=MSGS[mi]},1700);
+
+  const typePrompts={
+    poem:`이 말씀을 주제로 중학생이 쓴 것 같은 짧고 감성적인 시를 써줘. 4~6연, 각 연 3~4행. 운율감 있게.`,
+    essay:`이 말씀으로 묵상 에세이를 써줘. 중학생 눈높이로, 자신의 삶과 연결해서. 200자 내외, 3단락.`,
+    prayer:`이 말씀에서 시작하는 기도문을 써줘. 1인칭, 진솔하고 구체적으로. 하나님께 드리는 형식으로. 150자 내외.`,
+    image:`이 말씀의 분위기를 담은 DALL-E 이미지 생성 프롬프트를 영어로 써줘. 구체적인 장면·색감·분위기 포함. 60자 내외. 그리고 Canva 검색 키워드도 한국어로 3개 줘.`,
+    video:`이 말씀을 담은 30초 숏폼 영상(릴스/쇼츠) 스크립트를 써줘. 오프닝 후크→말씀→적용→마무리 구조로. 중학생이 공감할 수 있게.`,
+  };
+
+  const tipMap={
+    poem:'이 시를 손으로 예쁘게 써서 사진 찍어 공유해봐요 ✍️',
+    essay:'에세이를 단톡방에 공유하거나 수련회 신문에 실어봐요 📰',
+    prayer:'이 기도문으로 오늘 저녁 기도해보세요 🙏',
+    image:'위 프롬프트를 DALL-E나 Canva AI에 붙여넣으면 이미지가 생성돼요 🎨',
+    video:'캡컷이나 CapCut으로 영상 만들 때 이 스크립트를 사용해봐요 🎬',
+  };
+
+  const prompt=`중등부 여름수련회 창작 활동을 도와줘.
+
+작성자: ${tmp.name} (${tmp.grade}, ${tmp.team})
+말씀: ${tmp.verse}
+출처: ${tmp.ref}
+창작 유형: ${TYPE_INFO[tmp.type]?.label}
+
+${typePrompts[tmp.type]}
+
+JSON만 응답 (코드블록 없이):
+{"title":"창작물 제목 (15자 이내)","creation":"창작물 본문","extra":"${tmp.type==='image'?'Canva 검색 키워드 3개 (쉼표 구분)':''}" }`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('retreat_api_key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    clearInterval(msgT);
+    const j=JSON.parse(data.content.find(b=>b.type==='text').text.replace(/```json|```/g,'').trim());
+    tmp.result=j;
+    renderResult(j,tipMap[tmp.type]);
+    go(4);
+  }catch(e){
+    clearInterval(msgT);
+    toast('⚠️ 오류가 발생했어요. 다시 시도해주세요.');
+    go(2);
+  }
+}
+
+function renderResult(j,tip){
+  const info=TYPE_INFO[tmp.type];
+  document.getElementById('rTypeBadge').textContent=`${info.icon} ${info.label}`;
+  document.getElementById('rTitle').textContent=j.title||'';
+  document.getElementById('rVerse').textContent=tmp.verse;
+  document.getElementById('rRef').textContent=tmp.ref;
+  document.getElementById('rBodyLabel').textContent=info.bodyLabel;
+  document.getElementById('rTip').textContent=tip||'';
+
+  const bodyEl=document.getElementById('rBody');
+  if(tmp.type==='image'){
+    bodyEl.innerHTML=`<div class="prompt-body">${esc(j.creation)}</div>
+      ${j.extra?`<div style="margin-top:10px;font-size:.75rem;color:var(--sub)">Canva 키워드: <strong style="color:var(--violet)">${esc(j.extra)}</strong></div>`:''}`;
+  } else {
+    bodyEl.innerHTML=`<div class="creation-body">${esc(j.creation)}</div>`;
+  }
+  window._creation=j.creation+(j.extra?'\n\nCanva 키워드: '+j.extra:'');
+}
+
+function copyCreation(){
+  navigator.clipboard.writeText(window._creation||'').then(()=>{
+    const b=document.getElementById('copyChip');
+    b.textContent='✓'; b.classList.add('ok');
+    setTimeout(()=>{b.textContent='복사';b.classList.remove('ok')},2000);
+  });
+}
+
+function saveWork(){
+  if(!tmp.result){toast('먼저 창작물을 만들어주세요');return}
+  const d=D();
+  d.works.push({
+    id:Date.now().toString(36),
+    name:tmp.name,grade:tmp.grade,team:tmp.team,
+    type:tmp.type,verse:tmp.verse,ref:tmp.ref,
+    title:tmp.result.title,creation:tmp.result.creation,
+    ts:Date.now()
+  });
+  save(d);
+  toast('📌 창작물이 저장됐어요!');
+}
+
+function renderGallery(){
+  const d=D();
+  const works=[...(d.works||[])].reverse();
+  const el=document.getElementById('galleryList');
+  if(!works.length){
+    el.innerHTML=`<div class="empty"><span>🎨</span><p>아직 저장된 창작물이 없어요.<br>첫 번째 작품을 만들어봐요!</p></div>`;return;
+  }
+  el.innerHTML=works.map(w=>{
+    const info=TYPE_INFO[w.type]||{icon:'🎨',label:'창작'};
+    return `<div class="gallery-card" onclick="openModal('${w.id}')">
+      <div class="gc-head">
+        <div class="gc-icon">${info.icon}</div>
+        <div class="gc-info">
+          <div class="gc-badge">${info.label}</div>
+          <div class="gc-title">${esc(w.title)}</div>
+        </div>
+      </div>
+      <div class="gc-preview">${esc(w.creation)}</div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(id){
+  const d=D();
+  const w=d.works.find(x=>x.id===id);
+  if(!w)return;
+  const info=TYPE_INFO[w.type]||{icon:'🎨',label:'창작'};
+  document.getElementById('mBadge').textContent=`${info.icon} ${info.label}`;
+  document.getElementById('mTitle').textContent=w.title;
+  document.getElementById('mVerse').textContent=w.verse;
+  document.getElementById('mRef').textContent=w.ref;
+  document.getElementById('mBody').innerHTML=`<div class="creation-body" style="font-size:.83rem;line-height:1.95;white-space:pre-wrap">${esc(w.creation)}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e){if(e.target===document.getElementById('modalOverlay'))document.getElementById('modalOverlay').classList.remove('open')}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+let tt;
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2500)}
+</script>
+</body>
+</html>
