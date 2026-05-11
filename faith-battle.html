@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신앙 논증 배틀</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080C14;--card:#0F1521;--card2:#151E2E;
+  --red:#EF4444;--red2:#FCA5A5;--red3:rgba(239,68,68,.12);
+  --blue:#3B82F6;--blue2:#93C5FD;--blue3:rgba(59,130,246,.12);
+  --gold:#F59E0B;--gold2:#FCD34D;
+  --white:#F1F5F9;--sub:#64748B;--border:#1E2D42;
+}
+html,body{min-height:100%;background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--white);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(239,68,68,.06),transparent 60%);pointer-events:none}
+
+/* 탑바 */
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(8,12,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--sub);font-size:1rem;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center}
+.tag{font-size:.65rem;font-weight:900;background:var(--red);color:white;padding:3px 8px;border-radius:4px}
+.topbar-title{font-size:.88rem;font-weight:800;color:var(--white);flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--sub)}
+
+/* 히어로 */
+.hero{padding:22px 20px 18px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'⚔';position:absolute;font-size:10rem;opacity:.03;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.hero-badge{display:inline-block;background:var(--red3);border:1px solid rgba(239,68,68,.35);color:var(--red2);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:10px;letter-spacing:.06em}
+.hero h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.4rem,5vw,2rem);line-height:1.2;margin-bottom:4px}
+.hero h1 em{background:linear-gradient(135deg,var(--red),#F97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.hero p{font-size:.78rem;color:var(--sub);line-height:1.7}
+
+.wrap{max-width:560px;margin:0 auto;padding:18px 16px 80px;position:relative;z-index:1}
+.sec-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--sub);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* 설정 화면 */
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+
+/* 주제 선택 */
+.topic-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.topic-btn{padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer;font-family:inherit;text-align:left;transition:.2s;position:relative;overflow:hidden}
+.topic-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--red);opacity:0;transition:.2s}
+.topic-btn:hover{border-color:rgba(239,68,68,.4);background:var(--card2)}
+.topic-btn:hover::before{opacity:1}
+.topic-btn.on{border-color:var(--red);background:var(--red3)}
+.topic-btn.on::before{opacity:1}
+.topic-title{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:3px}
+.topic-sub{font-size:.72rem;color:var(--sub);line-height:1.4}
+
+/* 팀 선택 */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.team-btn{padding:12px 8px;border:1px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer;font-family:inherit;text-align:center;font-size:.85rem;font-weight:700;color:var(--sub);transition:.15s}
+.team-btn.t0.on{background:rgba(59,130,246,.2);border-color:#3B82F6;color:#93C5FD}
+.team-btn.t1.on{background:rgba(16,185,129,.2);border-color:#10B981;color:#6EE7B7}
+.team-btn.t2.on{background:rgba(139,92,246,.2);border-color:#8B5CF6;color:#C4B5FD}
+.team-btn.t3.on{background:rgba(239,68,68,.2);border-color:#EF4444;color:#FCA5A5}
+
+/* 난이도 */
+.diff-row{display:flex;gap:8px;margin-bottom:20px}
+.diff-btn{flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-family:inherit;text-align:center;font-size:.8rem;font-weight:700;color:var(--sub);transition:.15s}
+.diff-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(245,158,11,.1)}
+
+/* 시작 버튼 */
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--red),#DC2626);color:white;border:none;border-radius:12px;font-size:1rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 24px rgba(239,68,68,.3)}
+.start-btn:hover{opacity:.9;transform:translateY(-1px)}
+
+/* 배틀 화면 */
+.battle-screen{display:none}
+.battle-screen.show{display:block}
+
+/* 진행 바 */
+.round-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.round-pips{display:flex;gap:6px}
+.pip{width:28px;height:6px;border-radius:3px;background:var(--border);transition:.4s}
+.pip.done{background:var(--red)}
+.pip.active{background:linear-gradient(90deg,var(--red),#F97316)}
+.round-info{font-size:.75rem;color:var(--sub)}
+
+/* AI 공격 카드 */
+.ai-attack{background:var(--red3);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:16px;margin-bottom:14px;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ai-attack-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ai-label{font-size:.68rem;font-weight:700;background:rgba(239,68,68,.3);color:var(--red2);padding:3px 10px;border-radius:20px;letter-spacing:.04em}
+.ai-round{font-size:.68rem;color:var(--sub)}
+.ai-text{font-size:.88rem;line-height:1.75;color:var(--white)}
+.ai-weak{margin-top:10px;padding:10px 12px;background:rgba(239,68,68,.08);border-radius:8px;border-left:3px solid var(--red);font-size:.78rem;color:var(--red2);line-height:1.6}
+
+/* 방어 입력 */
+.defense-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.defense-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.team-label-badge{font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.defense-guide{font-size:.78rem;color:var(--sub);margin-bottom:10px;line-height:1.6;padding:8px 12px;background:var(--blue3);border-radius:8px;border-left:3px solid rgba(59,130,246,.4)}
+.defense-textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:.88rem;font-family:inherit;background:var(--card2);color:var(--white);resize:none;min-height:100px;line-height:1.6}
+.defense-textarea:focus{outline:none;border-color:var(--blue)}
+.defense-textarea::placeholder{color:var(--sub)}
+.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--blue),#2563EB);color:white;border:none;border-radius:10px;font-size:.9rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:10px;transition:.15s}
+.submit-btn:hover{opacity:.9}
+.submit-btn:disabled{background:var(--border);color:var(--sub);cursor:not-allowed}
+
+/* 방어 기록 */
+.log-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.log-item{border-radius:10px;padding:12px 14px;border:1px solid}
+.log-ai{background:var(--red3);border-color:rgba(239,68,68,.2)}
+.log-def{background:var(--blue3);border-color:rgba(59,130,246,.2)}
+.log-header{font-size:.7rem;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.log-text{font-size:.82rem;line-height:1.6;color:rgba(255,255,255,.82)}
+
+/* AI 분석 중 */
+.loading-attack{display:none;text-align:center;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:14px}
+.loading-attack.show{display:block;animation:fadeIn .3s ease}
+.sword-anim{font-size:2.2rem;animation:swing 1s ease-in-out infinite alternate;display:inline-block}
+@keyframes swing{from{transform:rotate(-20deg)}to{transform:rotate(20deg)}}
+.loading-txt{font-size:.85rem;font-weight:700;color:var(--red2);margin-top:8px}
+
+/* 최종 판결 */
+.verdict{display:none;animation:fadeIn .5s ease}
+.verdict.show{display:block}
+.verdict-top{background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(239,68,68,.08));border:2px solid rgba(245,158,11,.4);border-radius:16px;padding:20px;text-align:center;margin-bottom:14px}
+.verdict-icon{font-size:3rem;display:block;margin-bottom:8px;animation:bounce .8s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.verdict-title{font-family:'Black Han Sans',sans-serif;font-size:1.2rem;color:var(--gold2);margin-bottom:4px}
+.verdict-sub{font-size:.78rem;color:rgba(255,255,255,.6)}
+.verdict-score{font-family:'Black Han Sans',sans-serif;font-size:2.5rem;color:var(--gold);margin:10px 0}
+.score-max{font-size:1rem;color:var(--sub)}
+
+.verdict-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.vs-title{font-size:.78rem;font-weight:700;color:var(--sub);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.vs-text{font-size:.83rem;line-height:1.7;color:rgba(255,255,255,.82)}
+.vs-strong{color:var(--gold2);font-weight:700}
+.vs-weak{color:var(--red2);font-weight:700}
+
+.again-btn{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font-size:.9rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--card);color:var(--sub);transition:.15s;margin-top:4px}
+.again-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* 모달 */
+
+/* 힌트 섹션 */
+.hint-toggle{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);border-radius:8px;padding:7px 12px;cursor:pointer;font-family:inherit;font-size:.75rem;font-weight:700;color:var(--sub);width:100%;margin-bottom:0;transition:.15s}
+.hint-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.hint-toggle.open{border-color:rgba(245,158,11,.4);color:var(--gold);background:rgba(245,158,11,.06)}
+.hint-box{display:none;padding:12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:10px;margin-top:8px;animation:fadeIn .2s ease}
+.hint-box.show{display:block}
+.hint-sec{margin-bottom:10px}
+.hint-sec:last-child{margin-bottom:0}
+.hint-sec-title{font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:.06em;margin-bottom:6px}
+.hint-chips{display:flex;flex-wrap:wrap;gap:5px}
+.hint-chip{padding:4px 10px;border:1px solid rgba(245,158,11,.3);border-radius:20px;font-size:.72rem;color:var(--gold2);cursor:pointer;background:rgba(245,158,11,.08);transition:.15s}
+.hint-chip:hover{background:rgba(245,158,11,.2);border-color:var(--gold)}
+.hint-chip-arg{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);color:var(--blue2)}
+.hint-chip-arg:hover{background:rgba(59,130,246,.2);border-color:var(--blue)}
+.hint-arg{font-size:.75rem;color:rgba(255,255,255,.65);padding:4px 0;border-bottom:1px solid var(--border);line-height:1.4}
+.hint-arg:last-child{border-bottom:none}
+.hint-starter{font-size:.73rem;color:rgba(255,255,255,.55);padding:5px 0 5px 8px;border-left:2px solid rgba(245,158,11,.3);line-height:1.5;cursor:pointer;transition:.15s}
+.hint-starter:hover{color:var(--gold2);border-left-color:var(--gold)}
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+.key-modal.open{display:flex}
+.key-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 20px;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.key-box h3{font-weight:900;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:14px;line-height:1.6}
+.key-inp{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;font-family:inherit;background:var(--card2);color:var(--white);margin-bottom:10px}
+.key-save{width:100%;padding:12px;background:var(--red);color:white;border:none;border-radius:8px;font-weight:900;font-family:inherit;cursor:pointer;font-size:.9rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+  <span class="tag">중-11</span>
+  <span class="topbar-title">⚔️ 신앙 논증 배틀</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+
+<div class="hero">
+  <div class="hero-badge">🔥 3일차 오전 · 10:00–11:30 · 팀 대결</div>
+  <h1>AI 악마의 변호인을<br><em>이겨라</em></h1>
+  <p>AI가 신앙을 집요하게 공격합니다<br>성경 근거로 반박할수록 AI의 공격이 강해져요</p>
+</div>
+
+<div class="wrap">
+
+  <!-- 설정 화면 -->
+  <div id="setupScreen">
+
+    <div class="sec-label">공격 주제 선택</div>
+    <div class="topic-list">
+      <div class="topic-btn on" onclick="pickTopic(this,0)">
+        <div class="topic-title">⚡ "하나님이 존재한다는 증거가 없다"</div>
+        <div class="topic-sub">신의 존재 증명 vs 불가지론적 공격</div>
+      </div>
+      <div class="topic-btn" onclick="pickTopic(this,1)">
+        <div class="topic-title">💀 "선한 하나님이라면 왜 고난을 허락하는가?"</div>
+        <div class="topic-sub">신정론 — 하나님의 선함과 악의 공존</div>
+      </div>
+      <div class="topic-btn" onclick="pickTopic(this,2)">
+        <div class="topic-title">📖 "성경은 인간이 만든 책일 뿐이다"</div>
+        <div class="topic-sub">성경의 신뢰성과 영감에 관한 공격</div>
+      </div>
+      <div class="topic-btn" onclick="pickTopic(this,3)">
+        <div class="topic-title">✝️ "예수님의 부활은 신화에 불과하다"</div>
+        <div class="topic-sub">부활의 역사적 사실성에 관한 공격</div>
+      </div>
+      <div class="topic-btn" onclick="pickTopic(this,4)">
+        <div class="topic-title">🙏 "기도가 효과 있다는 과학적 증거가 없다"</div>
+        <div class="topic-sub">기도의 실효성과 신앙의 합리성 공격</div>
+      </div>
+      <div class="topic-btn" onclick="pickTopic(this,5)">
+        <div class="topic-title">🌍 "기독교는 역사적으로 악을 행해왔다"</div>
+        <div class="topic-sub">십자군·종교 전쟁을 근거로 한 신앙 공격</div>
+      </div>
+    </div>
+
+    <div class="sec-label">우리 팀</div>
+    <div class="team-grid">
+      <button class="team-btn t0 on" onclick="pickTeam(this,'베드로팀','#3B82F6')">⚓ 베드로팀</button>
+      <button class="team-btn t1" onclick="pickTeam(this,'바울팀','#10B981')">✉️ 바울팀</button>
+      <button class="team-btn t2" onclick="pickTeam(this,'에스더팀','#8B5CF6')">👑 에스더팀</button>
+      <button class="team-btn t3" onclick="pickTeam(this,'다윗팀','#EF4444')">🎵 다윗팀</button>
+    </div>
+
+    <div class="sec-label">AI 공격 강도</div>
+    <div class="diff-row">
+      <button class="diff-btn" onclick="pickDiff(this,'easy')">🌱 입문<br><span style="font-size:.68rem;font-weight:400">논리 단순</span></button>
+      <button class="diff-btn on" onclick="pickDiff(this,'normal')">⚔️ 표준<br><span style="font-size:.68rem;font-weight:400">균형 공격</span></button>
+      <button class="diff-btn" onclick="pickDiff(this,'hard')">🔥 고강도<br><span style="font-size:.68rem;font-weight:400">철학적 공격</span></button>
+    </div>
+
+    <button class="start-btn" onclick="startBattle()">⚔️ 배틀 시작!</button>
+  </div>
+
+  <!-- 배틀 화면 -->
+  <div class="battle-screen" id="battleScreen">
+    <div class="round-bar">
+      <div class="round-pips" id="roundPips"></div>
+      <div class="round-info" id="roundInfo"></div>
+    </div>
+    <div class="log-list" id="logList"></div>
+    <div class="loading-attack" id="loadingAttack">
+      <div class="sword-anim">⚔️</div>
+      <div class="loading-txt">AI 악마의 변호인이 반박을 준비 중...</div>
+    </div>
+    <div id="aiAttackArea"></div>
+    <div id="defenseArea"></div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+</div>
+
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 Claude API 키 설정</h3>
+    <p>AI 악마의 변호인을 불러오려면 API 키가 필요해요.</p>
+    <input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+
+<script>
+var TOPICS = [
+  {title:'하나님이 존재한다는 증거가 없다', ctx:'신의 존재 증명과 불가지론'},
+  {title:'선한 하나님이라면 왜 고난을 허락하는가?', ctx:'신정론과 악의 문제'},
+  {title:'성경은 인간이 만든 책일 뿐이다', ctx:'성경의 신뢰성과 영감'},
+  {title:'예수님의 부활은 신화에 불과하다', ctx:'부활의 역사적 사실성'},
+  {title:'기도가 효과 있다는 과학적 증거가 없다', ctx:'기도의 실효성과 신앙의 합리성'},
+  {title:'기독교는 역사적으로 악을 행해왔다', ctx:'기독교 역사의 어두운 면'},
+];
+var HINTS = [
+  { // 0: 하나님 존재
+    verses: ['시편 19:1','롬 1:20','히 11:1','요 1:3','창 1:1'],
+    args: ['우주론적 논증','목적론적 논증','도덕법칙의 기원','무에서 유를 만들 수 없다','세밀한 우주 설계(Fine-Tuning)','C.S.루이스 - 내면의 법칙'],
+    starters: ['하나님의 존재는 과학으로 증명할 필요가 없는 이유는...','우주의 질서와 복잡성 자체가 설계자를 가리키는 이유는...','증거가 없다는 것과 존재하지 않는다는 것은 다릅니다. 왜냐하면...'],
+  },
+  { // 1: 신정론(고난)
+    verses: ['롬 8:28','욥 1:21','요 9:3','고후 12:9','약 1:2-4','창 50:20'],
+    args: ['자유의지와 악의 필요성','고난을 통한 성장','요셉의 이야기 - 악이 선으로','욥기 - 이유 없는 고난의 의미','영원한 관점에서 본 고난','C.S.루이스 <고통의 문제>'],
+    starters: ['고난이 존재한다는 것이 하나님의 선함을 부정하지 않는 이유는...','자유의지를 주셨기 때문에 고난이 허락될 수 있습니다. 왜냐하면...','고난 속에서도 하나님이 선하신 증거는...'],
+  },
+  { // 2: 성경 신뢰성
+    verses: ['딤후 3:16','벧후 1:21','사 40:8','마 5:18','시 119:160'],
+    args: ['수천 개의 필사본 일치율','예언의 성취 (이사야 53장)','고고학적 발굴 증거','역사적 사실과의 일치','저자들의 순교 - 거짓말이면 죽지 않는다','사해 두루마리 발견'],
+    starters: ['성경이 인간의 작품이라면 설명할 수 없는 것들이 있습니다. 예를 들어...','수백 년에 걸쳐 다른 저자들이 쓴 책들이 하나의 주제로 일치한다는 것은...','성경 예언이 수백 년 후에 정확히 이루어진 사례로...'],
+  },
+  { // 3: 부활
+    verses: ['고전 15:3-8','마 28:6','요 20:27','행 1:3','고전 15:17'],
+    args: ['500명 이상 목격자','빈 무덤 - 아무도 시체를 제시 못함','제자들의 순교','여성이 첫 목격자 - 당시 증인으로 불리해 조작 아님','바울의 회심','역사가 요세푸스의 기록'],
+    starters: ['부활이 신화라면 당시 사람들이 시체를 보여줬을 것입니다. 하지만...','500명 이상의 목격자가 있었다는 사실은...','제자들이 거짓을 알면서도 죽었다는 것은 불가능합니다. 왜냐하면...'],
+  },
+  { // 4: 기도의 실효성
+    verses: ['마 7:7','빌 4:6','요 15:7','살전 5:17','약 5:16'],
+    args: ['기도는 응답만이 아닌 관계','응답 없음도 하나님의 뜻','기도 연구 (간호학 저널)','내적 변화의 증거','기도로 바뀐 역사적 사건들','과학이 측정 못하는 것들'],
+    starters: ['기도의 목적이 원하는 것을 얻는 것만이 아닌 이유는...','과학이 측정할 수 없다는 것이 효과가 없다는 증거가 아닌 이유는...','기도 후 내 마음과 관계가 변한 경험은...'],
+  },
+  { // 5: 기독교 역사
+    verses: ['마 7:21','롬 3:23','요 10:10','갈 5:22-23','마 22:37-39'],
+    args: ['인간의 죄와 하나님의 뜻은 다르다','십자군은 예수님 가르침과 반대','기독교가 가져온 선 - 병원·학교·노예제 폐지','역사 속 반기독교 세력의 더 큰 폭력','진정한 기독교 vs 이름만 기독교','예수님의 가르침 자체를 보라'],
+    starters: ['기독교인들의 잘못과 기독교의 가르침 자체를 구분해야 합니다. 예를 들어...','예수님은 오히려 이렇게 가르치셨습니다...','기독교가 역사에서 가져온 긍정적 변화로는...'],
+  },
+];
+
+var TOTAL_ROUNDS = 5;
+var selTopicIdx = 0;
+var selTeam = '베드로팀';
+var selTeamColor = '#3B82F6';
+var selDiff = 'normal';
+var curRound = 0;
+var battleLog = []; // {type:'ai'|'def', text, round}
+var isLoading = false;
+
+var DIFF_MAP = {
+  easy:   '입문 수준 — 논리를 단순하게 유지하고, 중학생이 이해할 수 있는 철학적 수준으로만 공격해.',
+  normal: '표준 수준 — 철학적 논리와 역사적 사례를 균형 있게 활용해서 공격해.',
+  hard:   '고강도 — 칸트, 흄, 니체 등 철학자 논증을 인용하며 집요하게 공격해. 학생의 약점을 정확히 찾아.'
+};
+
+function pickTopic(el, idx){
+  document.querySelectorAll('.topic-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on'); selTopicIdx=idx;
+}
+function pickTeam(el, name, color){
+  document.querySelectorAll('.team-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on'); selTeam=name; selTeamColor=color;
+}
+function pickDiff(el, diff){
+  document.querySelectorAll('.diff-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on'); selDiff=diff;
+}
+
+function startBattle(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  if(!key){openKeyModal();return;}
+  curRound=0; battleLog=[];
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('battleScreen').classList.add('show');
+  document.getElementById('logList').innerHTML='';
+  document.getElementById('verdict').classList.remove('show');
+  renderPips();
+  fetchAIAttack(null);
+}
+
+function renderPips(){
+  var bar=document.getElementById('roundPips');
+  bar.innerHTML='';
+  for(var i=0;i<TOTAL_ROUNDS;i++){
+    var pip=document.createElement('div');
+    pip.className='pip'+(i<curRound?' done':i===curRound?' active':'');
+    bar.appendChild(pip);
+  }
+  document.getElementById('roundInfo').textContent=(curRound<TOTAL_ROUNDS)?
+    (curRound+1)+'라운드 / '+TOTAL_ROUNDS:'최종 판결';
+}
+
+async function fetchAIAttack(defenseText){
+  if(isLoading)return;
+  isLoading=true;
+  var key=localStorage.getItem('retreat_api_key')||'';
+  document.getElementById('loadingAttack').classList.add('show');
+  document.getElementById('aiAttackArea').innerHTML='';
+  document.getElementById('defenseArea').innerHTML='';
+  scrollBottom();
+
+  var topic=TOPICS[selTopicIdx];
+  var prevLog=battleLog.map(function(l){
+    return (l.type==='ai'?'[AI 공격 '+l.round+'라운드]':'['+selTeam+' 방어 '+l.round+'라운드]')+'\n'+l.text;
+  }).join('\n\n');
+
+  var isFirst=curRound===0;
+  var prompt=
+    '너는 "악마의 변호인(Devil\'s Advocate)" AI야. 기독교 신앙에 대해 집요하게 논리적으로 공격하는 역할이야.\n\n'+
+    '공격 주제: "'+topic.title+'"\n'+
+    '배경: '+topic.ctx+'\n'+
+    '공격 강도: '+DIFF_MAP[selDiff]+'\n'+
+    '현재 라운드: '+(curRound+1)+' / '+TOTAL_ROUNDS+'\n\n'+
+    (prevLog?'이전 공방 기록:\n'+prevLog+'\n\n':'')+
+    (defenseText?selTeam+'의 이번 방어: '+defenseText+'\n\n':'')+
+    (isFirst?
+      '첫 공격을 시작해. 이 주제에 대해 가장 날카로운 논리적 질문으로 시작해.':
+      '방어를 분석하고 약점을 찾아 다음 공격을 생성해.')+
+    '\n\n반드시 아래 JSON만 답해:\n'+
+    '{"attack":"공격 논리 (2-3문장, 鋭利하고 구체적으로)","weakness":"방어의 약점 한 줄 (없으면 null)","pressure":"'+(curRound>=TOTAL_ROUNDS-1?'최후통첩처럼 강하게':'점점 더 강하게')+' 몰아붙이는 한 마디"}';
+
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})
+    });
+    var data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    var parsed=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    battleLog.push({type:'ai',round:curRound+1,text:parsed.attack});
+    document.getElementById('loadingAttack').classList.remove('show');
+    showAIAttack(parsed);
+  }catch(e){
+    document.getElementById('loadingAttack').classList.remove('show');
+    alert('오류: '+e.message);
+  }
+  isLoading=false;
+}
+
+function showAIAttack(parsed){
+  var area=document.getElementById('aiAttackArea');
+  area.innerHTML=
+    '<div class="ai-attack">'+
+      '<div class="ai-attack-header">'+
+        '<span class="ai-label">⚔️ AI 악마의 변호인 — '+(curRound+1)+'라운드 공격</span>'+
+        '<span class="ai-round">'+esc(TOPICS[selTopicIdx].title.slice(0,15))+'...</span>'+
+      '</div>'+
+      '<div class="ai-text">'+esc(parsed.attack)+'</div>'+
+      (parsed.weakness?'<div class="ai-weak">🎯 아직 해결 안 된 약점: '+esc(parsed.weakness)+'</div>':'')+
+      '<div style="margin-top:10px;padding:8px 12px;background:rgba(239,68,68,.15);border-radius:6px;font-size:.78rem;color:var(--red2);font-style:italic">'+esc(parsed.pressure)+'</div>'+
+    '</div>';
+  showDefenseInput();
+  scrollBottom();
+}
+
+function showDefenseInput(){
+  var guides=[
+    '성경 구절, 신학적 논거, 삶의 경험을 모두 활용해서 반박하세요',
+    '단순히 "믿으니까"가 아닌 논리적 근거로 방어하세요',
+    '철학적 반박도 좋아요. C.S. 루이스, 알빈 플란팅가 등을 참고해도 됩니다',
+  ];
+  var area=document.getElementById('defenseArea');
+  area.innerHTML=
+    '<div class="defense-card">'+
+      '<div class="defense-header">'+
+        '<span class="team-label-badge" style="background:rgba(59,130,246,.2);color:#93C5FD;border:1px solid rgba(59,130,246,.4)">'+esc(selTeam)+'</span>'+
+        '<span style="font-size:.78rem;font-weight:700;color:var(--white)">'+(curRound+1)+' 라운드 방어</span>'+
+        '<span style="font-size:.7rem;color:var(--sub);margin-left:auto">남은 라운드: '+(TOTAL_ROUNDS-curRound-1)+'</span>'+
+      '</div>'+
+      '<div class="defense-guide">💡 '+esc(guides[curRound%3])+'</div>'+
+      '<button class="hint-toggle" id="hintToggle" onclick="toggleHint()">💡 성경 구절 · 논거 힌트 보기</button>'+
+      '<div class="hint-box" id="hintBox">'+buildHintHTML()+'</div>'+
+      '<textarea class="defense-textarea" id="defInput" placeholder="팀의 방어 논거를 입력하세요... (성경 구절, 논리, 사례 등)"></textarea>'+
+      '<button class="submit-btn" id="submitBtn" onclick="submitDefense()">'+
+        (curRound<TOTAL_ROUNDS-1?'🛡️ 방어 제출 → 다음 공격 받기':'⚖️ 최후 방어 제출 → 판결 받기')+
+      '</button>'+
+    '</div>';
+}
+
+function submitDefense(){
+  var text=document.getElementById('defInput').value.trim();
+  if(!text){alert('방어 논거를 입력해주세요!');return;}
+
+  // 로그에 추가
+  battleLog.push({type:'def',round:curRound+1,text:text});
+  addLog('ai', (curRound+1)+'라운드 AI 공격', document.querySelector('.ai-text').textContent);
+  addLog('def', selTeam+' 방어', text);
+
+  document.getElementById('aiAttackArea').innerHTML='';
+  document.getElementById('defenseArea').innerHTML='';
+  curRound++;
+  renderPips();
+
+  if(curRound>=TOTAL_ROUNDS){
+    fetchFinalVerdict();
+  } else {
+    fetchAIAttack(text);
+  }
+}
+
+function addLog(type, label, text){
+  var list=document.getElementById('logList');
+  var div=document.createElement('div');
+  div.className='log-item '+(type==='ai'?'log-ai':'log-def');
+  div.innerHTML=
+    '<div class="log-header">'+
+      (type==='ai'?
+        '<span style="color:var(--red2);font-size:.7rem">⚔️ '+esc(label)+'</span>':
+        '<span style="color:#93C5FD;font-size:.7rem">🛡️ '+esc(label)+'</span>')+
+    '</div>'+
+    '<div class="log-text">'+esc(text)+'</div>';
+  list.appendChild(div);
+}
+
+async function fetchFinalVerdict(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  document.getElementById('loadingAttack').classList.add('show');
+  document.getElementById('loadingAttack').querySelector('.loading-txt').textContent='AI 판사가 5라운드를 분석하는 중...';
+  scrollBottom();
+
+  var topic=TOPICS[selTopicIdx];
+  var fullLog=battleLog.map(function(l){
+    return (l.type==='ai'?'[AI '+l.round+'R]':'['+selTeam+' '+l.round+'R]')+' '+l.text;
+  }).join('\n');
+
+  var prompt=
+    '5라운드 신앙 논증 배틀의 공정한 판사야.\n\n'+
+    '주제: "'+topic.title+'"\n팀: '+selTeam+'\n\n'+
+    '전체 기록:\n'+fullLog+'\n\n'+
+    '아래 JSON으로 최종 평가해:\n'+
+    '{"score":80,"strongest":"가장 강력했던 방어 논거 한 줄","weakest":"가장 아쉬웠던 순간 한 줄","verdict":"종합 평가 (2문장, 팀의 성장 칭찬 포함)","bible":"이 주제와 관련된 성경 구절 하나와 짧은 적용","conclusion":"이 주제에 대한 신앙인의 균형 잡힌 답 (2문장)"}';
+
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})
+    });
+    var data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    var parsed=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    document.getElementById('loadingAttack').classList.remove('show');
+    showVerdict(parsed);
+  }catch(e){
+    document.getElementById('loadingAttack').classList.remove('show');
+    alert('판결 오류: '+e.message);
+  }
+}
+
+function showVerdict(data){
+  var score=data.score||75;
+  var v=document.getElementById('verdict');
+  v.innerHTML=
+    '<div class="verdict-top">'+
+      '<span class="verdict-icon">'+(score>=80?'🏆':score>=60?'⚔️':'🌱')+'</span>'+
+      '<div class="verdict-title">최종 판결</div>'+
+      '<div class="verdict-sub">'+esc(selTeam)+'의 5라운드 방어 결과</div>'+
+      '<div class="verdict-score">'+score+'<span class="score-max"> / 100</span></div>'+
+    '</div>'+
+    '<div class="verdict-section">'+
+      '<div class="vs-title">⚖️ 종합 평가</div>'+
+      '<div class="vs-text">'+esc(data.verdict)+'</div>'+
+    '</div>'+
+    '<div class="verdict-section">'+
+      '<div class="vs-title">✨ 강점 · 약점</div>'+
+      '<div class="vs-text"><span class="vs-strong">가장 강한 순간: </span>'+esc(data.strongest)+'</div>'+
+      '<div class="vs-text" style="margin-top:6px"><span class="vs-weak">보완할 점: </span>'+esc(data.weakest)+'</div>'+
+    '</div>'+
+    '<div class="verdict-section">'+
+      '<div class="vs-title">📖 이 주제의 성경적 답</div>'+
+      '<div class="vs-text" style="color:var(--gold2)">'+esc(data.bible)+'</div>'+
+      '<div class="vs-text" style="margin-top:8px">'+esc(data.conclusion)+'</div>'+
+    '</div>'+
+    '<button class="again-btn" onclick="resetAll()">↩ 다른 주제로 다시 도전</button>';
+  v.classList.add('show');
+  scrollBottom();
+}
+
+function resetAll(){
+  curRound=0; battleLog=[];
+  document.getElementById('battleScreen').classList.remove('show');
+  document.getElementById('setupScreen').style.display='block';
+  document.getElementById('logList').innerHTML='';
+  document.getElementById('aiAttackArea').innerHTML='';
+  document.getElementById('defenseArea').innerHTML='';
+  document.getElementById('verdict').classList.remove('show');
+  window.scrollTo(0,0);
+}
+
+
+function buildHintHTML(){
+  var h = HINTS[selTopicIdx];
+  var vChips = h.verses.map(function(v){
+    return '<span class="hint-chip" onclick="insertVerse(this.textContent)">'+v+'</span>';
+  }).join('');
+  var aItems = h.args.map(function(a, i){
+    return '<span class="hint-chip hint-chip-arg" data-arg="'+i+'" onclick="insertArgByIdx('+i+')">'+esc(a)+'</span>';
+  }).join('');
+  var sItems = h.starters.map(function(s, i){
+    return '<div class="hint-starter" data-starter="'+i+'" onclick="insertStarterByIdx('+i+')">▷ '+esc(s)+'</div>';
+  }).join('');
+  return '<div class="hint-sec">'+
+    '<div class="hint-sec-title">📖 관련 성경 구절 (클릭하면 입력창에 추가)</div>'+
+    '<div class="hint-chips">'+vChips+'</div></div>'+
+    '<div class="hint-sec">'+
+    '<div class="hint-sec-title">🧠 활용할 수 있는 논거 (클릭하면 입력창에 추가)</div>'+
+    '<div class="hint-chips">'+aItems+'</div></div>'+
+    '<div class="hint-sec">'+
+    '<div class="hint-sec-title">✏️ 이런 방향으로 시작해보세요 (클릭하면 입력창에 추가)</div>'+sItems+'</div>';
+}
+function insertArgByIdx(idx){
+  var text = HINTS[selTopicIdx].args[idx];
+  var ta = document.getElementById('defInput');
+  var cur = ta.value.trim();
+  ta.value = cur ? cur + ' [' + text + ']' : '[' + text + '] ';
+  ta.focus();
+}
+function insertStarterByIdx(idx){
+  var text = HINTS[selTopicIdx].starters[idx];
+  var ta = document.getElementById('defInput');
+  if(!ta.value.trim()){ ta.value=text; } else { ta.value=ta.value+' '+text; }
+  ta.focus();
+}
+function toggleHint(){
+  var btn=document.getElementById('hintToggle');
+  var box=document.getElementById('hintBox');
+  var open=btn.classList.toggle('open');
+  box.classList.toggle('show',open);
+  btn.textContent=open?'💡 힌트 닫기':'💡 성경 구절 · 논거 힌트 보기';
+}
+function insertVerse(verse){
+  var ta=document.getElementById('defInput');
+  var cur=ta.value;
+  ta.value=cur+(cur&&!cur.endsWith('\n')?'\n':'')+'['+verse+'] ';
+  ta.focus();
+}
+function insertStarter(text){
+  var ta=document.getElementById('defInput');
+  if(!ta.value.trim()){
+    ta.value=text;
+  } else {
+    ta.value=ta.value+(ta.value.endsWith('\n')?'':' ')+text;
+  }
+  ta.focus();
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function scrollBottom(){setTimeout(function(){window.scrollTo(0,document.body.scrollHeight);},100);}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open');}
+function closeKeyModal(){document.getElementById('keyModal').classList.remove('open');}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);closeKeyModal();}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)closeKeyModal();});
+</script>
+</body>
+</html>
