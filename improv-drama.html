@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AI 즉흥 성경 드라마</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#1A0A2E;--card:#2D1B4E;--card2:#3D2563;--purple:#A78BFA;--gold:#F59E0B;--pink:#EC4899;--sub:#7C3AED;--brd:#4C1D95;--w:#F5F3FF}html,body{min-height:100%;background:var(--bg);font-family:-apple-system,"Noto Sans KR",sans-serif;color:var(--w);overflow-x:hidden}.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(26,10,46,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd)}.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--brd);color:var(--purple);font-size:1rem;cursor:pointer;font-family:inherit}.tag{font-size:.65rem;font-weight:700;background:var(--purple);color:white;padding:3px 8px;border-radius:4px}.topbar-title{font-size:.88rem;font-weight:700;flex:1}.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;color:rgba(167,139,250,.7)}.hero{padding:20px 16px 16px;text-align:center;border-bottom:1px solid var(--brd)}.hero-badge{display:inline-block;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);color:var(--purple);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}.hero h1{font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;margin-bottom:4px}.hero h1 em{color:var(--gold);font-style:normal}.hero p{font-size:.78rem;color:rgba(245,243,255,.6);line-height:1.6}.wrap{max-width:600px;margin:0 auto;padding:16px 16px 80px}.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:rgba(167,139,250,.6);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}.sec::after{content:"";flex:1;height:1px;background:var(--brd)}.scene-select{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}.sbtn{padding:12px 14px;border:1px solid var(--brd);border-radius:9px;background:var(--card);cursor:pointer;font-family:inherit;text-align:left;transition:.15s}.sbtn:hover,.sbtn.on{border-color:var(--purple);background:rgba(167,139,250,.1)}.sbtn-t{font-size:.88rem;font-weight:700;color:var(--w);margin-bottom:2px}.sbtn-d{font-size:.7rem;color:rgba(245,243,255,.5)}.start-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--sub),#4C1D95);color:white;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer}.drama-screen{display:none}.drama-screen.show{display:block}.scene-num{text-align:center;font-size:.75rem;color:rgba(167,139,250,.7);margin-bottom:12px}.scene-card{background:var(--card);border:2px solid var(--purple);border-radius:14px;padding:18px;margin-bottom:14px;animation:glow 2s ease-in-out infinite alternate}@keyframes glow{from{box-shadow:0 0 10px rgba(167,139,250,.2)}to{box-shadow:0 0 20px rgba(167,139,250,.4)}}.scene-label{font-size:.72rem;font-weight:700;color:var(--purple);margin-bottom:8px}.scene-title{font-size:1.05rem;font-weight:900;color:var(--gold);margin-bottom:8px}.scene-desc{font-size:.85rem;line-height:1.75;color:var(--w)}.scene-roles{margin-top:10px;padding:10px 12px;background:rgba(167,139,250,.08);border-radius:8px;border:1px solid rgba(167,139,250,.2)}.role-title{font-size:.7rem;font-weight:700;color:rgba(167,139,250,.8);margin-bottom:6px}.role-item{font-size:.8rem;color:rgba(245,243,255,.8);margin-bottom:3px}.timer-area{text-align:center;margin-bottom:14px}.timer-btn{padding:12px 28px;border:2px solid var(--gold);border-radius:50px;background:rgba(245,158,11,.1);color:var(--gold);font-size:1.1rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.15s}.timer-btn:hover{background:rgba(245,158,11,.2)}.timer-display{font-size:2rem;font-weight:900;color:var(--gold);margin:8px 0}.vote-section{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:14px}.vote-label{font-size:.82rem;font-weight:700;color:var(--w);margin-bottom:10px}.vote-options{display:flex;flex-direction:column;gap:6px}.vote-btn{padding:11px 14px;border:1px solid var(--brd);border-radius:9px;background:var(--card2);cursor:pointer;font-family:inherit;text-align:left;font-size:.85rem;color:rgba(245,243,255,.85);transition:.15s;font-weight:500}.vote-btn:hover{border-color:var(--purple);color:var(--w)}.vote-btn.voted{border-color:var(--gold);background:rgba(245,158,11,.12);color:var(--gold);font-weight:700}.vote-result{font-size:.72rem;color:rgba(167,139,250,.7);margin-top:4px}.next-scene-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--pink),#BE185D);color:white;border:none;border-radius:10px;font-size:.92rem;font-weight:900;font-family:inherit;cursor:pointer;margin-bottom:12px}.loading{display:none;text-align:center;padding:22px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:12px}.loading.show{display:block}.finale{display:none;animation:popIn .5s ease}.finale.show{display:block}@keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.finale-card{background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(245,158,11,.1));border:2px solid rgba(167,139,250,.4);border-radius:14px;padding:18px;text-align:center;margin-bottom:12px}.again-btn{width:100%;padding:12px;border:1px solid var(--brd);border-radius:8px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--card);color:rgba(167,139,250,.8)}.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}.key-modal.open{display:flex}.key-box{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}.key-box h3{font-weight:900;margin-bottom:6px}.key-box p{font-size:.78rem;color:rgba(245,243,255,.6);margin-bottom:12px;line-height:1.6}.key-inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;background:var(--card2);color:var(--w);margin-bottom:8px}.key-save{width:100%;padding:11px;background:var(--sub);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}</style></head>
+<body>
+<div class="topbar"><button class="back-btn" onclick="window.location.href='index.html'">←</button><span class="tag">중-12</span><span class="topbar-title">🎭 AI 즉흥 성경 드라마</span><button class="key-btn" onclick="openKeyModal()">🔑 API키</button></div>
+<div class="hero"><div class="hero-badge">🎬 2일차 오전 · 10:00-11:30 · 전체 참여</div><h1>AI가 연출하는<br><em>즉흥 성경 드라마</em></h1><p>관중이 투표하면 AI가 다음 장면을 실시간으로 만들어요<br>MC용 화면 — 빔프로젝터에 연결해서 사용하세요</p></div>
+<div class="wrap">
+  <div id="setupScreen">
+    <div class="sec">성경 배경 선택</div>
+    <div class="scene-select">
+      <div class="sbtn on" onclick="pickScene(this,0)"><div class="sbtn-t">✝️ 예수님의 마지막 주간</div><div class="sbtn-d">예루살렘 입성부터 부활까지의 이야기</div></div>
+      <div class="sbtn" onclick="pickScene(this,1)"><div class="sbtn-t">⚓ 베드로의 부름과 실패</div><div class="sbtn-d">어부 베드로가 사도가 되기까지</div></div>
+      <div class="sbtn" onclick="pickScene(this,2)"><div class="sbtn-t">✉️ 바울의 다메섹 회심</div><div class="sbtn-d">박해자에서 사도로 극적 변화</div></div>
+      <div class="sbtn" onclick="pickScene(this,3)"><div class="sbtn-t">💧 요셉의 이집트 여정</div><div class="sbtn-d">형들의 배신부터 총리가 되기까지</div></div>
+      <div class="sbtn" onclick="pickScene(this,4)"><div class="sbtn-t">👑 에스더의 결단</div><div class="sbtn-d">왕비가 된 에스더의 용기</div></div>
+    </div>
+    <button class="start-btn" onclick="startDrama()">🎬 드라마 시작!</button>
+  </div>
+  <div class="drama-screen" id="dramaScreen">
+    <div class="scene-num" id="sceneNum"></div>
+    <div id="sceneDisplay"></div>
+    <div class="timer-area" id="timerArea" style="display:none">
+      <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">⏱ 연기 시작 (2분)</button>
+      <div class="timer-display" id="timerDisplay">2:00</div>
+    </div>
+    <div class="vote-section" id="voteSection" style="display:none"></div>
+    <button class="next-scene-btn" id="nextBtn" style="display:none" onclick="generateNextScene()">🎬 다음 장면 생성하기</button>
+    <div class="loading" id="loading"><div style="font-size:2rem;animation:spin 1s linear infinite;display:inline-block">🎭</div><div style="font-size:.85rem;font-weight:700;color:var(--purple);margin-top:8px">AI 연출가가 다음 장면을 쓰는 중...</div></div>
+    <div class="finale" id="finale"></div>
+  </div>
+</div>
+<style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360)}}</style>
+<div class="key-modal" id="keyModal"><div class="key-box"><h3>🔑 API 키 설정</h3><p>AI 연출에 필요해요.</p><input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-..."><button class="key-save" onclick="saveKey()">저장하기</button></div></div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var SCENES_SETUP=[
+  {name:'예수님의 마지막 주간',ctx:'유월절 직전 예루살렘. 예수님이 입성하시고 제자들과 함께 계십니다.'},
+  {name:'베드로의 부름과 실패',ctx:'갈릴리 바다. 어부 베드로가 밤새 고기를 못 잡고 실망해 있습니다.'},
+  {name:'바울의 다메섹 회심',ctx:'다메섹 가는 길. 그리스도인을 박해하던 사울이 빛에 넘어집니다.'},
+  {name:'요셉의 이집트 여정',ctx:'가나안. 요셉이 형들에게 팔리는 순간입니다.'},
+  {name:'에스더의 결단',ctx:'페르시아 왕궁. 에스더가 허락 없이 왕 앞에 나가야 하는 상황입니다.'},
+];
+var TOTAL_SCENES=5;var selScene=0;var curScene=0;var sceneHistory=[];var timerInterval=null;var timerSecs=120;var selVote=null;
+function pickScene(el,i){document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selScene=i;}
+function startDrama(){
+  var key=localStorage.getItem('retreat_api_key')||'';if(!key){openKeyModal();return;}
+  curScene=0;sceneHistory=[];
+  document.getElementById('setupScreen').style.display='none';document.getElementById('dramaScreen').classList.add('show');
+  generateFirstScene();
+}
+async function generateFirstScene(){
+  document.getElementById('loading').classList.add('show');
+  var setup=SCENES_SETUP[selScene];
+  var prompt='중학생 수련회 즉흥 성경 드라마 연출가야.\n\n성경 배경: '+setup.name+'\n배경 설명: '+setup.ctx+'\n총 장면 수: '+TOTAL_SCENES+'장면\n\n1장면을 만들어줘.\n\nJSON만:\n{"scene":1,"title":"장면 제목","setting":"무대 배경 설명 (1문장)","situation":"지금 이 순간 무슨 일이 일어나는가 (2문장)","roles":[{"role":"인물명","desc":"역할 설명"},{"role":"인물2","desc":"설명"}],"director_note":"배우들에게 한 마디","vote_options":["전개 방향1","전개 방향2","전개 방향3"]}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('retreat_api_key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    sceneHistory.push(p);document.getElementById('loading').classList.remove('show');showScene(p);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function showScene(p){
+  curScene=p.scene||curScene;
+  document.getElementById('sceneNum').textContent='장면 '+curScene+' / '+TOTAL_SCENES;
+  var roles=p.roles?p.roles.map(r=>'<div class="role-item">• <strong>'+esc(r.role)+'</strong>: '+esc(r.desc)+'</div>').join(''):'';
+  document.getElementById('sceneDisplay').innerHTML='<div class="scene-card"><div class="scene-label">🎬 장면 '+curScene+'</div><div class="scene-title">'+esc(p.title)+'</div><div class="scene-desc">'+esc(p.setting)+'<br><br>'+esc(p.situation)+'</div>'+(roles?'<div class="scene-roles"><div class="role-title">등장인물</div>'+roles+'</div>':'')+'<div style="margin-top:10px;padding:8px 12px;background:rgba(245,158,11,.1);border-radius:7px;font-size:.78rem;color:var(--gold);font-style:italic">🎬 연출 노트: '+esc(p.director_note)+'</div></div>';
+  document.getElementById('timerArea').style.display='';
+  timerSecs=120;document.getElementById('timerDisplay').textContent='2:00';
+  document.getElementById('timerBtn').textContent='⏱ 연기 시작 (2분)';
+  if(p.vote_options&&p.vote_options.length){
+    var voteHtml='<div class="vote-label">📊 관중 투표 — 다음 전개를 선택하세요!</div><div class="vote-options">'+p.vote_options.map((opt,i)=>'<button class="vote-btn" id="vopt'+i+'" onclick="vote('+i+',this)">'+esc(opt)+'</button>').join('')+'</div>';
+    document.getElementById('voteSection').innerHTML=voteHtml;
+    document.getElementById('voteSection').style.display=curScene<TOTAL_SCENES?'':'none';
+  }
+  document.getElementById('nextBtn').style.display=curScene<TOTAL_SCENES?'':'none';
+  window.scrollTo(0,0);
+}
+function vote(i,el){document.querySelectorAll('.vote-btn').forEach(b=>b.classList.remove('voted'));el.classList.add('voted');selVote=i;document.getElementById('nextBtn').style.display='';}
+var timerRunning=false;
+function toggleTimer(){
+  if(timerRunning){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerBtn').textContent='⏱ 다시 시작';return;}
+  timerRunning=true;document.getElementById('timerBtn').textContent='⏸ 일시정지';
+  timerInterval=setInterval(function(){
+    timerSecs--;var m=Math.floor(timerSecs/60);var s=timerSecs%60;
+    document.getElementById('timerDisplay').textContent=m+':'+(s<10?'0':'')+s;
+    if(timerSecs<=0){clearInterval(timerInterval);timerRunning=false;document.getElementById('timerDisplay').textContent='🎬 연기 끝!';}
+  },1000);
+}
+async function generateNextScene(){
+  if(curScene>=TOTAL_SCENES){generateFinale();return;}
+  clearInterval(timerInterval);timerRunning=false;
+  var voted=selVote!==null?document.getElementById('vopt'+selVote).textContent:'무작위 전개';
+  document.getElementById('nextBtn').style.display='none';document.getElementById('voteSection').style.display='none';document.getElementById('loading').classList.add('show');
+  var histSummary=sceneHistory.map(s=>s.scene+'장면: '+s.title+' — '+s.situation).join('\n');
+  var nextScene=curScene+1;
+  var prompt='즉흥 성경 드라마 연출가.\n배경: '+SCENES_SETUP[selScene].name+'\n\n이전 장면들:\n'+histSummary+'\n\n관중 선택: '+voted+'\n\n'+nextScene+'장면 (전체 '+TOTAL_SCENES+'장면)을 만들어줘.\n\nJSON만:\n{"scene":'+nextScene+',"title":"장면 제목","setting":"배경 (1문장)","situation":"상황 (2문장, 관중 선택 반영)","roles":[{"role":"인물","desc":"역할"}],"director_note":"배우들에게 한 마디"'+(nextScene<TOTAL_SCENES?',"vote_options":["전개1","전개2","전개3"]':'')+'}\n';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('retreat_api_key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    sceneHistory.push(p);curScene++;selVote=null;document.getElementById('loading').classList.remove('show');showScene(p);
+    if(curScene>=TOTAL_SCENES){document.getElementById('nextBtn').textContent='🎊 피날레로 마무리';document.getElementById('nextBtn').style.display='';}
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+async function generateFinale(){
+  document.getElementById('nextBtn').style.display='none';document.getElementById('loading').classList.add('show');
+  var story=sceneHistory.map(s=>s.scene+'장면: '+s.title).join(' → ');
+  var prompt='즉흥 성경 드라마 피날레.\n배경: '+SCENES_SETUP[selScene].name+'\n여정: '+story+'\n\n이 드라마의 신학적 메시지와 나눔 질문을 만들어줘.\n\nJSON만:\n{"message":"이 드라마가 말하는 핵심 신앙 메시지 2문장","bible":"핵심 성경 구절","discussion":["나눔 질문1","나눔 질문2","나눔 질문3"]}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('retreat_api_key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    document.getElementById('loading').classList.remove('show');
+    var el=document.getElementById('finale');
+    el.innerHTML='<div class="finale-card"><div style="font-size:2.5rem;margin-bottom:8px">🎊</div><div style="font-size:1rem;font-weight:900;color:var(--gold);margin-bottom:4px">드라마 완성!</div><div style="font-size:.78rem;color:rgba(245,243,255,.6)">'+TOTAL_SCENES+'장면 여정이 끝났습니다</div></div>'+
+      '<div class="scene-card" style="border-color:rgba(245,158,11,.4);animation:none"><div style="font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:6px">✨ 이 드라마의 메시지</div><div style="font-size:.85rem;line-height:1.75">'+esc(p.message)+'</div><div style="margin-top:10px;font-size:.8rem;font-weight:700;color:var(--gold)">📖 '+esc(p.bible)+'</div></div>'+
+      '<div class="vote-section" style="display:block"><div class="vote-label">💬 함께 나눠보세요</div><div class="vote-options">'+p.discussion.map(q=>'<div style="padding:10px 14px;border:1px solid var(--brd);border-radius:8px;font-size:.83px;color:rgba(245,243,255,.8)">Q. '+esc(q)+'</div>').join('')+'</div></div>'+
+      '<button class="again-btn" onclick="resetAll()">↩ 다른 성경 배경으로 다시</button>';
+    el.classList.add('show');window.scrollTo(0,document.body.scrollHeight);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function resetAll(){curScene=0;sceneHistory=[];selVote=null;clearInterval(timerInterval);document.getElementById('dramaScreen').classList.remove('show');document.getElementById('setupScreen').style.display='';document.getElementById('sceneDisplay').innerHTML='';document.getElementById('finale').classList.remove('show');window.scrollTo(0,0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open')}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open')}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
+</script></body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>살아있는 공동체 기도벽</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#FFFFF8;--card:#FFFFFF;--card2:#FEFCE8;--yellow:#CA8A04;--amber:#D97706;--blue:#1D4ED8;--sub:#6B7280;--brd:#FDE68A;--ink:#1C1400}html,body{min-height:100%;background:var(--bg);font-family:-apple-system,"Noto Sans KR","Apple Chancery",sans-serif;color:var(--ink)}.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(255,255,248,.95);backdrop-filter:blur(12px);border-bottom:1.5px solid var(--brd)}.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card2);border:1.5px solid var(--brd);color:var(--yellow);font-size:1rem;cursor:pointer;font-family:inherit}.tag{font-size:.65rem;font-weight:900;background:var(--yellow);color:white;padding:3px 8px;border-radius:4px}.topbar-title{font-size:.88rem;font-weight:800;flex:1}.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card2);border:1.5px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--sub)}.hero{background:linear-gradient(135deg,#1C1400,#2D2000);padding:22px 20px 18px;text-align:center;color:white}.hero-badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}.hero h1{font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;margin-bottom:4px}.hero h1 em{color:var(--brd);font-style:normal}.hero p{font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.6}.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}.day-tabs{display:flex;gap:0;border:1.5px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:16px}.day-tab{flex:1;padding:10px;text-align:center;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:none;font-family:inherit;transition:.15s}.day-tab.on{background:var(--yellow);color:white}.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--yellow);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}.sec::after{content:"";flex:1;height:1px;background:var(--brd)}.input-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}.ic-label{font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:6px}.ic-guide{font-size:.73rem;color:var(--sub);background:rgba(202,138,4,.08);border:1px solid rgba(202,138,4,.2);border-radius:7px;padding:7px 10px;margin-bottom:8px;line-height:1.5}.row{display:flex;gap:8px;margin-bottom:8px}.inp{flex:1;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.83rem;font-family:inherit;background:var(--bg);color:var(--ink)}.inp:focus{outline:none;border-color:var(--yellow)}.add-btn{padding:9px 16px;background:var(--yellow);color:white;border:none;border-radius:8px;font-size:.82rem;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap}.postits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:14px}.postit{background:#FDE68A;border-radius:2px 10px 10px 2px;padding:10px 10px 20px;position:relative;min-height:90px;box-shadow:2px 3px 8px rgba(0,0,0,.12);transform:rotate(var(--r,0deg));cursor:pointer}.postit:nth-child(2n){background:#FEF9C3}.postit:nth-child(3n){background:#FEF3C7}.postit:nth-child(4n){background:#FFFBEB}.postit-text{font-size:.78rem;line-height:1.5;color:#1C1400;font-family:"Noto Sans KR",sans-serif}.postit-del{position:absolute;bottom:5px;right:5px;border:none;background:none;color:rgba(28,20,0,.3);cursor:pointer;font-size:.75rem}.analyze-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--yellow),var(--amber));color:white;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;margin-bottom:12px}.analyze-btn:disabled{background:#D1D5DB;cursor:not-allowed}.loading{display:none;text-align:center;padding:24px;background:var(--card);border:1.5px solid var(--brd);border-radius:12px;margin-bottom:12px}.loading.show{display:block}.analysis-result{display:none;animation:popIn .5s ease}.analysis-result.show{display:block}@keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.ar-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px}.ar-title{font-size:.78rem;font-weight:700;color:var(--sub);margin-bottom:8px}.ar-body{font-size:.84rem;line-height:1.8;color:var(--ink)}.declaration{background:var(--card2);border:2px solid var(--brd);border-radius:12px;padding:16px;margin-bottom:10px}.decl-header{text-align:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1.5px solid var(--brd)}.decl-title{font-size:.9rem;font-weight:900;color:var(--yellow);margin-bottom:3px}.decl-sub{font-size:.72rem;color:var(--sub)}.decl-body{font-size:.85rem;line-height:2;color:var(--ink);white-space:pre-wrap;font-style:italic}.decl-verse{font-size:.8rem;font-weight:700;color:var(--yellow);margin-top:10px;text-align:center}.count-info{font-size:.75rem;color:var(--sub);margin-bottom:10px}.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}.key-modal.open{display:flex}.key-box{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}.key-box h3{font-weight:900;margin-bottom:6px}.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}.key-inp{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;margin-bottom:8px}.key-save{width:100%;padding:11px;background:var(--yellow);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}</style></head>
+<body>
+<div class="topbar"><button class="back-btn" onclick="window.location.href='index.html'">←</button><span class="tag">피지털⑤</span><span class="topbar-title">🙏 살아있는 공동체 기도벽</span><button class="key-btn" onclick="openKeyModal()">🔑 API키</button></div>
+<div class="hero"><div class="hero-badge">📝 3일간 누적 · 교사 입력 · 예배용</div><h1>손글씨 기도가<br><em>공동체의 고백이 됩니다</em></h1><p>학생들이 쓴 포스트잇을 교사가 입력하면<br>AI가 공동체의 마음을 읽고 예배 선언문을 만들어요</p></div>
+<div class="wrap">
+  <div class="day-tabs"><button class="day-tab on" id="tab0" onclick="switchDay(0)">📅 1일차</button><button class="day-tab" id="tab1" onclick="switchDay(1)">📅 2일차</button><button class="day-tab" id="tab2" onclick="switchDay(2)">📅 3일차</button></div>
+  <div id="dayArea"></div>
+  <button class="analyze-btn" id="analyzeBtn" onclick="generateDeclaration()" disabled>✨ 공동체 기도 선언문 생성하기</button>
+  <div id="analysisSection"></div>
+</div>
+<div class="key-modal" id="keyModal"><div class="key-box"><h3>🔑 API 키 설정</h3><p>AI 분석에 필요해요.</p><input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-..."><button class="key-save" onclick="saveKey()">저장하기</button></div></div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var STORE='prayer_wall_v1';var curDay=0;var DAYS=['1일차','2일차','3일차'];var ROTATIONS=['-2deg','1deg','-1deg','2deg','0deg','-1.5deg','1.5deg'];
+function load(){try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){return{}}}
+function save(d){localStorage.setItem(STORE,JSON.stringify(d))}
+function switchDay(i){curDay=i;document.querySelectorAll('.day-tab').forEach((t,j)=>t.classList.toggle('on',j===i));renderDay();}
+function renderDay(){
+  var data=load();var notes=(data['day_'+curDay]||[]);
+  var html='<div class="sec">'+DAYS[curDay]+' 기도 포스트잇</div>'+
+    '<div class="input-card"><div class="ic-label">포스트잇 내용 입력</div>'+
+    '<div class="ic-guide">💡 학생이 직접 쓴 손글씨 기도, 감사, 결단, 고민을 입력해주세요</div>'+
+    '<div class="row"><input class="inp" id="noteInp" placeholder="예: 하나님 감사합니다. 외로웠는데 친구가 생겼어요..."><button class="add-btn" onclick="addNote()">+ 추가</button></div></div>'+
+    '<div class="count-info">'+DAYS[curDay]+': '+notes.length+'개 기도 포스트잇</div>'+
+    '<div class="postits-grid" id="postitsGrid"></div>';
+  document.getElementById('dayArea').innerHTML=html;
+  renderPostits(notes);updateAnalyzeBtn();
+}
+function renderPostits(notes){
+  var grid=document.getElementById('postitsGrid');if(!grid)return;
+  grid.innerHTML='';
+  notes.forEach((n,i)=>{
+    var div=document.createElement('div');div.className='postit';div.style.setProperty('--r',ROTATIONS[i%ROTATIONS.length]);
+    div.innerHTML='<div class="postit-text">'+esc(n)+'</div><button class="postit-del" onclick="delNote('+i+')">✕</button>';
+    grid.appendChild(div);
+  });
+}
+function addNote(){var inp=document.getElementById('noteInp');var text=inp.value.trim();if(!text)return;var data=load();(data['day_'+curDay]=data['day_'+curDay]||[]).push(text);save(data);inp.value='';var notes=data['day_'+curDay];renderPostits(notes);document.querySelector('.count-info').textContent=DAYS[curDay]+': '+notes.length+'개 기도 포스트잇';updateAnalyzeBtn();}
+function delNote(i){var data=load();(data['day_'+curDay]=data['day_'+curDay]||[]).splice(i,1);save(data);renderDay();}
+function updateAnalyzeBtn(){var data=load();var total=Object.values(data).flat().length;document.getElementById('analyzeBtn').disabled=total<3;document.getElementById('analyzeBtn').textContent='✨ 공동체 기도 선언문 생성하기 (전체 '+total+'개 포스트잇)';}
+async function generateDeclaration(){
+  var key=localStorage.getItem('retreat_api_key')||'';if(!key){openKeyModal();return;}
+  var data=load();
+  var allNotes=[];['day_0','day_1','day_2'].forEach((k,i)=>{if(data[k]&&data[k].length)allNotes.push(DAYS[i]+': '+data[k].join(' / '));});
+  var el=document.getElementById('analysisSection');
+  el.innerHTML='<div class="loading show"><div style="font-size:2rem">🙏</div><div style="font-size:.85rem;font-weight:700;color:var(--yellow);margin-top:8px">AI가 공동체의 기도를 읽는 중...</div></div>';
+  var prompt='중학생 수련회 3일간의 기도 포스트잇을 분석해줘.\n\n'+allNotes.join('\n')+'\n\nJSON만:\n{"community_heart":"공동체 마음 흐름 2문장","key_themes":["주제1","주제2","주제3"],"prayer_analysis":"기도의 특징과 하나님의 역사 2문장","declaration":"예배 낭독용 공동체 기도 선언문 (3-4단락, 실제로 다함께 낭독할 수 있게, 각 단락을 개행으로 구분)","verse":"이 공동체의 기도를 표현하는 성경 구절"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    showResult(p,el);
+  }catch(e){el.innerHTML='<div style="color:red;padding:12px">오류: '+e.message+'</div>';}
+}
+function showResult(p,el){
+  var themeHtml=p.key_themes.map(t=>'<span style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;background:rgba(202,138,4,.15);color:var(--yellow);margin:2px;border:1px solid rgba(202,138,4,.3)">'+esc(t)+'</span>').join('');
+  el.innerHTML='<div class="analysis-result show">'+
+    '<div class="ar-card"><div class="ar-title">💛 공동체 마음 흐름</div><div class="ar-body">'+esc(p.community_heart)+'</div></div>'+
+    '<div class="ar-card"><div class="ar-title">🌿 핵심 기도 주제</div><div style="margin-bottom:4px">'+themeHtml+'</div><div class="ar-body" style="margin-top:10px">'+esc(p.prayer_analysis)+'</div></div>'+
+    '<div class="declaration"><div class="decl-header"><div class="decl-title">🕊️ 공동체 기도 선언문</div><div class="decl-sub">— 함께 읽어주세요 —</div></div><div class="decl-body">'+esc(p.declaration)+'</div><div class="decl-verse">📖 '+esc(p.verse)+'</div></div>'+
+    '<button style="width:100%;padding:11px;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);font-family:inherit" onclick="resetAll()">↩ 초기화</button>'+
+    '</div>';
+}
+function resetAll(){if(!confirm('모든 포스트잇 데이터를 초기화할까요?'))return;localStorage.removeItem(STORE);renderDay();document.getElementById('analysisSection').innerHTML='';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open')}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open')}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
+renderDay();
+</script></body></html>

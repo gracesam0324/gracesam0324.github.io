@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AI 탐정 — 수련회 미스터리</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#0D1117;--card:#161B22;--card2:#1C2128;--amber:#F59E0B;--blue:#58A6FF;--green:#3FB950;--red:#F85149;--sub:#8B949E;--brd:#30363D;--w:#F0F6FC}html,body{min-height:100%;background:var(--bg);font-family:-apple-system,"Noto Sans KR","Courier New",monospace;color:var(--w);overflow-x:hidden}.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd)}.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--brd);color:var(--sub);font-size:1rem;cursor:pointer;font-family:inherit}.tag{font-size:.65rem;font-weight:700;background:var(--amber);color:#000;padding:3px 8px;border-radius:4px}.topbar-title{font-size:.88rem;font-weight:700;flex:1;font-family:-apple-system,"Noto Sans KR",sans-serif}.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--sub)}.hero{padding:20px 16px 16px;text-align:center;border-bottom:1px solid var(--brd)}.hero-badge{display:inline-block;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--amber);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}.hero h1{font-size:clamp(1.1rem,4vw,1.5rem);font-weight:900;margin-bottom:4px;font-family:-apple-system,"Noto Sans KR",sans-serif}.hero h1 em{color:var(--amber);font-style:normal}.hero p{font-size:.78rem;color:var(--sub);line-height:1.6;font-family:-apple-system,"Noto Sans KR",sans-serif}.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}.mode-tabs{display:flex;gap:0;border:1px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:16px}.mode-tab{flex:1;padding:10px;text-align:center;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:none;font-family:inherit;transition:.15s}.mode-tab.on{background:var(--amber);color:#000}.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--sub);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-family:-apple-system,"Noto Sans KR",sans-serif}.sec::after{content:"";flex:1;height:1px;background:var(--brd)}.teacher-form{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}.tf-label{font-size:.78rem;font-weight:700;color:var(--w);margin-bottom:6px;font-family:-apple-system,"Noto Sans KR",sans-serif}.tf-guide{font-size:.73rem;color:var(--sub);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:7px;padding:7px 10px;margin-bottom:8px;line-height:1.5;font-family:-apple-system,"Noto Sans KR",sans-serif}.inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:8px;font-size:.83rem;font-family:-apple-system,"Noto Sans KR",sans-serif;background:var(--card2);color:var(--w);margin-bottom:8px}.inp:focus{outline:none;border-color:var(--amber)}.gen-plan-btn{width:100%;padding:12px;background:var(--amber);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:900;font-family:inherit;cursor:pointer}.plan-display{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}.clue-card{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:12px;position:relative}.cc-num{font-size:.65rem;font-weight:700;background:var(--amber);color:#000;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:6px}.cc-loc{font-size:.8rem;font-weight:700;color:var(--amber);margin-bottom:3px}.cc-clue{font-size:.8rem;color:rgba(240,246,252,.8);line-height:1.5;margin-bottom:4px}.cc-code{font-size:.72rem;font-weight:700;color:var(--green);font-family:"Courier New",monospace;background:rgba(63,185,80,.1);padding:3px 8px;border-radius:4px;display:inline-block}.player-area{background:var(--card);border:2px solid var(--amber);border-radius:14px;padding:16px;margin-bottom:12px}.progress-dots{display:flex;gap:6px;margin-bottom:12px}.pdot{width:12px;height:12px;border-radius:50%;background:var(--brd);transition:.3s}.pdot.done{background:var(--green)}.pdot.cur{background:var(--amber);box-shadow:0 0 8px rgba(245,158,11,.5)}.hint-display{background:var(--card2);border:1px solid var(--brd);border-radius:10px;padding:14px;margin-bottom:12px;font-size:.85rem;line-height:1.75;color:var(--w);white-space:pre-wrap;min-height:60px}.hint-label{font-size:.7rem;font-weight:700;color:var(--amber);margin-bottom:6px}.code-row{display:flex;gap:8px;margin-bottom:8px}.code-inp{flex:1;padding:10px 14px;border:1px solid var(--brd);border-radius:8px;font-size:1rem;font-family:"Courier New",monospace;background:var(--card2);color:var(--w);text-transform:uppercase;letter-spacing:.1em}.code-inp:focus{outline:none;border-color:var(--amber)}.check-btn{padding:10px 18px;background:var(--amber);color:#000;border:none;border-radius:8px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;white-space:nowrap}.correct-badge{background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);color:var(--green);font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:7px;display:none}.wrong-badge{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.25);color:var(--red);font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:7px;display:none}.loading{display:none;text-align:center;padding:22px;background:var(--card);border:1px solid var(--brd);border-radius:12px;margin-bottom:12px}.loading.show{display:block}.solved-finale{display:none;animation:popIn .5s ease}.solved-finale.show{display:block}@keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.team-select{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}.tbtn{padding:6px 12px;border:1px solid var(--brd);border-radius:20px;background:var(--card2);font-size:.75rem;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;transition:.15s}.tbtn.on{background:var(--amber);border-color:var(--amber);color:#000}.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}.key-modal.open{display:flex}.key-box{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}.key-box h3{font-weight:900;margin-bottom:6px;font-family:-apple-system,"Noto Sans KR",sans-serif}.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6;font-family:-apple-system,"Noto Sans KR",sans-serif}.key-inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;background:var(--card2);color:var(--w);margin-bottom:8px}.key-save{width:100%;padding:11px;background:var(--amber);color:#000;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}</style></head>
+<body>
+<div class="topbar"><button class="back-btn" onclick="window.location.href='index.html'">←</button><span class="tag">중-5</span><span class="topbar-title">🔍 AI 탐정 — 수련회 미스터리</span><button class="key-btn" onclick="openKeyModal()">🔑 API키</button></div>
+<div class="hero"><div class="hero-badge">🗺️ 피지털 · 수련회 장소 전체가 무대</div><h1>장소를 탐험하며<br><em>미스터리를 풀어라</em></h1><p>교사가 단서를 숨겨두면 팀이 장소를 돌아다니며 코드를 찾아요<br>AI가 팀마다 다른 수수께끼 경로를 만들어요</p></div>
+<div class="wrap">
+  <div class="mode-tabs"><button class="mode-tab on" onclick="switchMode('teacher')">👨‍🏫 교사 모드</button><button class="mode-tab" onclick="switchMode('player')">🔍 탐정 모드</button></div>
+  <!-- 교사 모드 -->
+  <div id="teacherMode">
+    <div class="sec">수련회 장소 설정</div>
+    <div class="teacher-form">
+      <div class="tf-label">수련회 장소명</div>
+      <input class="inp" id="placeName" placeholder="예: OO수련원" value="">
+      <div class="tf-label" style="margin-top:4px">단서를 숨길 장소들 (쉼표로 구분, 6-8개)</div>
+      <div class="tf-guide">💡 실제 수련회 장소의 특정 공간을 입력하세요</div>
+      <textarea class="inp" id="places" rows="3" placeholder="예: 본당 강단 아래, 식당 입구 게시판, 숙소 문 앞, 운동장 나무, 야외 십자가, 화장실 거울"></textarea>
+      <div class="tf-label" style="margin-top:4px">미스터리 주제 (성경 관련)</div>
+      <input class="inp" id="mystery" placeholder="예: 잃어버린 양을 찾아라, 부활의 증거를 모아라">
+      <button class="gen-plan-btn" onclick="generatePlan()">🗺️ 단서 경로 생성하기</button>
+    </div>
+    <div id="planResult"></div>
+  </div>
+  <!-- 플레이어 모드 -->
+  <div id="playerMode" style="display:none">
+    <div class="sec">팀 선택</div>
+    <div class="team-select">
+      <button class="tbtn on" onclick="pickTeam(this,'베드로팀')">⚓ 베드로팀</button>
+      <button class="tbtn" onclick="pickTeam(this,'바울팀')">✉️ 바울팀</button>
+      <button class="tbtn" onclick="pickTeam(this,'에스더팀')">👑 에스더팀</button>
+      <button class="tbtn" onclick="pickTeam(this,'다윗팀')">🎵 다윗팀</button>
+    </div>
+    <div class="player-area">
+      <div class="progress-dots" id="progressDots"></div>
+      <div class="hint-label" id="hintLabel">🔍 현재 수수께끼</div>
+      <div class="hint-display" id="hintDisplay">팀을 선택하고 게임을 시작해주세요!</div>
+      <div class="code-row"><input class="code-inp" id="codeInp" placeholder="발견한 코드 입력..." maxlength="10"><button class="check-btn" onclick="checkCode()">확인</button></div>
+      <div class="correct-badge" id="correctBadge">✅ 정확해요! 다음 단서로...</div>
+      <div class="wrong-badge" id="wrongBadge">❌ 틀렸어요. 다시 찾아보세요!</div>
+    </div>
+    <div class="loading" id="loading2"><div style="font-size:2rem">🔍</div><div style="font-size:.85rem;font-weight:700;color:var(--amber);margin-top:8px">AI 탐정이 다음 단서를 준비 중...</div></div>
+    <div class="solved-finale" id="solvedFinale"></div>
+    <button style="width:100%;padding:11px;border:1px solid var(--brd);border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);font-family:inherit" onclick="resetPlayer()">↩ 처음부터 다시</button>
+  </div>
+</div>
+<div class="loading" id="loading"><div style="font-size:2rem">🗺️</div><div style="font-size:.85rem;font-weight:700;color:var(--amber);margin-top:8px;font-family:-apple-system,"Noto Sans KR",sans-serif">AI가 단서 경로를 만드는 중...</div></div>
+<div class="key-modal" id="keyModal"><div class="key-box"><h3>🔑 API 키 설정</h3><p>AI 단서 생성에 필요해요.</p><input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-..."><button class="key-save" onclick="saveKey()">저장하기</button></div></div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var STORE='detective_v1';var selTeam='베드로팀';var curStep=0;var playerLog=[];var CODES=[];
+function switchMode(m){document.getElementById('teacherMode').style.display=m==='teacher'?'':'none';document.getElementById('playerMode').style.display=m==='player'?'':'none';document.querySelectorAll('.mode-tab').forEach((t,i)=>t.classList.toggle('on',(m==='teacher'&&i===0)||(m==='player'&&i===1)));if(m==='player')initPlayer();}
+function pickTeam(el,t){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selTeam=t;initPlayer();}
+async function generatePlan(){
+  var key=localStorage.getItem('retreat_api_key')||'';if(!key){openKeyModal();return;}
+  var place=document.getElementById('placeName').value.trim()||'수련원';
+  var places=document.getElementById('places').value.trim();var mystery=document.getElementById('mystery').value.trim()||'잃어버린 양을 찾아라';
+  if(!places){alert('장소를 입력해주세요!');return;}
+  document.getElementById('loading').classList.add('show');document.getElementById('planResult').innerHTML='';
+  var prompt='중학생 수련회 AI 탐정 게임 경로를 만들어줘.\n\n장소: '+place+'\n단서 숨길 장소들: '+places+'\n미스터리 주제: '+mystery+'\n\n각 장소에 숨길 단서와 코드를 만들어줘.\n\nJSON만:\n{"mystery":"미스터리 이야기 한 줄","clues":[{"step":1,"location":"장소명","clue":"이 장소에 숨겨진 단서 힌트 (수수께끼 형식, 한 문장)","code":"CODE1","bible_hint":"관련 성경 구절 짧게"},{"step":2,"location":"장소명","clue":"힌트","code":"CODE2","bible_hint":"구절"}],"final_answer":"최종 답/메시지"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    localStorage.setItem(STORE,JSON.stringify(p));
+    document.getElementById('loading').classList.remove('show');
+    var html='<div class="sec">📋 교사 가이드 — 단서 배치 계획</div>'+
+      '<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:.82rem;font-weight:700;color:var(--amber)">🎯 미스터리: '+esc(p.mystery)+'</div>'+
+      '<div class="plan-display">'+p.clues.map(c=>'<div class="clue-card"><div class="cc-num">단서 '+c.step+'</div><div class="cc-loc">📍 '+esc(c.location)+'</div><div class="cc-clue">힌트: '+esc(c.clue)+'</div><div class="cc-clue" style="font-size:.72rem;color:rgba(88,166,255,.8)">📖 '+esc(c.bible_hint||'')+'</div><div>코드: <span class="cc-code">'+esc(c.code)+'</span></div></div>').join('')+'</div>'+
+      '<div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.2);border-radius:10px;padding:12px;font-size:.82rem;color:var(--green)">🏆 최종 답: '+esc(p.final_answer)+'</div>';
+    document.getElementById('planResult').innerHTML=html;
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function initPlayer(){
+  var data=null;try{data=JSON.parse(localStorage.getItem(STORE))}catch(e){}
+  var teamStore=localStorage.getItem('detective_team_'+selTeam);
+  var progress=teamStore?JSON.parse(teamStore):{step:0,log:[]};
+  curStep=progress.step;playerLog=progress.log;
+  if(!data){document.getElementById('hintDisplay').textContent='⚠️ 교사가 먼저 단서 경로를 만들어야 해요!';return;}
+  CODES=data.clues.map(c=>c.code.toUpperCase());
+  renderProgress(data.clues.length);
+  if(curStep<data.clues.length){showHint(data.clues[curStep]);}
+  else{showFinal(data);}
+}
+function renderProgress(total){var d=document.getElementById('progressDots');d.innerHTML='';for(var i=0;i<total;i++){var p=document.createElement('div');p.className='pdot'+(i<curStep?' done':i===curStep?' cur':'');d.appendChild(p);}}
+function showHint(clue){
+  document.getElementById('hintLabel').textContent='🔍 단서 '+clue.step+' — 찾아갈 곳';
+  document.getElementById('hintDisplay').textContent=clue.clue+'\n\n📖 힌트: '+clue.bible_hint;
+  document.getElementById('codeInp').value='';document.getElementById('correctBadge').style.display='none';document.getElementById('wrongBadge').style.display='none';
+}
+function checkCode(){
+  var input=document.getElementById('codeInp').value.trim().toUpperCase();
+  if(!input)return;
+  var data=null;try{data=JSON.parse(localStorage.getItem(STORE))}catch(e){}
+  if(!data)return;
+  if(input===CODES[curStep]){
+    document.getElementById('correctBadge').style.display='';document.getElementById('wrongBadge').style.display='none';
+    curStep++;playerLog.push({step:curStep,code:input,ts:Date.now()});
+    localStorage.setItem('detective_team_'+selTeam,JSON.stringify({step:curStep,log:playerLog}));
+    setTimeout(function(){
+      renderProgress(data.clues.length);
+      if(curStep<data.clues.length)showHint(data.clues[curStep]);else showFinal(data);
+    },1200);
+  }else{document.getElementById('wrongBadge').style.display='';document.getElementById('correctBadge').style.display='none';}
+}
+function showFinal(data){
+  document.getElementById('hintLabel').textContent='🏆 미션 완료!';document.getElementById('hintDisplay').textContent='모든 단서를 찾았어요! 아래 최종 메시지를 확인하세요.';
+  document.getElementById('codeInp').disabled=true;
+  var el=document.getElementById('solvedFinale');
+  el.innerHTML='<div style="background:rgba(63,185,80,.1);border:2px solid rgba(63,185,80,.3);border-radius:14px;padding:18px;text-align:center"><div style="font-size:2.5rem;margin-bottom:8px">🏆</div><div style="font-size:1rem;font-weight:900;color:var(--green);margin-bottom:6px">'+esc(selTeam)+' 미션 완료!</div><div style="font-size:.85rem;color:rgba(240,246,252,.85);line-height:1.75">'+esc(data.final_answer||'수고했어요!')+'</div></div>';
+  el.classList.add('show');window.scrollTo(0,document.body.scrollHeight);
+}
+function resetPlayer(){localStorage.removeItem('detective_team_'+selTeam);initPlayer();}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open')}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open')}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
+</script></body></html>

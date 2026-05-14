@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수련회 내러티브 엔진</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0E1A;--card:#111827;--card2:#1F2937;--purple:#8B5CF6;--gold:#F59E0B;--sub:#6B7280;--brd:#1F2937;--w:#F9FAFB}
+html,body{min-height:100%;background:var(--bg);font-family:-apple-system,"Noto Sans KR",sans-serif;color:var(--w);overflow-x:hidden}
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(10,14,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd)}
+.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--brd);color:var(--sub);font-size:1rem;cursor:pointer;font-family:inherit}
+.tag{font-size:.65rem;font-weight:700;background:var(--purple);color:white;padding:3px 8px;border-radius:4px}
+.topbar-title{font-size:.88rem;font-weight:700;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card);border:1px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--sub)}
+.hero{padding:20px 16px 16px;text-align:center;border-bottom:1px solid var(--brd)}
+.hero-badge{display:inline-block;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:#C4B5FD;font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}
+.hero h1{font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;margin-bottom:4px}
+.hero h1 em{color:var(--purple);font-style:normal}
+.hero p{font-size:.78rem;color:var(--sub);line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}
+.day-tabs{display:flex;gap:0;border:1px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.day-tab{flex:1;padding:11px;text-align:center;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:none;font-family:inherit;transition:.15s}
+.day-tab.on{background:var(--purple);color:white}
+.day-tab.done::after{content:"✓";margin-left:4px;font-size:.7rem}
+.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--sub);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:"";flex:1;height:1px;background:var(--brd)}
+.entry-form{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}
+.ef-label{font-size:.78rem;font-weight:700;color:var(--w);margin-bottom:6px}
+.ef-guide{font-size:.73rem;color:var(--sub);background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:7px;padding:7px 10px;margin-bottom:8px;line-height:1.5}
+textarea.ef-inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:8px;font-size:.83rem;font-family:inherit;background:var(--card2);color:var(--w);resize:none;line-height:1.6}
+textarea.ef-inp:focus{outline:none;border-color:var(--purple)}
+.add-entry-btn{width:100%;padding:11px;background:var(--purple);color:white;border:none;border-radius:8px;font-size:.88rem;font-weight:800;font-family:inherit;cursor:pointer;margin-top:8px}
+.entries-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.entry-item{padding:10px 12px;background:var(--card);border:1px solid var(--brd);border-radius:8px;display:flex;align-items:flex-start;gap:8px}
+.ei-team{font-size:.68rem;font-weight:700;color:var(--purple);flex-shrink:0;background:rgba(139,92,246,.15);padding:2px 8px;border-radius:10px;margin-top:2px}
+.ei-txt{font-size:.82rem;color:rgba(249,250,251,.8);flex:1;line-height:1.5}
+.ei-del{border:none;background:none;color:var(--sub);cursor:pointer;font-size:.9rem;flex-shrink:0}
+.gen-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--purple),#7C3AED);color:white;border:none;border-radius:10px;font-size:.92rem;font-weight:900;font-family:inherit;cursor:pointer;margin-bottom:12px}
+.gen-btn:disabled{background:var(--brd);color:var(--sub);cursor:not-allowed}
+.loading{display:none;text-align:center;padding:22px;background:var(--card);border:1px solid var(--brd);border-radius:12px}
+.loading.show{display:block}
+.story-output{display:none;background:var(--card);border:1px solid rgba(139,92,246,.3);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.story-output.show{display:block;animation:popIn .5s ease}
+@keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.so-header{padding:12px 16px;background:rgba(139,92,246,.12);border-bottom:1px solid rgba(139,92,246,.2);display:flex;align-items:center;gap:8px}
+.so-chapter{font-size:.72rem;font-weight:700;color:#C4B5FD}
+.so-title{font-size:.95rem;font-weight:800;color:var(--w);flex:1}
+.so-body{padding:16px;font-size:.85rem;line-height:1.9;color:rgba(249,250,251,.85);white-space:pre-wrap}
+.final-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#D97706);color:#000;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;margin-bottom:12px}
+.final-btn:disabled{background:var(--brd);color:var(--sub);cursor:not-allowed}
+.team-select{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.tbtn2{padding:6px 12px;border:1px solid var(--brd);border-radius:20px;background:var(--card2);font-size:.75rem;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;transition:.15s}
+.tbtn2.on{background:var(--purple);border-color:var(--purple);color:white}
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+.key-modal.open{display:flex}
+.key-box{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}
+.key-box h3{font-weight:900;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}
+.key-inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;background:var(--card2);color:var(--w);margin-bottom:8px}
+.key-save{width:100%;padding:11px;background:var(--purple);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+  <span class="tag">후-4</span>
+  <span class="topbar-title">📖 수련회 내러티브 엔진</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+<div class="hero">
+  <div class="hero-badge">✨ 3일간 누적 · 교사·학생 함께</div>
+  <h1>수련회의 <em>이야기</em>를<br>AI가 기록합니다</h1>
+  <p>매일 팀의 순간들을 입력하면 AI가 3일간의 이야기를 쌓아가요<br>마지막 날, 완성된 수련회 이야기가 펼쳐집니다</p>
+</div>
+<div class="wrap">
+  <div class="day-tabs">
+    <button class="day-tab on" id="tab0" onclick="switchDay(0)">1일차</button>
+    <button class="day-tab" id="tab1" onclick="switchDay(1)">2일차</button>
+    <button class="day-tab" id="tab2" onclick="switchDay(2)">3일차</button>
+  </div>
+  <div id="dayContent"></div>
+  <button class="final-btn" id="finalBtn" onclick="generateFinal()" disabled>📜 최종 수련회 이야기 생성하기</button>
+  <div id="finalStory"></div>
+</div>
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 API 키 설정</h3>
+    <p>AI 이야기 생성에 필요해요.</p>
+    <input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var STORE = 'narrative_v1';
+var TEAMS = ['베드로팀','바울팀','에스더팀','다윗팀'];
+var DAY_LABELS = ['1일차','2일차','3일차'];
+var DAY_GUIDES = [
+  '오늘 가장 인상 깊었던 순간, 하나님을 느꼈던 장면, 팀의 특별한 이야기를 입력해주세요',
+  '어제보다 달라진 것, 새로 깨달은 것, 팀 안에서 일어난 변화의 순간을 입력해주세요',
+  '수련회를 통해 변화된 것, 마지막 날의 결단, 서로에게 남긴 말을 입력해주세요',
+];
+var curDay = 0, selTeam = '베드로팀';
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE) || '{"days":[[],[],[]],"stories":[]}'); }
+  catch(e) { return {days:[[],[],[]],stories:[]}; }
+}
+function save(data) { localStorage.setItem(STORE, JSON.stringify(data)); }
+function switchDay(d) {
+  curDay = d;
+  document.querySelectorAll('.day-tab').forEach((t,i) => t.classList.toggle('on', i===d));
+  renderDay();
+}
+function renderDay() {
+  var data = load();
+  var entries = data.days[curDay] || [];
+  var story = data.stories[curDay];
+  var teamBtns = TEAMS.map(function(t) {
+    return '<button class="tbtn2' + (t===selTeam?' on':'') + '" onclick="pickTeam(this,\'' + t + '\')">' + t + '</button>';
+  }).join('');
+  var html = '<div class="sec">' + DAY_LABELS[curDay] + '의 순간들</div>' +
+    '<div class="entry-form"><div class="ef-label">팀 선택</div><div class="team-select">' + teamBtns + '</div>' +
+    '<div class="ef-label" style="margin-top:8px">오늘의 순간 입력</div>' +
+    '<div class="ef-guide">💡 ' + DAY_GUIDES[curDay] + '</div>' +
+    '<textarea class="ef-inp" id="entryInp" rows="3" placeholder="예: 찬양 시간에 모두가 눈물을 흘렸어요. 처음으로 팀이 하나된 느낌..."></textarea>' +
+    '<button class="add-entry-btn" onclick="addEntry()">+ 이 순간 기록하기</button></div>';
+  if (entries.length) {
+    html += '<div class="sec">기록된 순간 (' + entries.length + '개)</div><div class="entries-list">' +
+      entries.map(function(e,i) {
+        return '<div class="entry-item"><span class="ei-team">' + e.team + '</span><span class="ei-txt">' + esc(e.text) + '</span><button class="ei-del" onclick="delEntry(' + i + ')">✕</button></div>';
+      }).join('') + '</div>' +
+      '<button class="gen-btn" onclick="generateDay()">✨ ' + DAY_LABELS[curDay] + ' 이야기 생성하기</button>';
+  } else {
+    html += '<div style="font-size:.82rem;color:var(--sub);padding:16px 0">아직 기록된 순간이 없어요</div>';
+  }
+  if (story) {
+    html += '<div class="story-output show"><div class="so-header"><span class="so-chapter">' + DAY_LABELS[curDay] + '</span><span class="so-title">' + esc(story.title) + '</span></div><div class="so-body">' + esc(story.body) + '</div></div>';
+  }
+  html += '<div class="loading" id="loading"><div style="font-size:2rem">✍️</div><div style="font-size:.85rem;font-weight:700;color:#C4B5FD;margin-top:8px">AI가 오늘의 이야기를 쓰는 중...</div></div>';
+  document.getElementById('dayContent').innerHTML = html;
+  updateFinalBtn();
+}
+function pickTeam(el, t) { selTeam = t; renderDay(); }
+function addEntry() {
+  var text = document.getElementById('entryInp').value.trim();
+  if (!text) return;
+  var data = load();
+  if (!data.days[curDay]) data.days[curDay] = [];
+  data.days[curDay].push({team: selTeam, text: text, ts: Date.now()});
+  save(data); renderDay();
+}
+function delEntry(idx) { var data = load(); data.days[curDay].splice(idx, 1); save(data); renderDay(); }
+async function generateDay() {
+  var key = localStorage.getItem('retreat_api_key') || '';
+  if (!key) { openKeyModal(); return; }
+  var data = load(); var entries = data.days[curDay];
+  document.getElementById('loading').classList.add('show');
+  var entriesText = entries.map(function(e) { return e.team + ': ' + e.text; }).join('\n');
+  var prevStories = data.stories.filter(Boolean).map(function(s,i) { return DAY_LABELS[i] + ' 이야기: ' + s.title; }).join('\n');
+  var prompt = '중학생 수련회 ' + DAY_LABELS[curDay] + '의 이야기를 소설처럼 써줘.\n\n오늘의 순간들:\n' + entriesText + (prevStories ? '\n\n이전 이야기:\n' + prevStories : '') + '\n\n아래 JSON만:\n{"title":"챕터 제목 (짧고 감동적으로)","body":"이야기 본문 (3-4단락, 팀 이름과 실제 순간을 담아서, 소설체로, 500자 내외)"}';
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var errBody=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(errBody.error&&errBody.error.message||res.statusText));}
+var d = await res.json(); if (d.error) throw new Error(d.error.message);
+    var p = safeParseJSON(d.content[0].text);
+    data.stories[curDay] = p; save(data);
+    document.getElementById('loading').classList.remove('show');
+    document.querySelectorAll('.day-tab')[curDay].classList.add('done');
+    renderDay();
+  } catch(e) { document.getElementById('loading').classList.remove('show'); alert('오류: ' + e.message); }
+}
+function updateFinalBtn() {
+  var data = load(); var done = data.stories.filter(Boolean).length;
+  document.getElementById('finalBtn').disabled = done < 2;
+  document.getElementById('finalBtn').textContent = '📜 최종 수련회 이야기 생성하기 (' + done + '/3일 완료)';
+}
+async function generateFinal() {
+  var key = localStorage.getItem('retreat_api_key') || '';
+  if (!key) { openKeyModal(); return; }
+  var data = load();
+  var storiesText = data.stories.filter(Boolean).map(function(s,i) { return DAY_LABELS[i] + ' — ' + s.title + ':\n' + s.body; }).join('\n\n');
+  var el = document.getElementById('finalStory');
+  el.innerHTML = '<div class="loading show"><div style="font-size:2rem">📖</div><div style="font-size:.85rem;font-weight:700;color:var(--gold);margin-top:8px">3일간의 이야기를 완성하는 중...</div></div>';
+  var prompt = '3일간 수련회 이야기의 에필로그와 최종 수련회 이야기 제목을 써줘.\n\n각 날의 이야기:\n' + storiesText + '\n\n아래 JSON만:\n{"title":"수련회 전체 제목","subtitle":"부제목","epilogue":"에필로그 (3단락, 3일간의 여정이 하나의 이야기로 완성되는 감동적인 마무리, 800자 내외)","final_verse":"이 수련회를 가장 잘 표현하는 성경 구절"}';
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:900,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var errBody=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(errBody.error&&errBody.error.message||res.statusText));}
+var d = await res.json(); if (d.error) throw new Error(d.error.message);
+    var p = safeParseJSON(d.content[0].text);
+    el.innerHTML = '<div class="story-output show" style="border-color:rgba(245,158,11,.4)"><div class="so-header" style="background:rgba(245,158,11,.12)"><span class="so-chapter" style="color:var(--gold)">✨ 2026 수련회 이야기</span><span class="so-title">' + esc(p.title) + '</span></div><div class="so-body" style="border-top:1px solid rgba(245,158,11,.15);padding-top:12px;font-style:italic;color:rgba(249,250,251,.7);font-size:.8rem">' + esc(p.subtitle) + '</div><div class="so-body">' + esc(p.epilogue) + '</div><div style="padding:12px 16px;background:rgba(245,158,11,.08);border-top:1px solid rgba(245,158,11,.2);font-size:.8rem;font-weight:700;color:var(--gold)">📖 ' + esc(p.final_verse) + '</div></div>';
+  } catch(e) { el.innerHTML = '<div style="color:red;padding:12px">오류: ' + e.message + '</div>'; }
+}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function openKeyModal() { document.getElementById('keyModal').classList.add('open'); }
+function saveKey() { var k = document.getElementById('keyInp').value.trim(); if(k) { localStorage.setItem('retreat_api_key',k); document.getElementById('keyModal').classList.remove('open'); } }
+document.getElementById('keyModal').addEventListener('click', function(e) { if(e.target===this) this.classList.remove('open'); });
+renderDay();
+</script>
+</body>
+</html>

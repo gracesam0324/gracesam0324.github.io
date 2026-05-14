@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>역할 반전 — 학생이 AI를 가르친다</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0D1117;--card:#161B22;--card2:#1C2128;--blue:#58A6FF;--gold:#E3B341;--green:#3FB950;--sub:#8B949E;--border:#30363D;--white:#F0F6FC}
+html,body{min-height:100%;background:var(--bg);font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--white);overflow-x:hidden}
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--sub);font-size:1rem;cursor:pointer;font-family:inherit}
+.tag{font-size:.65rem;font-weight:700;background:var(--green);color:#000;padding:3px 8px;border-radius:4px}
+.topbar-title{font-size:.88rem;font-weight:700;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--sub)}
+.hero{padding:20px 16px 16px;text-align:center;border-bottom:1px solid var(--border)}
+.hero-badge{display:inline-block;background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);color:var(--green);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}
+.hero h1{font-size:clamp(1.2rem,4vw,1.7rem);font-weight:900;margin-bottom:4px}
+.hero h1 em{color:var(--green);font-style:normal}
+.hero p{font-size:.78rem;color:var(--sub);line-height:1.65}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}
+.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--sub);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.topic-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.tbtn{padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer;font-family:inherit;text-align:left;transition:.15s}
+.tbtn:hover,.tbtn.on{border-color:var(--green);background:rgba(63,185,80,.08)}
+.tbtn-t{font-size:.88rem;font-weight:700;color:var(--white);margin-bottom:2px}
+.tbtn-d{font-size:.72rem;color:var(--sub)}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.team-btn{padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;font-family:inherit;text-align:center;font-size:.85rem;font-weight:700;color:var(--sub);transition:.15s}
+.team-btn.on{border-color:var(--blue);color:var(--blue);background:rgba(88,166,255,.1)}
+.start-btn{width:100%;padding:14px;background:var(--green);color:#000;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.15s}
+.start-btn:hover{opacity:.9}
+.chat{display:none;flex-direction:column;gap:10px;margin-bottom:14px}
+.chat.show{display:flex}
+.bubble{padding:12px 14px;border-radius:12px;font-size:.85rem;line-height:1.7;max-width:90%;animation:popIn .3s ease}
+@keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.bubble-ai{background:var(--card2);border:1px solid var(--border);align-self:flex-start}
+.bubble-ai-label{font-size:.68rem;font-weight:700;color:var(--gold);margin-bottom:5px}
+.bubble-team{background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.25);align-self:flex-end;text-align:right}
+.bubble-team-label{font-size:.68rem;font-weight:700;color:var(--green);margin-bottom:5px}
+.input-area{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.input-label{font-size:.75rem;font-weight:700;color:var(--white);margin-bottom:8px}
+.input-guide{font-size:.73rem;color:var(--sub);background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.15);border-radius:8px;padding:8px 10px;margin-bottom:8px;line-height:1.5}
+textarea.inp{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;background:var(--card2);color:var(--white);resize:none;min-height:90px;line-height:1.6}
+textarea.inp:focus{outline:none;border-color:var(--green)}
+.send-btn{width:100%;padding:12px;background:var(--blue);color:#000;border:none;border-radius:8px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:8px;transition:.15s}
+.send-btn:hover{opacity:.9}
+.send-btn:disabled{background:var(--border);color:var(--sub);cursor:not-allowed}
+.rnd-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pips{display:flex;gap:5px}
+.pip{width:28px;height:5px;border-radius:3px;background:var(--border);transition:.3s}
+.pip.done{background:var(--green)}
+.pip.cur{background:var(--blue)}
+.loading{display:none;text-align:center;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px}
+.loading.show{display:block}
+.spin{display:inline-block;font-size:2rem;animation:spin 1.5s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.report{display:none;animation:popIn .5s ease}
+.report.show{display:block}
+.report-top{background:linear-gradient(135deg,rgba(227,179,65,.15),rgba(63,185,80,.1));border:2px solid rgba(227,179,65,.4);border-radius:14px;padding:18px;text-align:center;margin-bottom:12px}
+.report-icon{font-size:2.5rem;margin-bottom:6px}
+.report-title{font-size:1.1rem;font-weight:900;color:var(--gold);margin-bottom:4px}
+.report-sub{font-size:.75rem;color:var(--sub)}
+.report-score{font-size:2.2rem;font-weight:900;color:var(--gold);margin:8px 0}
+.rsec{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:8px}
+.rsec-t{font-size:.75rem;font-weight:700;color:var(--sub);margin-bottom:6px}
+.rsec-body{font-size:.82rem;line-height:1.7;color:rgba(240,246,252,.85)}
+.again-btn{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--card);color:var(--sub);transition:.15s}
+.again-btn:hover{border-color:var(--green);color:var(--green)}
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+.key-modal.open{display:flex}
+.key-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;max-width:320px;width:90%}
+.key-box h3{font-weight:900;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}
+.key-inp{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;font-size:.85rem;font-family:inherit;background:var(--card2);color:var(--white);margin-bottom:8px}
+.key-save{width:100%;padding:11px;background:var(--green);color:#000;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+  <span class="tag">후-2</span>
+  <span class="topbar-title">🔄 역할 반전 — 학생이 AI를 가르친다</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+<div class="hero">
+  <div class="hero-badge">💡 수련회 후 · D+3~D+7 · 팀 활동</div>
+  <h1>AI에게 <em>복음을 가르쳐보세요</em></h1>
+  <p>AI가 신앙을 전혀 모르는 존재가 됩니다<br>설명할수록 AI의 질문이 더 깊어져요</p>
+</div>
+<div class="wrap">
+  <div id="setupScreen">
+    <div class="sec">가르칠 주제</div>
+    <div class="topic-list">
+      <div class="tbtn on" onclick="pickT(this,0)"><div class="tbtn-t">✝️ 예수님은 누구인가?</div><div class="tbtn-d">예수님의 정체성과 십자가의 의미 설명하기</div></div>
+      <div class="tbtn" onclick="pickT(this,1)"><div class="tbtn-t">🙏 왜 기도를 하는가?</div><div class="tbtn-d">기도의 의미와 목적 설명하기</div></div>
+      <div class="tbtn" onclick="pickT(this,2)"><div class="tbtn-t">❤️ 하나님의 사랑이란 무엇인가?</div><div class="tbtn-d">하나님의 사랑을 이해 못하는 AI에게 설명하기</div></div>
+      <div class="tbtn" onclick="pickT(this,3)"><div class="tbtn-t">🌿 구원이란 무엇인가?</div><div class="tbtn-d">죄, 용서, 구원의 개념 설명하기</div></div>
+      <div class="tbtn" onclick="pickT(this,4)"><div class="tbtn-t">📖 성경은 왜 중요한가?</div><div class="tbtn-d">성경의 역할과 중요성 설명하기</div></div>
+    </div>
+    <div class="sec">우리 팀</div>
+    <div class="team-grid">
+      <button class="team-btn on" onclick="pickTeam(this,'베드로팀')">⚓ 베드로팀</button>
+      <button class="team-btn" onclick="pickTeam(this,'바울팀')">✉️ 바울팀</button>
+      <button class="team-btn" onclick="pickTeam(this,'에스더팀')">👑 에스더팀</button>
+      <button class="team-btn" onclick="pickTeam(this,'다윗팀')">🎵 다윗팀</button>
+    </div>
+    <button class="start-btn" onclick="startSession()">🚀 가르치기 시작!</button>
+  </div>
+  <div id="battleScreen" style="display:none">
+    <div class="rnd-bar"><div class="pips" id="pips"></div><span id="rndInfo" style="font-size:.75rem;color:var(--sub)"></span></div>
+    <div class="chat" id="chat"></div>
+    <div class="loading" id="loading"><div class="spin">🤔</div><div style="font-size:.85rem;font-weight:700;color:var(--gold);margin-top:8px">AI가 질문을 생각하는 중...</div></div>
+    <div class="input-area" id="inputArea">
+      <div class="input-label" id="inputLabel"></div>
+      <div class="input-guide" id="inputGuide"></div>
+      <textarea class="inp" id="userInput" placeholder="팀의 설명을 입력하세요..."></textarea>
+      <button class="send-btn" id="sendBtn" onclick="submitExplain()">설명 제출하기 →</button>
+    </div>
+    <div class="report" id="report"></div>
+  </div>
+</div>
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 API 키 설정</h3>
+    <p>AI를 불러오려면 API 키가 필요해요.</p>
+    <input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var TOPICS=[
+  {t:'예수님은 누구인가?',ctx:'예수님의 정체성 (신성, 인성, 구원자 역할)'},
+  {t:'왜 기도를 하는가?',ctx:'기도의 의미, 목적, 응답'},
+  {t:'하나님의 사랑이란 무엇인가?',ctx:'하나님의 사랑의 특성과 증거'},
+  {t:'구원이란 무엇인가?',ctx:'죄, 용서, 구원의 개념'},
+  {t:'성경은 왜 중요한가?',ctx:'성경의 권위, 역할, 중요성'},
+];
+var TOTAL=5;
+var selT=0,selTeam='베드로팀',curRnd=0,chatLog=[],isLoad=false;
+function pickT(el,i){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selT=i;}
+function pickTeam(el,n){document.querySelectorAll('.team-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selTeam=n;}
+function startSession(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  if(!key){openKeyModal();return;}
+  curRnd=0;chatLog=[];
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('battleScreen').style.display='block';
+  document.getElementById('chat').classList.add('show');
+  document.getElementById('report').classList.remove('show');
+  renderPips();fetchAIQuestion(null);
+}
+function renderPips(){
+  var bar=document.getElementById('pips');bar.innerHTML='';
+  for(var i=0;i<TOTAL;i++){var p=document.createElement('div');p.className='pip'+(i<curRnd?' done':i===curRnd?' cur':'');bar.appendChild(p);}
+  document.getElementById('rndInfo').textContent=(curRnd<TOTAL)?'질문 '+(curRnd+1)+' / '+TOTAL:'최종 보고서';
+}
+async function fetchAIQuestion(explain){
+  if(isLoad)return;isLoad=true;
+  var key=localStorage.getItem('retreat_api_key')||'';
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('inputArea').style.display='none';
+  scrollB();
+  var topic=TOPICS[selT];
+  var history=chatLog.map(l=>(l.role==='ai'?'[AI 질문 '+l.rnd+'R] ':'['+selTeam+' 설명 '+l.rnd+'R] ')+l.text).join('\n\n');
+  var prompt='너는 인공지능이지만 기독교 신앙에 대해 완전히 무지한 존재야. 진심으로 이해하려고 하지만 개념이 낯설어서 솔직하고 순진한 질문을 해.\n\n'+
+    '가르칠 주제: "'+topic.t+'"\n배경: '+topic.ctx+'\n현재 라운드: '+(curRnd+1)+'/'+TOTAL+'\n\n'+
+    (history?'이전 대화:\n'+history+'\n\n':'')+
+    (explain?selTeam+'의 방금 설명: '+explain+'\n\n':'')+
+    (curRnd===0?'첫 질문을 해줘. 이 주제에 대해 전혀 모르는 입장에서 가장 기초적이고 솔직한 질문으로 시작해.':'이 설명을 듣고 이해가 된 부분도 있지만, 더 깊이 알고 싶은 부분에 대해 다음 질문을 해줘. 점점 더 본질적인 부분을 파고들어줘.')+
+    '\n\n반드시 아래 JSON만:\n{"question":"AI의 질문 (1-2문장, 순진하고 진지하게)","understood":"설명에서 이해한 것 한 줄 (첫 라운드면 null)","still_confused":"아직 모르는 것 한 줄"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+    var data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    var parsed=safeParseJSON(d.content[0].text);
+    chatLog.push({role:'ai',rnd:curRnd+1,text:parsed.question});
+    document.getElementById('loading').classList.remove('show');
+    addBubble('ai',parsed.question,parsed.understood,parsed.still_confused);
+    showInput();
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+  isLoad=false;
+}
+function addBubble(role,text,understood,confused){
+  var chat=document.getElementById('chat');
+  var div=document.createElement('div');
+  div.className='bubble bubble-'+role;
+  if(role==='ai'){
+    div.innerHTML='<div class="bubble-ai-label">🤖 AI (아무것도 모름)</div>'+esc(text)+
+      (understood?'<div style="font-size:.72rem;color:var(--green);margin-top:6px">✅ 이해: '+esc(understood)+'</div>':'')+
+      (confused?'<div style="font-size:.72rem;color:#E3B341;margin-top:2px">❓ 아직 모름: '+esc(confused)+'</div>':'');
+  }else{
+    div.innerHTML='<div class="bubble-team-label">🛡️ '+esc(selTeam)+'의 설명</div>'+esc(text);
+  }
+  chat.appendChild(div);scrollB();
+}
+function showInput(){
+  var guides=['핵심 개념을 쉽고 구체적으로 설명해보세요','비유나 예시를 들어 설명하면 좋아요','AI가 헷갈려하는 부분을 중심으로 설명해주세요'];
+  document.getElementById('inputArea').style.display='';
+  document.getElementById('inputLabel').textContent=selTeam+' — '+(curRnd+1)+'라운드 설명';
+  document.getElementById('inputGuide').textContent='💡 '+guides[curRnd%3];
+  document.getElementById('userInput').value='';
+  document.getElementById('sendBtn').textContent=curRnd<TOTAL-1?'설명 제출 → 다음 질문 받기':'최후 설명 제출 → 보고서 받기';
+}
+function submitExplain(){
+  var text=document.getElementById('userInput').value.trim();
+  if(!text){alert('설명을 입력해주세요!');return;}
+  chatLog.push({role:'team',rnd:curRnd+1,text});
+  addBubble('team',text,null,null);
+  document.getElementById('inputArea').style.display='none';
+  curRnd++;renderPips();
+  if(curRnd>=TOTAL)fetchReport();else fetchAIQuestion(text);
+}
+async function fetchReport(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('loading').querySelector('div:last-child').textContent='AI가 5번의 설명을 분석하는 중...';
+  var log=chatLog.map(l=>(l.role==='ai'?'[AI '+l.rnd+'R]':'[팀 '+l.rnd+'R]')+' '+l.text).join('\n');
+  var prompt='5라운드 신앙 교육의 AI 학습 평가자야.\n주제: "'+TOPICS[selT].t+'"\n팀: '+selTeam+'\n\n전체 기록:\n'+log+'\n\n아래 JSON만:\n{"score":80,"best":"가장 인상적인 설명 한 줄","weak":"아쉬웠던 설명 한 줄","ai_learned":"AI가 이 설명으로 이해하게 된 것 2문장","suggestion":"더 잘 설명하려면 한 줄","bible":"이 주제를 설명할 때 핵심 성경 구절"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+    var data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    document.getElementById('loading').classList.remove('show');
+    showReport(p);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function showReport(p){
+  var el=document.getElementById('report');
+  el.innerHTML='<div class="report-top"><div class="report-icon">'+(p.score>=80?'🎓':p.score>=60?'📚':'🌱')+'</div><div class="report-title">AI 학습 보고서</div><div class="report-sub">'+esc(selTeam)+' · '+esc(TOPICS[selT].t)+'</div><div class="report-score">'+p.score+'<span style="font-size:1rem;color:var(--sub)"> / 100</span></div></div>'+
+    '<div class="rsec"><div class="rsec-t">🤖 AI가 이해한 것</div><div class="rsec-body">'+esc(p.ai_learned)+'</div></div>'+
+    '<div class="rsec"><div class="rsec-t">✨ 가장 좋은 설명</div><div class="rsec-body" style="color:var(--green)">'+esc(p.best)+'</div></div>'+
+    '<div class="rsec"><div class="rsec-t">💡 개선할 점</div><div class="rsec-body">'+esc(p.weak)+'<br><span style="color:var(--blue);font-size:.8rem;margin-top:4px;display:block">→ '+esc(p.suggestion)+'</span></div></div>'+
+    '<div class="rsec"><div class="rsec-t">📖 핵심 성경 구절</div><div class="rsec-body" style="color:var(--gold)">'+esc(p.bible)+'</div></div>'+
+    '<button class="again-btn" onclick="resetAll()">↩ 다른 주제로 다시 도전</button>';
+  el.classList.add('show');scrollB();
+}
+function resetAll(){curRnd=0;chatLog=[];document.getElementById('battleScreen').style.display='none';document.getElementById('setupScreen').style.display='';document.getElementById('chat').innerHTML='';document.getElementById('report').classList.remove('show');window.scrollTo(0,0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function scrollB(){setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),100);}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open');}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open');}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+</script>
+</body>
+</html>

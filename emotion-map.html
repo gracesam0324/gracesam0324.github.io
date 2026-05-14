@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실시간 공동체 감정 지도</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FFF8F0;--card:#FFFFFF;--card2:#FFF3E8;--orange:#EA580C;--yellow:#CA8A04;--green:#16A34A;--blue:#2563EB;--sub:#6B7280;--border:#FED7AA;--ink:#1C0A00}
+html,body{min-height:100%;background:var(--bg);font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--ink)}
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(255,248,240,.95);backdrop-filter:blur(12px);border-bottom:1.5px solid var(--border)}
+.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card2);border:1.5px solid var(--border);color:var(--orange);font-size:1rem;cursor:pointer;font-family:inherit}
+.tag{font-size:.65rem;font-weight:900;background:var(--orange);color:white;padding:3px 8px;border-radius:4px}
+.topbar-title{font-size:.88rem;font-weight:800;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card2);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--sub)}
+.hero{background:linear-gradient(135deg,var(--orange),#DC2626);padding:22px 20px 18px;text-align:center;color:white}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}
+.hero h1{font-size:clamp(1.2rem,4vw,1.7rem);font-weight:900;margin-bottom:4px}
+.hero p{font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}
+.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--orange);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.mode-tabs{display:flex;gap:0;margin-bottom:16px;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+.mode-tab{flex:1;padding:10px;text-align:center;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);transition:.15s;border:none;font-family:inherit}
+.mode-tab.on{background:var(--orange);color:white}
+/* 입력 모드 */
+.emotion-cats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.ecat{padding:8px 14px;border:1.5px solid var(--border);border-radius:50px;background:var(--card);cursor:pointer;font-size:.8rem;font-weight:700;color:var(--sub);font-family:inherit;transition:.15s}
+.ecat.on{background:var(--orange);border-color:var(--orange);color:white}
+.custom-inp{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;background:var(--card);color:var(--ink);margin-bottom:10px}
+.custom-inp:focus{outline:none;border-color:var(--orange)}
+.intensity-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.int-label{font-size:.78rem;font-weight:700;color:var(--ink);flex-shrink:0}
+.int-btns{display:flex;gap:4px}
+.int-btn{width:34px;height:28px;border:1.5px solid var(--border);border-radius:6px;background:var(--card);font-size:.75rem;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;transition:.15s}
+.int-btn.on{background:var(--orange);border-color:var(--orange);color:white}
+.add-btn{width:100%;padding:12px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:.9rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.15s;margin-bottom:14px}
+.add-btn:hover{opacity:.9}
+/* 감정 목록 */
+.emotion-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:220px;overflow-y:auto}
+.emotion-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:8px}
+.ei-word{flex:1;font-size:.85rem;font-weight:700;color:var(--ink)}
+.ei-int{display:flex;gap:2px}
+.ei-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);opacity:.3}
+.ei-dot.on{opacity:1}
+.ei-del{width:24px;height:24px;border:none;background:none;cursor:pointer;color:var(--sub);font-size:.9rem;border-radius:4px;flex-shrink:0}
+.ei-del:hover{color:#EF4444}
+.count-badge{font-size:.75rem;font-weight:700;color:var(--sub);margin-bottom:10px}
+/* 분석 */
+.analyze-btn{width:100%;padding:14px;background:linear-gradient(135deg,#CA8A04,#EA580C);color:white;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;margin-bottom:14px;transition:.15s}
+.analyze-btn:hover{opacity:.9}
+.analyze-btn:disabled{background:#D1D5DB;cursor:not-allowed}
+.loading{display:none;text-align:center;padding:24px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;margin-bottom:12px}
+.loading.show{display:block}
+.result{display:none;animation:popIn .4s ease}
+.result.show{display:block}
+@keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.emotion-cloud{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:var(--card);border:1.5px solid var(--border);border-radius:12px;margin-bottom:12px}
+.cloud-word{padding:5px 12px;border-radius:20px;font-weight:700;transition:.15s}
+.result-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.result-title{font-size:.78rem;font-weight:700;color:var(--sub);margin-bottom:8px}
+.result-body{font-size:.83rem;line-height:1.7;color:var(--ink)}
+.reset-btn{width:100%;padding:11px;border:1.5px solid var(--border);border-radius:8px;font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--card);color:var(--sub)}
+.reset-btn:hover{border-color:var(--orange);color:var(--orange)}
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}
+.key-modal.open{display:flex}
+.key-box{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:22px;max-width:320px;width:90%}
+.key-box h3{font-weight:900;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}
+.key-inp{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:.85rem;font-family:inherit;margin-bottom:8px}
+.key-save{width:100%;padding:11px;background:var(--orange);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+  <span class="tag">중-3</span>
+  <span class="topbar-title">🗺️ 실시간 공동체 감정 지도</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+<div class="hero">
+  <div class="hero-badge">💛 1일차 · 찬양 전 · 전체 참여</div>
+  <h1>우리 공동체의<br>지금 마음은?</h1>
+  <p>한 명씩 감정을 입력하면 AI가 공동체 전체의 마음을 읽어드려요</p>
+</div>
+<div class="wrap">
+  <div class="mode-tabs">
+    <button class="mode-tab on" onclick="switchMode('input')">✏️ 감정 입력</button>
+    <button class="mode-tab" onclick="switchMode('analyze')">📊 분석하기</button>
+  </div>
+  <!-- 입력 모드 -->
+  <div id="inputMode">
+    <div class="sec">감정 선택 또는 직접 입력</div>
+    <div class="emotion-cats">
+      <button class="ecat on" onclick="pickCat(this,'감사')">🙏 감사</button>
+      <button class="ecat" onclick="pickCat(this,'기대')">✨ 기대</button>
+      <button class="ecat" onclick="pickCat(this,'설렘')">💫 설렘</button>
+      <button class="ecat" onclick="pickCat(this,'평안')">🕊️ 평안</button>
+      <button class="ecat" onclick="pickCat(this,'외로움')">😔 외로움</button>
+      <button class="ecat" onclick="pickCat(this,'두려움')">😨 두려움</button>
+      <button class="ecat" onclick="pickCat(this,'피곤함')">😴 피곤함</button>
+      <button class="ecat" onclick="pickCat(this,'기쁨')">😊 기쁨</button>
+      <button class="ecat" onclick="pickCat(this,'슬픔')">😢 슬픔</button>
+      <button class="ecat" onclick="pickCat(this,'혼란')">😵 혼란</button>
+    </div>
+    <input class="custom-inp" id="customEmotion" placeholder="직접 입력 (예: 뭔가 변화될 것 같은 느낌)">
+    <div class="intensity-row">
+      <span class="int-label">강도:</span>
+      <div class="int-btns" id="intBtns">
+        <button class="int-btn on" onclick="pickInt(this,1)">1</button>
+        <button class="int-btn" onclick="pickInt(this,2)">2</button>
+        <button class="int-btn" onclick="pickInt(this,3)">3</button>
+        <button class="int-btn" onclick="pickInt(this,4)">4</button>
+        <button class="int-btn" onclick="pickInt(this,5)">5</button>
+      </div>
+    </div>
+    <button class="add-btn" onclick="addEmotion()">+ 감정 추가하기</button>
+    <div class="count-badge" id="countBadge">아직 입력된 감정이 없어요</div>
+    <div class="emotion-list" id="emotionList"></div>
+  </div>
+  <!-- 분석 모드 -->
+  <div id="analyzeMode" style="display:none">
+    <div class="count-badge" id="countBadge2"></div>
+    <div class="emotion-cloud" id="emotionCloud"></div>
+    <button class="analyze-btn" id="analyzeBtn" onclick="runAnalysis()" disabled>🔍 AI 공동체 감정 분석하기</button>
+    <div class="loading" id="loading">
+      <div style="font-size:2rem">🌡️</div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--orange);margin-top:8px">AI가 공동체 마음을 읽는 중...</div>
+    </div>
+    <div class="result" id="result"></div>
+    <button class="reset-btn" onclick="resetAll()">↩ 초기화하고 다시 시작</button>
+  </div>
+</div>
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 API 키 설정</h3>
+    <p>AI 분석에 필요해요.</p>
+    <input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var STORE='emotion_map_v1';
+var selCat='감사',selInt=1;
+var COLORS=['#EA580C','#CA8A04','#16A34A','#2563EB','#9333EA','#DB2777'];
+function loadEmotions(){try{return JSON.parse(localStorage.getItem(STORE)||'[]');}catch(e){return[];}}
+function saveEmotions(data){localStorage.setItem(STORE,JSON.stringify(data));}
+function pickCat(el,cat){document.querySelectorAll('.ecat').forEach(b=>b.classList.remove('on'));el.classList.add('on');selCat=cat;document.getElementById('customEmotion').value='';}
+function pickInt(el,n){document.querySelectorAll('.int-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selInt=n;}
+function switchMode(m){
+  document.getElementById('inputMode').style.display=m==='input'?'':'none';
+  document.getElementById('analyzeMode').style.display=m==='analyze'?'':'none';
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>{t.classList.toggle('on',(m==='input'&&i===0)||(m==='analyze'&&i===1));});
+  if(m==='analyze'){renderCloud();updateAnalyzeBtn();}
+  else renderList();
+}
+function addEmotion(){
+  var custom=document.getElementById('customEmotion').value.trim();
+  var word=custom||selCat;
+  if(!word)return;
+  var data=loadEmotions();
+  data.push({word,intensity:selInt,ts:Date.now()});
+  saveEmotions(data);
+  renderList();
+  document.getElementById('customEmotion').value='';
+  document.getElementById('result').classList.remove('show');
+}
+function renderList(){
+  var data=loadEmotions();
+  var list=document.getElementById('emotionList');
+  list.innerHTML='';
+  data.slice().reverse().forEach((e,i)=>{
+    var div=document.createElement('div');div.className='emotion-item';
+    var dots='';for(var d=1;d<=5;d++)dots+='<div class="ei-dot'+(d<=e.intensity?' on':'')+'"></div>';
+    div.innerHTML='<div class="ei-word">'+esc(e.word)+'</div><div class="ei-int">'+dots+'</div><button class="ei-del" onclick="delEmotion('+( data.length-1-i)+')">✕</button>';
+    list.appendChild(div);
+  });
+  var cnt=data.length;
+  document.getElementById('countBadge').textContent=cnt?cnt+'명의 감정이 모였어요':'아직 입력된 감정이 없어요';
+}
+function delEmotion(idx){var data=loadEmotions();data.splice(idx,1);saveEmotions(data);renderList();}
+function renderCloud(){
+  var data=loadEmotions();
+  var cloud=document.getElementById('emotionCloud');
+  cloud.innerHTML='';
+  if(!data.length){cloud.innerHTML='<div style="font-size:.82rem;color:var(--sub)">아직 입력된 감정이 없어요</div>';return;}
+  var freq={};data.forEach(e=>{freq[e.word]=(freq[e.word]||0)+e.intensity;});
+  var max=Math.max(...Object.values(freq));
+  Object.entries(freq).sort((a,b)=>b[1]-a[1]).forEach(([word,cnt],i)=>{
+    var size=Math.max(11,Math.round(11+((cnt/max)*14)));
+    var div=document.createElement('div');
+    div.className='cloud-word';
+    div.style.cssText='font-size:'+size+'px;background:'+COLORS[i%COLORS.length]+'22;color:'+COLORS[i%COLORS.length]+';border:1px solid '+COLORS[i%COLORS.length]+'44';
+    div.textContent=word+' '+cnt;
+    cloud.appendChild(div);
+  });
+  var cnt=data.length;
+  document.getElementById('countBadge2').textContent='총 '+cnt+'명의 감정 · '+Object.keys(freq).length+'가지 감정';
+}
+function updateAnalyzeBtn(){var data=loadEmotions();document.getElementById('analyzeBtn').disabled=data.length<2;}
+async function runAnalysis(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  if(!key){openKeyModal();return;}
+  var data=loadEmotions();
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('result').classList.remove('show');
+  var summary=data.map(e=>e.word+'(강도'+e.intensity+')').join(', ');
+  var prompt='중학생 수련회 공동체의 실시간 감정 데이터야.\n\n감정 목록: '+summary+'\n총 인원: '+data.length+'명\n\n아래 JSON만:\n{"dominant":"가장 많은 감정 흐름 (1문장)","pattern":"감정 패턴 분석 (2문장)","worship_theme":"이 감정들에 어울리는 찬양/예배 주제 (1문장)","prayer_focus":"지금 공동체에게 필요한 기도 방향 (1문장)","word_of_comfort":"공동체를 향한 AI의 따뜻한 한 마디","bible":"이 공동체 감정에 어울리는 성경 구절"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    document.getElementById('loading').classList.remove('show');
+    showResult(p);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function showResult(p){
+  var el=document.getElementById('result');
+  el.innerHTML='<div class="result-card"><div class="result-title">💛 공동체 감정 흐름</div><div class="result-body">'+esc(p.dominant)+'<br><br>'+esc(p.pattern)+'</div></div>'+
+    '<div class="result-card"><div class="result-title">🎵 어울리는 찬양 주제</div><div class="result-body" style="color:var(--orange)">'+esc(p.worship_theme)+'</div></div>'+
+    '<div class="result-card"><div class="result-title">🙏 오늘 기도 방향</div><div class="result-body">'+esc(p.prayer_focus)+'</div></div>'+
+    '<div class="result-card" style="background:var(--card2);border-color:var(--border)"><div class="result-title">💌 AI의 한 마디</div><div class="result-body" style="font-style:italic">'+esc(p.word_of_comfort)+'</div><div style="font-size:.78rem;color:var(--orange);margin-top:8px;font-weight:700">'+esc(p.bible)+'</div></div>';
+  el.classList.add('show');
+}
+function resetAll(){if(!confirm('모든 감정 데이터를 초기화할까요?'))return;saveEmotions([]);renderList();renderCloud();document.getElementById('result').classList.remove('show');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open');}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open');}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+renderList();
+</script>
+</body>
+</html>

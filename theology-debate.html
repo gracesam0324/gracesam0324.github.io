@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>멀티 AI 신학 토론장</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0F0F14;--c1:#1A1A2E;--c2:#16213E;--r:#E11D48;--b:#2563EB;--g:#16A34A;--gold:#F59E0B;--sub:#94A3B8;--brd:#1E293B;--w:#F1F5F9}
+html,body{min-height:100%;background:var(--bg);font-family:-apple-system,'Noto Sans KR',sans-serif;color:var(--w);overflow-x:hidden}
+.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(15,15,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--brd)}
+.back-btn{width:34px;height:34px;border-radius:8px;background:var(--c1);border:1px solid var(--brd);color:var(--sub);font-size:1rem;cursor:pointer;font-family:inherit}
+.tag{font-size:.65rem;font-weight:700;background:var(--b);color:white;padding:3px 8px;border-radius:4px}
+.topbar-title{font-size:.88rem;font-weight:700;flex:1}
+.key-btn{font-size:.7rem;padding:5px 10px;background:var(--c1);border:1px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;color:var(--sub)}
+.hero{padding:20px 16px 16px;text-align:center;border-bottom:1px solid var(--brd)}
+.hero-badge{display:inline-block;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:#93C5FD;font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}
+.hero h1{font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;margin-bottom:4px}
+.hero h1 em{color:var(--gold);font-style:normal}
+.hero p{font-size:.78rem;color:var(--sub);line-height:1.6}
+.wrap{max-width:600px;margin:0 auto;padding:16px 16px 80px}
+.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--sub);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--brd)}
+.topics{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.tbtn{padding:11px 14px;border:1px solid var(--brd);border-radius:9px;background:var(--c1);cursor:pointer;font-family:inherit;text-align:left;transition:.15s}
+.tbtn:hover,.tbtn.on{border-color:var(--b);background:rgba(37,99,235,.08)}
+.tbtn-t{font-size:.88rem;font-weight:700;color:var(--w);margin-bottom:2px}
+.tbtn-d{font-size:.7rem;color:var(--sub)}
+.start-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--b),#1D4ED8);color:white;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.15s}
+.start-btn:hover{opacity:.9}
+/* 토론 화면 */
+.debate-screen{display:none}
+.debate-screen.show{display:block}
+.theologians{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.theo-card{padding:10px;border:1px solid var(--brd);border-radius:10px;text-align:center;background:var(--c1)}
+.theo-icon{font-size:1.4rem;margin-bottom:4px}
+.theo-name{font-size:.72rem;font-weight:700;color:var(--w);margin-bottom:2px}
+.theo-label{font-size:.65rem;color:var(--sub)}
+.round-badge{text-align:center;font-size:.75rem;color:var(--sub);margin-bottom:14px}
+.debate-log{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.debate-round{background:var(--c1);border:1px solid var(--brd);border-radius:12px;overflow:hidden;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.dr-header{padding:10px 14px;background:var(--c2);border-bottom:1px solid var(--brd);font-size:.75rem;font-weight:700;color:var(--sub)}
+.positions{display:flex;flex-direction:column;gap:0}
+.pos-item{padding:12px 14px;border-bottom:1px solid var(--brd)}
+.pos-item:last-child{border-bottom:none}
+.pos-label{font-size:.7rem;font-weight:700;margin-bottom:4px}
+.pos-text{font-size:.82rem;line-height:1.65;color:rgba(241,245,249,.85)}
+.student-input{background:var(--c1);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}
+.si-label{font-size:.78rem;font-weight:700;color:var(--w);margin-bottom:6px}
+.si-guide{font-size:.73rem;color:var(--sub);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:7px;padding:7px 10px;margin-bottom:8px;line-height:1.5}
+.choose-row{display:flex;gap:6px;margin-bottom:8px}
+.cho-btn{flex:1;padding:8px;border:1px solid var(--brd);border-radius:7px;background:var(--c2);font-size:.72rem;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;transition:.15s;text-align:center}
+.cho-btn.on{border-color:var(--gold);color:var(--gold);background:rgba(245,158,11,.1)}
+.si-note{font-size:.73rem;color:var(--sub);margin-bottom:8px}
+textarea.si-inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:8px;font-size:.83rem;font-family:inherit;background:var(--c2);color:var(--w);resize:none;min-height:75px;line-height:1.6}
+textarea.si-inp:focus{outline:none;border-color:var(--gold)}
+.submit-btn{width:100%;padding:11px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:.88rem;font-weight:900;font-family:inherit;cursor:pointer;margin-top:8px}
+.submit-btn:hover{opacity:.9}
+.submit-btn:disabled{background:var(--brd);color:var(--sub);cursor:not-allowed}
+.loading{display:none;text-align:center;padding:22px;background:var(--c1);border:1px solid var(--brd);border-radius:12px;margin-bottom:12px}
+.loading.show{display:block}
+.verdict{display:none;animation:fadeUp .5s ease}
+.verdict.show{display:block}
+.vcard{background:var(--c1);border:1px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px}
+.vcard-t{font-size:.75rem;font-weight:700;color:var(--sub);margin-bottom:8px}
+.vcard-body{font-size:.83rem;line-height:1.7;color:rgba(241,245,249,.85)}
+.again-btn{width:100%;padding:12px;border:1px solid var(--brd);border-radius:8px;font-size:.88rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--c1);color:var(--sub)}
+.again-btn:hover{border-color:var(--b);color:var(--b)}
+.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+.key-modal.open{display:flex}
+.key-box{background:var(--c1);border:1px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}
+.key-box h3{font-weight:900;margin-bottom:6px}
+.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}
+.key-inp{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;background:var(--c2);color:var(--w);margin-bottom:8px}
+.key-save{width:100%;padding:11px;background:var(--b);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+  <span class="tag">후-6</span>
+  <span class="topbar-title">🏛️ 멀티 AI 신학 토론장</span>
+  <button class="key-btn" onclick="openKeyModal()">🔑 API키</button>
+</div>
+<div class="hero">
+  <div class="hero-badge">⚖️ 수련회 후 · D+3~D+7 · 전체 토론</div>
+  <h1>세 신학자가<br><em>논쟁합니다</em></h1>
+  <p>개혁신학·해방신학·오순절신학 AI가 같은 주제로 토론<br>당신은 배심원이 되어 판결해주세요</p>
+</div>
+<div class="wrap">
+  <div id="setupScreen">
+    <div class="sec">토론 주제</div>
+    <div class="topics">
+      <div class="tbtn on" onclick="pickT(this,0)"><div class="tbtn-t">🙏 하나님의 뜻과 인간의 자유의지</div><div class="tbtn-d">예정론 vs 자유의지론의 신학적 충돌</div></div>
+      <div class="tbtn" onclick="pickT(this,1)"><div class="tbtn-t">✝️ 구원은 믿음으로만 가능한가?</div><div class="tbtn-d">이신칭의 vs 행함의 역할</div></div>
+      <div class="tbtn" onclick="pickT(this,2)"><div class="tbtn-t">🌍 교회는 사회 문제에 개입해야 하는가?</div><div class="tbtn-d">복음주의 vs 사회참여</div></div>
+      <div class="tbtn" onclick="pickT(this,3)"><div class="tbtn-t">🔥 성령의 은사는 오늘날도 계속되는가?</div><div class="tbtn-d">은사중단론 vs 은사지속론</div></div>
+      <div class="tbtn" onclick="pickT(this,4)"><div class="tbtn-t">📖 성경 해석의 기준은 무엇인가?</div><div class="tbtn-d">문자주의 vs 해석학적 접근</div></div>
+    </div>
+    <button class="start-btn" onclick="startDebate()">⚖️ 토론 시작!</button>
+  </div>
+  <div class="debate-screen" id="debateScreen">
+    <div class="theologians">
+      <div class="theo-card"><div class="theo-icon">📜</div><div class="theo-name">개혁신학자</div><div class="theo-label">칼뱅주의 · 하나님 주권</div></div>
+      <div class="theo-card"><div class="theo-icon">✊</div><div class="theo-name">해방신학자</div><div class="theo-label">현실 참여 · 약자 중심</div></div>
+      <div class="theo-card"><div class="theo-icon">🔥</div><div class="theo-name">오순절신학자</div><div class="theo-label">성령 체험 · 능력</div></div>
+    </div>
+    <div class="round-badge" id="roundBadge"></div>
+    <div class="debate-log" id="debateLog"></div>
+    <div class="loading" id="loading">
+      <div style="font-size:2rem">💬</div>
+      <div style="font-size:.85rem;font-weight:700;color:#93C5FD;margin-top:8px">세 신학자가 논쟁하는 중...</div>
+    </div>
+    <div class="student-input" id="studentInput" style="display:none"></div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+</div>
+<div class="key-modal" id="keyModal">
+  <div class="key-box">
+    <h3>🔑 API 키 설정</h3>
+    <p>AI 신학자들을 불러오려면 필요해요.</p>
+    <input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-...">
+    <button class="key-save" onclick="saveKey()">저장하기</button>
+  </div>
+</div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var TOPICS=[
+  {t:'하나님의 뜻과 인간의 자유의지',ctx:'예정론과 자유의지의 신학적 긴장'},
+  {t:'구원은 믿음으로만 가능한가?',ctx:'이신칭의와 행함의 역할'},
+  {t:'교회는 사회 문제에 개입해야 하는가?',ctx:'복음주의와 사회참여'},
+  {t:'성령의 은사는 오늘날도 계속되는가?',ctx:'은사중단론과 은사지속론'},
+  {t:'성경 해석의 기준은 무엇인가?',ctx:'문자주의와 해석학'},
+];
+var THEOS=[
+  {name:'개혁신학자',style:'칼뱅주의 개혁신학. 하나님의 주권, 예정, 성경의 무오성을 강조'},
+  {name:'해방신학자',style:'해방신학. 가난한 자 우선, 사회구조적 죄악, 역사적 예수의 실천 강조'},
+  {name:'오순절신학자',style:'오순절/카리스마 신학. 성령의 현재적 역사, 방언, 치유, 체험적 신앙 강조'},
+];
+var TOTAL_ROUNDS=3;
+var selT=0,curRnd=0,debateHistory=[],selTheo=null,isLoad=false;
+function pickT(el,i){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selT=i;}
+function startDebate(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  if(!key){openKeyModal();return;}
+  curRnd=0;debateHistory=[];
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('debateScreen').classList.add('show');
+  fetchDebateRound(null);
+}
+async function fetchDebateRound(studentInput){
+  if(isLoad)return;isLoad=true;
+  var key=localStorage.getItem('retreat_api_key')||'';
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('studentInput').style.display='none';
+  var topic=TOPICS[selT];
+  var prevLog=debateHistory.map(d=>'['+d.round+'R] '+d.summary).join('\n');
+  var prompt='세 명의 AI 신학자가 중학생 수련회에서 토론을 벌이고 있어. 주제: "'+topic.t+'"\n\n'+
+    THEOS.map((t,i)=>t.name+': '+t.style).join('\n')+'\n\n'+
+    (prevLog?'이전 라운드:\n'+prevLog+'\n\n':'')+
+    (studentInput?'학생 배심원 의견: '+studentInput+'\n\n':'')+
+    '현재 라운드: '+(curRnd+1)+'/'+TOTAL_ROUNDS+'\n\n'+
+    '각 신학자가 이 주제에 대해 자신의 입장에서 토론해줘. 서로의 주장에 반응하되 중학생이 이해할 수 있는 수준으로.\n\n'+
+    '반드시 아래 JSON만:\n{"round":'+(curRnd+1)+',"reformed":"개혁신학자 발언 (2-3문장)","liberation":"해방신학자 발언 (2-3문장)","pentecostal":"오순절신학자 발언 (2-3문장)","summary":"이 라운드 핵심 쟁점 한 줄"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var data=await res.json();if(data.error)throw new Error(data.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    debateHistory.push({round:curRnd+1,summary:p.summary});
+    document.getElementById('loading').classList.remove('show');
+    addDebateRound(p);
+    curRnd++;
+    if(curRnd>=TOTAL_ROUNDS)showFinalInput();else showStudentInput();
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+  isLoad=false;
+}
+function addDebateRound(p){
+  var log=document.getElementById('debateLog');
+  var div=document.createElement('div');div.className='debate-round';
+  div.innerHTML='<div class="dr-header">'+p.round+'라운드 — '+esc(TOPICS[selT].t)+'</div>'+
+    '<div class="positions">'+
+    '<div class="pos-item"><div class="pos-label" style="color:#86EFAC">📜 개혁신학자</div><div class="pos-text">'+esc(p.reformed)+'</div></div>'+
+    '<div class="pos-item"><div class="pos-label" style="color:#FCA5A5">✊ 해방신학자</div><div class="pos-text">'+esc(p.liberation)+'</div></div>'+
+    '<div class="pos-item"><div class="pos-label" style="color:#FDE68A">🔥 오순절신학자</div><div class="pos-text">'+esc(p.pentecostal)+'</div></div>'+
+    '<div style="padding:8px 14px;font-size:.72rem;color:var(--sub);font-style:italic">핵심 쟁점: '+esc(p.summary)+'</div>'+
+    '</div>';
+  log.appendChild(div);
+  document.getElementById('roundBadge').textContent=curRnd+1<TOTAL_ROUNDS?(curRnd+1)+'라운드 완료 → '+(curRnd+2)+'라운드로':'최종 라운드 완료';
+  scrollB();
+}
+function showStudentInput(){
+  var si=document.getElementById('studentInput');
+  si.style.display='';
+  si.innerHTML='<div class="si-label">⚖️ 배심원 의견 (선택)</div>'+
+    '<div class="si-guide">💡 지금까지 토론에서 어떤 신학자의 주장이 가장 설득력 있었나요?</div>'+
+    '<div class="choose-row">'+THEOS.map((t,i)=>'<button class="cho-btn" onclick="pickTheo(this,'+i+')">'+t.name+'</button>').join('')+'<button class="cho-btn" onclick="pickTheo(this,-1)">모르겠어요</button></div>'+
+    '<textarea class="si-inp" id="siInp" placeholder="이유나 추가 의견을 써주세요 (선택)"></textarea>'+
+    '<button class="submit-btn" onclick="submitStudent()">'+(curRnd<TOTAL_ROUNDS?'→ '+( curRnd+1)+'라운드 계속':'⚖️ 최종 판결 받기')+'</button>';
+  scrollB();
+}
+function showFinalInput(){
+  var si=document.getElementById('studentInput');
+  si.style.display='';
+  si.innerHTML='<div class="si-label">⚖️ 최종 판결</div>'+
+    '<div class="si-guide">💡 3라운드 토론을 모두 보셨습니다. 가장 설득력 있는 입장을 선택해주세요.</div>'+
+    '<div class="choose-row">'+THEOS.map((t,i)=>'<button class="cho-btn" onclick="pickTheo(this,'+i+')">'+t.name+'</button>').join('')+'<button class="cho-btn" onclick="pickTheo(this,-1)">모두 일리 있어요</button></div>'+
+    '<textarea class="si-inp" id="siInp" placeholder="판결 이유를 써주세요..."></textarea>'+
+    '<button class="submit-btn" onclick="submitFinal()">⚖️ 최종 판결 제출하기</button>';
+  scrollB();
+}
+function pickTheo(el,i){document.querySelectorAll('.cho-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');selTheo=i;}
+function submitStudent(){var inp=document.getElementById('siInp').value.trim();fetchDebateRound(inp||null);}
+async function submitFinal(){
+  var key=localStorage.getItem('retreat_api_key')||'';
+  var verdict=document.getElementById('siInp').value.trim();
+  document.getElementById('studentInput').style.display='none';
+  document.getElementById('loading').classList.add('show');
+  var choName=(selTheo!==null&&selTheo>=0)?THEOS[selTheo].name:'세 입장 모두';
+  var log=debateHistory.map(d=>d.round+'R: '+d.summary).join('\n');
+  var prompt='3라운드 신학 토론 종합 해설자야.\n주제: "'+TOPICS[selT].t+'"\n토론 요약:\n'+log+'\n학생 판결: '+choName+(verdict?' — '+verdict:'')+'\n\n아래 JSON만:\n{"synthesis":"세 신학 입장의 공통점과 차이점 2문장","each_strength":"각 신학자의 가장 강한 논거 한 줄씩 (reformed/liberation/pentecostal 키로)","student_verdict":"학생 판결에 대한 AI의 평가 1문장","balanced_answer":"이 주제에 대한 균형잡힌 성경적 답 2문장","bible":"이 토론의 핵심을 담은 성경 구절"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var data=await res.json();if(data.error)throw new Error(data.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    document.getElementById('loading').classList.remove('show');
+    showVerdict(p,choName);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function showVerdict(p,chosen){
+  var el=document.getElementById('verdict');
+  el.innerHTML='<div class="vcard" style="background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3)"><div class="vcard-t">⚖️ 학생 판결: '+esc(chosen)+'</div><div class="vcard-body" style="color:#FCD34D">'+esc(p.student_verdict)+'</div></div>'+
+    '<div class="vcard"><div class="vcard-t">🔍 세 신학의 공통점·차이점</div><div class="vcard-body">'+esc(p.synthesis)+'</div></div>'+
+    '<div class="vcard"><div class="vcard-t">💪 각 신학자의 강점</div><div class="vcard-body"><span style="color:#86EFAC">📜 개혁: </span>'+esc(p.each_strength.reformed)+'<br><br><span style="color:#FCA5A5">✊ 해방: </span>'+esc(p.each_strength.liberation)+'<br><br><span style="color:#FDE68A">🔥 오순절: </span>'+esc(p.each_strength.pentecostal)+'</div></div>'+
+    '<div class="vcard" style="background:rgba(37,99,235,.08);border-color:rgba(37,99,235,.25)"><div class="vcard-t">📖 균형잡힌 성경적 답</div><div class="vcard-body">'+esc(p.balanced_answer)+'<br><br><span style="color:#93C5FD;font-weight:700">'+esc(p.bible)+'</span></div></div>'+
+    '<button class="again-btn" onclick="resetAll()">↩ 다른 주제로 토론하기</button>';
+  el.classList.add('show');scrollB();
+}
+function resetAll(){curRnd=0;debateHistory=[];selTheo=null;document.getElementById('debateScreen').classList.remove('show');document.getElementById('setupScreen').style.display='';document.getElementById('debateLog').innerHTML='';document.getElementById('verdict').classList.remove('show');window.scrollTo(0,0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function scrollB(){setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),100);}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open');}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open');}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+</script>
+</body>
+</html>

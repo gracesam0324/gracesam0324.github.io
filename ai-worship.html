@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>학생이 만드는 AI 예배</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#F5F0FF;--card:#FFFFFF;--card2:#EDE9FE;--purple:#7C3AED;--gold:#D97706;--sub:#6B7280;--brd:#DDD6FE;--ink:#1F1235}html,body{min-height:100%;background:var(--bg);font-family:-apple-system,"Noto Sans KR",sans-serif;color:var(--ink)}.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(245,240,255,.95);backdrop-filter:blur(12px);border-bottom:1.5px solid var(--brd)}.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card2);border:1.5px solid var(--brd);color:var(--purple);font-size:1rem;cursor:pointer;font-family:inherit}.tag{font-size:.65rem;font-weight:900;background:var(--purple);color:white;padding:3px 8px;border-radius:4px}.topbar-title{font-size:.88rem;font-weight:800;flex:1}.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card2);border:1.5px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--sub)}.hero{background:linear-gradient(135deg,var(--purple),#4C1D95);padding:22px 20px 18px;text-align:center;color:white}.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}.hero h1{font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;margin-bottom:4px}.hero h1 em{color:#FDE68A;font-style:normal}.hero p{font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.6}.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}.mode-tabs{display:flex;gap:0;border:1.5px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:16px}.mode-tab{flex:1;padding:10px;text-align:center;font-size:.82rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:none;font-family:inherit;transition:.15s}.mode-tab.on{background:var(--purple);color:white}.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--purple);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}.sec::after{content:"";flex:1;height:1px;background:var(--brd)}.entry-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}.ec-label{font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:8px}.emotion-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.echip{padding:7px 12px;border:1.5px solid var(--brd);border-radius:50px;background:var(--card);cursor:pointer;font-size:.78rem;font-weight:700;color:var(--sub);font-family:inherit;transition:.15s}.echip.on{background:var(--purple);border-color:var(--purple);color:white}.custom-row{display:flex;gap:8px;margin-bottom:8px}.cinp{flex:1;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.82rem;font-family:inherit;background:var(--bg);color:var(--ink)}.cinp:focus{outline:none;border-color:var(--purple)}.add-btn{padding:9px 16px;background:var(--purple);color:white;border:none;border-radius:8px;font-size:.82rem;font-weight:800;font-family:inherit;cursor:pointer;white-space:nowrap}.entries-list{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;max-height:200px;overflow-y:auto}.entry-row{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card2);border-radius:8px}.er-emotion{font-size:.8rem;font-weight:700;color:var(--purple);flex-shrink:0}.er-moment{flex:1;font-size:.78rem;color:var(--ink)}.er-del{border:none;background:none;cursor:pointer;color:var(--sub);font-size:.9rem}.count-info{font-size:.75rem;color:var(--sub);margin-bottom:12px}.gen-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),#4C1D95);color:white;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;transition:.15s}.gen-btn:disabled{background:#D1D5DB;cursor:not-allowed}.loading{display:none;text-align:center;padding:24px;background:var(--card);border:1.5px solid var(--brd);border-radius:12px;margin-bottom:12px}.loading.show{display:block}.worship-plan{display:none;animation:popIn .5s ease}.worship-plan.show{display:block}@keyframes popIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.wp-header{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(217,119,6,.1));border:2px solid rgba(124,58,237,.3);border-radius:14px;padding:16px;text-align:center;margin-bottom:12px}.wp-title{font-size:1rem;font-weight:900;color:var(--purple)}.wp-sub{font-size:.75rem;color:var(--sub);margin-top:4px}.wp-section{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:10px}.ws-title{font-size:.78rem;font-weight:700;color:var(--sub);margin-bottom:8px}.ws-body{font-size:.83rem;line-height:1.75;color:var(--ink)}.ws-highlight{color:var(--purple);font-weight:700}.reset-btn{width:100%;padding:11px;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--card);color:var(--sub)}.reset-btn:hover{border-color:var(--purple);color:var(--purple)}.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}.key-modal.open{display:flex}.key-box{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}.key-box h3{font-weight:900;margin-bottom:6px}.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}.key-inp{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;margin-bottom:8px}.key-save{width:100%;padding:11px;background:var(--purple);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}</style></head>
+<body>
+<div class="topbar"><button class="back-btn" onclick="window.location.href='index.html'">←</button><span class="tag">3D-③</span><span class="topbar-title">🎵 학생이 만드는 AI 예배</span><button class="key-btn" onclick="openKeyModal()">🔑 API키</button></div>
+<div class="hero"><div class="hero-badge">✨ 저녁 예배 전 · 전체 참여 · 교사 진행</div><h1>학생의 감정이<br><em>예배를 만듭니다</em></h1><p>오늘 하루의 감정과 기억을 함께 입력하면<br>AI가 오늘 저녁 예배의 흐름을 설계해드려요</p></div>
+<div class="wrap">
+  <div class="mode-tabs"><button class="mode-tab on" onclick="switchMode('input')">✏️ 감정 수집</button><button class="mode-tab" onclick="switchMode('plan')">🎵 예배 설계</button></div>
+  <div id="inputMode">
+    <div class="sec">감정 입력 (학생 한 명씩)</div>
+    <div class="entry-card">
+      <div class="ec-label">오늘의 감정 선택</div>
+      <div class="emotion-chips">
+        <button class="echip on" onclick="pickEmotion(this,'감사')">🙏 감사</button><button class="echip" onclick="pickEmotion(this,'기쁨')">😊 기쁨</button><button class="echip" onclick="pickEmotion(this,'평안')">🕊 평안</button><button class="echip" onclick="pickEmotion(this,'설렘')">💫 설렘</button><button class="echip" onclick="pickEmotion(this,'외로움')">😔 외로움</button><button class="echip" onclick="pickEmotion(this,'두려움')">😨 두려움</button><button class="echip" onclick="pickEmotion(this,'혼란')">😵 혼란</button><button class="echip" onclick="pickEmotion(this,'그리움')">💙 그리움</button>
+      </div>
+      <div class="ec-label">오늘 가장 기억에 남는 순간 (선택)</div>
+      <div class="custom-row"><input class="cinp" id="momentInp" placeholder="예: 찬양 시간에 눈물이 났어요..."><button class="add-btn" onclick="addEntry()">+ 추가</button></div>
+    </div>
+    <div class="count-info" id="countInfo">아직 입력된 감정이 없어요</div>
+    <div class="entries-list" id="entriesList"></div>
+  </div>
+  <div id="planMode" style="display:none">
+    <div class="count-info" id="countInfo2"></div>
+    <button class="gen-btn" id="genBtn" onclick="generateWorship()" disabled>✨ 오늘 예배 흐름 설계하기</button>
+    <div class="loading" id="loading"><div style="font-size:2rem">🕊️</div><div style="font-size:.85rem;font-weight:700;color:var(--purple);margin-top:8px">AI가 오늘의 예배를 준비하는 중...</div></div>
+    <div class="worship-plan" id="worshipPlan"></div>
+    <button class="reset-btn" onclick="resetAll()">↩ 처음부터 다시</button>
+  </div>
+</div>
+<div class="key-modal" id="keyModal"><div class="key-box"><h3>🔑 API 키 설정</h3><p>AI 예배 설계에 필요해요.</p><input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-..."><button class="key-save" onclick="saveKey()">저장하기</button></div></div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var STORE='ai_worship_v1';var selEmotion='감사';
+function load(){try{return JSON.parse(localStorage.getItem(STORE)||'[]')}catch(e){return[]}}
+function save(d){localStorage.setItem(STORE,JSON.stringify(d))}
+function pickEmotion(el,e){document.querySelectorAll('.echip').forEach(b=>b.classList.remove('on'));el.classList.add('on');selEmotion=e;}
+function switchMode(m){document.getElementById('inputMode').style.display=m==='input'?'':'none';document.getElementById('planMode').style.display=m==='plan'?'':'none';document.querySelectorAll('.mode-tab').forEach((t,i)=>t.classList.toggle('on',(m==='input'&&i===0)||(m==='plan'&&i===1)));if(m==='plan')renderPlanMode();}
+function addEntry(){var d=load();d.push({emotion:selEmotion,moment:document.getElementById('momentInp').value.trim()||'',ts:Date.now()});save(d);document.getElementById('momentInp').value='';renderEntries();}
+function renderEntries(){var d=load();var el=document.getElementById('entriesList');el.innerHTML='';d.slice().reverse().forEach((e,i)=>{var div=document.createElement('div');div.className='entry-row';div.innerHTML='<span class="er-emotion">'+esc(e.emotion)+'</span><span class="er-moment">'+(e.moment?esc(e.moment):'감정만 입력')+'</span><button class="er-del" onclick="delEntry('+( d.length-1-i)+')">✕</button>';el.appendChild(div);});document.getElementById('countInfo').textContent=d.length?d.length+'명의 마음이 모였어요':'아직 입력된 감정이 없어요';}
+function delEntry(i){var d=load();d.splice(i,1);save(d);renderEntries();}
+function renderPlanMode(){var d=load();document.getElementById('countInfo2').textContent='총 '+d.length+'명의 감정으로 예배를 설계해요';document.getElementById('genBtn').disabled=d.length<2;}
+async function generateWorship(){
+  var key=localStorage.getItem('retreat_api_key')||'';if(!key){openKeyModal();return;}
+  var d=load();document.getElementById('loading').classList.add('show');document.getElementById('worshipPlan').classList.remove('show');
+  var summary=d.map(e=>e.emotion+(e.moment?' ('+e.moment+')':'')).join(', ');
+  var prompt='오늘 중학생 수련회 저녁 예배를 위한 흐름을 설계해줘.\n\n참여자 감정: '+summary+'\n\nJSON만:\n{"community_mood":"오늘 공동체의 감정 흐름 1문장","opening_prayer":"시작 기도 주제와 방향 2문장","songs":["찬양 1곡 (분위기·이유)","찬양 2곡","찬양 3곡"],"message_focus":"오늘 말씀 포인트 2문장","response_time":"응답 시간 활동 제안 1문장","closing_prayer":"마무리 기도문 (2-3문장, 실제로 바로 읽을 수 있게)","final_verse":"오늘 예배의 핵심 성경 구절"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var errX=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(errX.error&&errX.error.message||res.statusText));}
+var dd=await res.json();if(dd.error)throw new Error(dd.error.message);
+    var p=safeParseJSON(dd.content[0].text);
+    document.getElementById('loading').classList.remove('show');showPlan(p);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function showPlan(p){
+  var el=document.getElementById('worshipPlan');
+  el.innerHTML='<div class="wp-header"><div class="wp-title">✨ 오늘 저녁 예배 가이드</div><div class="wp-sub">'+esc(p.community_mood)+'</div></div>'+
+    '<div class="wp-section"><div class="ws-title">🙏 시작 기도 방향</div><div class="ws-body">'+esc(p.opening_prayer)+'</div></div>'+
+    '<div class="wp-section"><div class="ws-title">🎵 추천 찬양</div><div class="ws-body">'+p.songs.map((s,i)=>'<span class="ws-highlight">'+(i+1)+'곡.</span> '+esc(s)).join('<br><br>')+'</div></div>'+
+    '<div class="wp-section"><div class="ws-title">📖 말씀 포인트</div><div class="ws-body">'+esc(p.message_focus)+'</div></div>'+
+    '<div class="wp-section"><div class="ws-title">✋ 응답 시간</div><div class="ws-body">'+esc(p.response_time)+'</div></div>'+
+    '<div class="wp-section" style="background:rgba(124,58,237,.06);border-color:rgba(124,58,237,.25)"><div class="ws-title">🙏 마무리 기도문</div><div class="ws-body" style="font-style:italic;line-height:2">'+esc(p.closing_prayer)+'</div><div style="font-size:.8rem;font-weight:700;color:var(--purple);margin-top:10px">📖 '+esc(p.final_verse)+'</div></div>';
+  el.classList.add('show');
+}
+function resetAll(){if(!confirm('감정 데이터를 초기화할까요?'))return;save([]);renderEntries();document.getElementById('worshipPlan').classList.remove('show');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open')}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open')}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
+renderEntries();
+</script></body></html>

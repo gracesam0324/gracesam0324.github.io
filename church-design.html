@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AI 시대 교회 설계 프로젝트</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}:root{--bg:#F0FAF5;--card:#FFFFFF;--card2:#E8F7EF;--green:#059669;--teal:#0891B2;--gold:#D97706;--sub:#6B7280;--brd:#A7F3D0;--ink:#052E16}html,body{min-height:100%;background:var(--bg);font-family:-apple-system,"Noto Sans KR",sans-serif;color:var(--ink)}.topbar{height:52px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:100;background:rgba(240,250,245,.95);backdrop-filter:blur(12px);border-bottom:1.5px solid var(--brd)}.back-btn{width:34px;height:34px;border-radius:8px;background:var(--card2);border:1.5px solid var(--brd);color:var(--green);font-size:1rem;cursor:pointer;font-family:inherit}.tag{font-size:.65rem;font-weight:900;background:var(--green);color:white;padding:3px 8px;border-radius:4px}.topbar-title{font-size:.88rem;font-weight:800;flex:1}.key-btn{font-size:.7rem;padding:5px 10px;background:var(--card2);border:1.5px solid var(--brd);border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;color:var(--sub)}.hero{background:linear-gradient(135deg,var(--green),#064E3B);padding:22px 20px 18px;text-align:center;color:white}.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);font-size:.7rem;font-weight:700;padding:4px 14px;border-radius:50px;margin-bottom:8px}.hero h1{font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;margin-bottom:4px}.hero h1 em{color:#6EE7B7;font-style:normal}.hero p{font-size:.78rem;color:rgba(255,255,255,.8);line-height:1.6}.wrap{max-width:560px;margin:0 auto;padding:16px 16px 80px}.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;color:var(--green);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}.sec::after{content:"";flex:1;height:1px;background:var(--brd)}.team-tabs{display:flex;gap:0;border:1.5px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:16px}.team-tab{flex:1;padding:9px;text-align:center;font-size:.8rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--sub);border:none;font-family:inherit;transition:.15s}.team-tab.on{background:var(--green);color:white}.team-tab.done::after{content:"✓";margin-left:3px;font-size:.68rem}.vision-card{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:14px;margin-bottom:12px}.vc-label{font-size:.78rem;font-weight:700;color:var(--ink);margin-bottom:6px}.vc-guide{font-size:.73rem;color:var(--sub);background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);border-radius:7px;padding:7px 10px;margin-bottom:8px;line-height:1.5}textarea.vc-inp{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:8px;font-size:.83rem;font-family:inherit;background:var(--bg);color:var(--ink);resize:none;line-height:1.6}.vc-inp:focus{outline:none;border-color:var(--green)}.submit-btn{width:100%;padding:12px;background:var(--green);color:white;border:none;border-radius:8px;font-size:.9rem;font-weight:800;font-family:inherit;cursor:pointer;margin-top:8px}.submit-btn:hover{opacity:.9}.team-result{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;overflow:hidden;margin-bottom:12px;animation:popIn .3s ease}@keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.tr-header{padding:10px 14px;border-bottom:1.5px solid var(--brd);display:flex;align-items:center;gap:8px}.tr-team{font-size:.82rem;font-weight:800}.tr-status{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:10px}.tr-body{padding:12px 14px}.tr-vision{font-size:.83rem;color:var(--ink);line-height:1.65;margin-bottom:10px;border-left:3px solid var(--brd);padding-left:10px}.tr-challenge{font-size:.8rem;color:#B45309;background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2);border-radius:8px;padding:10px;line-height:1.6}.tr-label{font-size:.68rem;font-weight:700;color:var(--sub);margin-bottom:4px}.loading{display:none;text-align:center;padding:22px;background:var(--card);border:1.5px solid var(--brd);border-radius:12px;margin-bottom:12px}.loading.show{display:block}.final-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#B45309);color:white;border:none;border-radius:10px;font-size:.95rem;font-weight:900;font-family:inherit;cursor:pointer;margin-bottom:12px}.final-btn:disabled{background:#D1D5DB;cursor:not-allowed}.declaration{display:none;animation:popIn .5s ease}.declaration.show{display:block}.decl-header{background:linear-gradient(135deg,rgba(5,150,105,.15),rgba(217,119,6,.1));border:2px solid rgba(5,150,105,.3);border-radius:14px;padding:18px;text-align:center;margin-bottom:12px}.decl-title{font-size:1.1rem;font-weight:900;color:var(--green);margin-bottom:4px}.decl-sub{font-size:.75rem;color:var(--sub)}.decl-body{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:16px;margin-bottom:10px}.decl-text{font-size:.85rem;line-height:1.9;color:var(--ink);white-space:pre-wrap}.decl-verse{font-size:.82rem;font-weight:700;color:var(--green);margin-top:12px}.reset-btn{width:100%;padding:11px;border:1.5px solid var(--brd);border-radius:8px;font-size:.85rem;font-weight:700;font-family:inherit;cursor:pointer;background:var(--card);color:var(--sub)}.reset-btn:hover{border-color:var(--green);color:var(--green)}.key-modal{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}.key-modal.open{display:flex}.key-box{background:var(--card);border:1.5px solid var(--brd);border-radius:12px;padding:22px;max-width:320px;width:90%}.key-box h3{font-weight:900;margin-bottom:6px}.key-box p{font-size:.78rem;color:var(--sub);margin-bottom:12px;line-height:1.6}.key-inp{width:100%;padding:9px 12px;border:1.5px solid var(--brd);border-radius:7px;font-size:.85rem;font-family:inherit;margin-bottom:8px}.key-save{width:100%;padding:11px;background:var(--green);color:white;border:none;border-radius:7px;font-weight:900;font-family:inherit;cursor:pointer}</style></head>
+<body>
+<div class="topbar"><button class="back-btn" onclick="window.location.href='index.html'">←</button><span class="tag">중-8</span><span class="topbar-title">🏗️ AI 시대 교회 설계 프로젝트</span><button class="key-btn" onclick="openKeyModal()">🔑 API키</button></div>
+<div class="hero"><div class="hero-badge">🌍 2일차 오후 · 14:30-15:30 · 팀 대결</div><h1>2050년 교회를<br><em>설계하세요</em></h1><p>각 팀이 미래 교회 비전을 제시하면 AI가 반론하고<br>최종적으로 우리의 교회 선언문을 만들어요</p></div>
+<div class="wrap">
+  <div class="team-tabs"><button class="team-tab on" id="tab0" onclick="switchTeam(0)">⚓ 베드로팀</button><button class="team-tab" id="tab1" onclick="switchTeam(1)">✉️ 바울팀</button><button class="team-tab" id="tab2" onclick="switchTeam(2)">👑 에스더팀</button><button class="team-tab" id="tab3" onclick="switchTeam(3)">🎵 다윗팀</button></div>
+  <div id="teamContent"></div>
+  <div class="loading" id="loading"><div style="font-size:2rem">🤔</div><div style="font-size:.85rem;font-weight:700;color:var(--green);margin-top:8px">AI가 반론을 준비하는 중...</div></div>
+  <button class="final-btn" id="finalBtn" onclick="generateDeclaration()" disabled>📜 2050 교회 선언문 만들기</button>
+  <div class="declaration" id="declaration"></div>
+</div>
+<div class="key-modal" id="keyModal"><div class="key-box"><h3>🔑 API 키 설정</h3><p>AI 반론 및 선언문 생성에 필요해요.</p><input class="key-inp" id="keyInp" type="password" placeholder="sk-ant-..."><button class="key-save" onclick="saveKey()">저장하기</button></div></div>
+<script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
+var TEAMS=[{name:'베드로팀',icon:'⚓',color:'#3B82F6'},{name:'바울팀',icon:'✉️',color:'#10B981'},{name:'에스더팀',icon:'👑',color:'#8B5CF6'},{name:'다윗팀',icon:'🎵',color:'#EF4444'}];
+var STORE='church_design_v1';var curTeam=0;
+function load(){try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(e){return{}}}
+function save(d){localStorage.setItem(STORE,JSON.stringify(d))}
+function switchTeam(i){curTeam=i;document.querySelectorAll('.team-tab').forEach((t,j)=>t.classList.toggle('on',j===i));renderTeamContent();}
+function renderTeamContent(){
+  var data=load();var team=TEAMS[curTeam];var saved=data['team_'+curTeam];
+  var html='';
+  if(saved&&saved.vision){
+    html='<div class="team-result"><div class="tr-header"><span class="tr-team">'+team.icon+' '+team.name+'</span><span class="tr-status" style="background:rgba(5,150,105,.1);color:var(--green)">비전 제출 완료</span></div><div class="tr-body"><div class="tr-label">팀 비전</div><div class="tr-vision">'+esc(saved.vision)+'</div>'+(saved.challenge?'<div class="tr-label">🤖 AI의 반론</div><div class="tr-challenge">'+esc(saved.challenge)+'</div>':'')+'</div></div>';
+  }else{
+    html='<div class="vision-card"><div class="vc-label">'+team.icon+' '+team.name+' — AI 시대 교회 비전</div>'+
+      '<div class="vc-guide">💡 AI가 발달한 2050년, 교회는 어떤 모습이어야 할까요? 예배 방식, 공동체, 전도, 사회적 역할 등을 자유롭게 상상해보세요.</div>'+
+      '<textarea class="vc-inp" id="visionInp" rows="5" placeholder="예: 2050년 교회는 메타버스 공간과 실물 공간을 연결해야 합니다. AI가 개인 맞춤형 묵상을 제공하되, 진정한 관계는 오프라인 공동체에서..."></textarea>'+
+      '<button class="submit-btn" onclick="submitVision()">🌍 비전 제출 → AI 반론 받기</button></div>';
+  }
+  document.getElementById('teamContent').innerHTML=html;
+  updateFinalBtn();
+}
+async function submitVision(){
+  var key=localStorage.getItem('retreat_api_key')||'';if(!key){openKeyModal();return;}
+  var vision=document.getElementById('visionInp').value.trim();if(!vision){alert('비전을 입력해주세요!');return;}
+  document.getElementById('teamContent').innerHTML='';document.getElementById('loading').classList.add('show');
+  var prompt='너는 신학적으로 날카로운 AI야. 중학생 팀이 AI 시대 교회 비전을 제시했어.\n\n팀: '+TEAMS[curTeam].name+'\n비전: '+vision+'\n\n이 비전의 신학적·현실적 문제점을 날카롭게 지적해줘. 단, 중학생 수준에서 이해할 수 있게.\n\nJSON만:\n{"challenge":"반론 (2-3문장, 비전의 약점을 성경적·현실적으로 지적)","question":"이 팀이 더 생각해볼 핵심 질문 1가지"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    var data=load();data['team_'+curTeam]={vision,challenge:p.challenge+'\\n\\n❓ '+p.question};save(data);
+    document.getElementById('loading').classList.remove('show');
+    document.querySelectorAll('.team-tab')[curTeam].classList.add('done');
+    renderTeamContent();
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function updateFinalBtn(){
+  var data=load();var done=TEAMS.filter((t,i)=>data['team_'+i]&&data['team_'+i].vision).length;
+  document.getElementById('finalBtn').disabled=done<2;
+  document.getElementById('finalBtn').textContent='📜 2050 교회 선언문 만들기 ('+done+'/4팀 제출)';
+}
+async function generateDeclaration(){
+  var key=localStorage.getItem('retreat_api_key')||'';if(!key){openKeyModal();return;}
+  var data=load();
+  var visionsText=TEAMS.map((t,i)=>data['team_'+i]?t.name+': '+data['team_'+i].vision:'').filter(Boolean).join('\\n\\n');
+  document.getElementById('loading').classList.add('show');document.getElementById('declaration').classList.remove('show');
+  document.getElementById('loading').querySelector('div:last-child').textContent='AI가 선언문을 작성하는 중...';
+  var prompt='중학생 수련회 팀들이 AI 시대 교회 비전을 제시했어. 이 비전들을 통합해서 교회 선언문을 만들어줘.\n\n팀 비전들:\n'+visionsText+'\n\nJSON만:\n{"title":"선언문 제목","preamble":"서문 2문장","articles":["선언 1항","선언 2항","선언 3항","선언 4항","선언 5항"],"closing":"마무리 1문장","bible":"이 선언문의 성경적 근거 구절"}';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
+var d=await res.json();if(d.error)throw new Error(d.error.message);
+    var p=safeParseJSON(d.content[0].text);
+    document.getElementById('loading').classList.remove('show');showDeclaration(p);
+  }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
+}
+function showDeclaration(p){
+  var el=document.getElementById('declaration');
+  var articles=p.articles.map((a,i)=>'제'+(i+1)+'항. '+a).join('\\n\\n');
+  el.innerHTML='<div class="decl-header"><div class="decl-title">📜 '+esc(p.title)+'</div><div class="decl-sub">2026 중등부 수련회 AI 시대 교회 선언문</div></div>'+
+    '<div class="decl-body"><div class="decl-text">'+esc(p.preamble)+'\\n\\n'+esc(articles)+'\\n\\n'+esc(p.closing)+'</div><div class="decl-verse">📖 '+esc(p.bible)+'</div></div>'+
+    '<button class="reset-btn" onclick="resetAll()">↩ 처음부터 다시</button>';
+  el.classList.add('show');window.scrollTo(0,document.body.scrollHeight);
+}
+function resetAll(){if(!confirm('모든 데이터를 초기화할까요?'))return;localStorage.removeItem(STORE);document.querySelectorAll('.team-tab').forEach(t=>t.classList.remove('done'));document.getElementById('declaration').classList.remove('show');switchTeam(0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function openKeyModal(){document.getElementById('keyModal').classList.add('open')}
+function saveKey(){var k=document.getElementById('keyInp').value.trim();if(k){localStorage.setItem('retreat_api_key',k);document.getElementById('keyModal').classList.remove('open')}}
+document.getElementById('keyModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})
+renderTeamContent();
+</script></body></html>

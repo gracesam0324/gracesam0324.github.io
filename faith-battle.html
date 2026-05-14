@@ -258,6 +258,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 </div>
 
 <script>
+function safeParseJSON(text){
+  text=(text||'').replace(/```json|```/g,'').trim();
+  var m=text.match(/\{[\s\S]*\}/);
+  return JSON.parse(m?m[0]:text);
+}
 var TOPICS = [
   {title:'하나님이 존재한다는 증거가 없다', ctx:'신의 존재 증명과 불가지론'},
   {title:'선한 하나님이라면 왜 고난을 허락하는가?', ctx:'신정론과 악의 문제'},
@@ -383,12 +388,13 @@ async function fetchAIAttack(defenseText){
   try{
     var res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})
     });
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
     var data=await res.json();
     if(data.error)throw new Error(data.error.message);
-    var parsed=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    var parsed=safeParseJSON(d.content[0].text);
     battleLog.push({type:'ai',round:curRound+1,text:parsed.attack});
     document.getElementById('loadingAttack').classList.remove('show');
     showAIAttack(parsed);
@@ -495,12 +501,13 @@ async function fetchFinalVerdict(){
   try{
     var res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})
     });
+    if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
     var data=await res.json();
     if(data.error)throw new Error(data.error.message);
-    var parsed=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    var parsed=safeParseJSON(d.content[0].text);
     document.getElementById('loadingAttack').classList.remove('show');
     showVerdict(parsed);
   }catch(e){
