@@ -394,7 +394,7 @@ async function fetchAIAttack(defenseText){
     if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
     var data=await res.json();
     if(data.error)throw new Error(data.error.message);
-    var parsed=safeParseJSON(d.content[0].text);
+    var parsed=safeParseJSON(data.content[0].text);
     battleLog.push({type:'ai',round:curRound+1,text:parsed.attack});
     document.getElementById('loadingAttack').classList.remove('show');
     showAIAttack(parsed);
@@ -507,7 +507,7 @@ async function fetchFinalVerdict(){
     if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
     var data=await res.json();
     if(data.error)throw new Error(data.error.message);
-    var parsed=safeParseJSON(d.content[0].text);
+    var parsed=safeParseJSON(data.content[0].text);
     document.getElementById('loadingAttack').classList.remove('show');
     showVerdict(parsed);
   }catch(e){

@@ -171,7 +171,7 @@ async function fetchDebateRound(studentInput){
     var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})});
     if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
 var data=await res.json();if(data.error)throw new Error(data.error.message);
-    var p=safeParseJSON(d.content[0].text);
+    var p=safeParseJSON(data.content[0].text);
     debateHistory.push({round:curRnd+1,summary:p.summary});
     document.getElementById('loading').classList.remove('show');
     addDebateRound(p);
@@ -228,7 +228,7 @@ async function submitFinal(){
     var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})});
     if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}
 var data=await res.json();if(data.error)throw new Error(data.error.message);
-    var p=safeParseJSON(d.content[0].text);
+    var p=safeParseJSON(data.content[0].text);
     document.getElementById('loading').classList.remove('show');
     showVerdict(p,choName);
   }catch(e){document.getElementById('loading').classList.remove('show');alert('오류: '+e.message);}
