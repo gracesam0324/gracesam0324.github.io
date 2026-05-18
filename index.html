@@ -1899,11 +1899,33 @@ function ssPickTeam(btn,name){ssTeamName=name;document.querySelectorAll('.ss-tc'
 function ssShow(id){document.getElementById(id).style.display='block';}
 function ssHide(id){document.getElementById(id).style.display='none';}
 function ssSetPips(n){for(var i=1;i<=3;i++){var p=document.getElementById('sspip'+i);p.classList.remove('on','done');if(i<n)p.classList.add('done');else if(i===n)p.classList.add('on');}}
+
+function ssShowKeyModal(){
+  var modal=document.getElementById('ssKeyModal');
+  if(modal){
+    var saved=(localStorage.getItem('retreat_api_key')||'').trim();
+    var inp=document.getElementById('ssKeyInp');
+    if(inp&&saved)inp.value=saved;
+    modal.classList.add('open');
+  }
+}
+function ssSaveKey(){
+  var k=document.getElementById('ssKeyInp').value.trim();
+  if(!k){alert('API 키를 입력해주세요.');return;}
+  if(!k.startsWith('sk-ant-')){if(!confirm('sk-ant- 로 시작하지 않아요. 그래도 저장할까요?'))return;}
+  localStorage.setItem('retreat_api_key',k);
+  document.getElementById('ssKeyModal').classList.remove('open');
+  alert('✅ 저장됐어요. 다시 생성 버튼을 눌러주세요.');
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var modal=document.getElementById('ssKeyModal');
+  if(modal)modal.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
 function ssGoStep1(){ssHide('ssstep2');ssHide('ssstep3');ssHide('ssLoading');ssShow('ssstep1');ssSetPips(1);}
 function ssGoStep2(){if(!ssTeamName){alert('팀/조를 선택해주세요!');return;}var title=document.getElementById('ssTitle').value.trim();if(!title){alert('설교 제목을 입력해주세요!');return;}ssHide('ssstep1');ssHide('ssstep3');ssHide('ssLoading');ssShow('ssstep2');ssSetPips(2);}
 function ssCountChars(el,countId){document.getElementById(countId).textContent=el.value.length+'자';}
-async function ssCallClaude(messages){var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'APIKEY_HERE','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:messages})});var data=await res.json();return(data.content&&data.content[0]&&data.content[0].text)||'';}
-async function ssGenerate(){var notes=document.getElementById('ssNotes').value.trim();if(!notes){alert('설교 내용 메모를 입력해주세요!');return;}ssInfo={title:document.getElementById('ssTitle').value.trim(),preacher:document.getElementById('ssPreacher').value.trim(),verse:document.getElementById('ssVerse').value.trim(),notes:notes,opinion:document.getElementById('ssOpinion').value.trim()};ssHide('ssstep2');document.getElementById('ssLoading').classList.add('show');ssSetPips(3);var prompt=['교회 중학생 여름수련회 설교 3줄 요약 챌린지야.','아래 설교 내용 메모를 바탕으로 핵심 3줄을 작성해줘.','','설교 제목: '+(ssInfo.title||'(미입력)'),'설교자: '+(ssInfo.preacher||'(미입력)'),'핵심 구절: '+(ssInfo.verse||'(미입력)'),'설교 내용 메모:',ssInfo.notes,ssInfo.opinion?'\n팀 의견: '+ssInfo.opinion:'','','규칙:','- 3줄 각각 완결된 문장으로 (15~30자)','- 1줄: 오늘 설교의 핵심 주제/메시지','- 2줄: 가장 인상 깊은 예화나 말씀 장면','- 3줄: 나의 삶에 적용할 점 / 결단','- 중학생이 직접 쓴 것처럼 자연스럽게','','아래 형식으로만 답해줘 (다른 말 없이):','[LINE1] 첫 번째 줄','[LINE2] 두 번째 줄','[LINE3] 세 번째 줄','[VERSE] 추천 핵심 구절 (성경책 장절 + 짧은 본문)'].join('\n');try{var text=await ssCallClaude([{role:'user',content:prompt}]);function exLine(tag){var m=text.match(new RegExp('\\['+tag+'\\]\\s*(.+)'));return m?m[1].trim():'';}ssLines[0]=exLine('LINE1')||'(생성 실패 — 직접 입력해주세요)';ssLines[1]=exLine('LINE2')||'(생성 실패 — 직접 입력해주세요)';ssLines[2]=exLine('LINE3')||'(생성 실패 — 직접 입력해주세요)';var v=exLine('VERSE');ssRenderSummary();var vc=document.getElementById('ssVerseCard');var vt=document.getElementById('ssVerseDisplay');if(v){vt.textContent='"'+v+'"';vc.style.display='block';}else if(ssInfo.verse){vt.textContent=ssInfo.verse;vc.style.display='block';}else vc.style.display='none';document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep3');}catch(e){document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep2');alert('생성 중 오류가 발생했어요. 다시 시도해주세요.');}}
+async function ssCallClaude(messages){var key=(localStorage.getItem('retreat_api_key')||'').trim();if(!key){ssShowKeyModal();throw new Error('API 키를 먼저 입력해주세요.');}var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:messages})});if(!res.ok){var err=await res.json().catch(()=>({}));throw new Error('API '+res.status+': '+(err.error&&err.error.message||res.statusText));}var data=await res.json();if(data.error)throw new Error(data.error.message);return(data.content&&data.content[0]&&data.content[0].text)||'';}
+async function ssGenerate(){var notes=document.getElementById('ssNotes').value.trim();if(!notes){alert('설교 내용 메모를 입력해주세요!');return;}ssInfo={title:document.getElementById('ssTitle').value.trim(),preacher:document.getElementById('ssPreacher').value.trim(),verse:document.getElementById('ssVerse').value.trim(),notes:notes,opinion:document.getElementById('ssOpinion').value.trim()};ssHide('ssstep2');document.getElementById('ssLoading').classList.add('show');ssSetPips(3);var prompt=['교회 중학생 여름수련회 설교 3줄 요약 챌린지야.','아래 설교 내용 메모를 바탕으로 핵심 3줄을 작성해줘.','','설교 제목: '+(ssInfo.title||'(미입력)'),'설교자: '+(ssInfo.preacher||'(미입력)'),'핵심 구절: '+(ssInfo.verse||'(미입력)'),'설교 내용 메모:',ssInfo.notes,ssInfo.opinion?'\n팀 의견: '+ssInfo.opinion:'','','규칙:','- 3줄 각각 완결된 문장으로 (15~30자)','- 1줄: 오늘 설교의 핵심 주제/메시지','- 2줄: 가장 인상 깊은 예화나 말씀 장면','- 3줄: 나의 삶에 적용할 점 / 결단','- 중학생이 직접 쓴 것처럼 자연스럽게','','아래 형식으로만 답해줘 (다른 말 없이):','[LINE1] 첫 번째 줄','[LINE2] 두 번째 줄','[LINE3] 세 번째 줄','[VERSE] 추천 핵심 구절 (성경책 장절 + 짧은 본문)'].join('\n');try{var text=await ssCallClaude([{role:'user',content:prompt}]);function exLine(tag){var m=text.match(new RegExp('\\['+tag+'\\]\\s*(.+)'));return m?m[1].trim():'';}ssLines[0]=exLine('LINE1')||'(생성 실패 — 직접 입력해주세요)';ssLines[1]=exLine('LINE2')||'(생성 실패 — 직접 입력해주세요)';ssLines[2]=exLine('LINE3')||'(생성 실패 — 직접 입력해주세요)';var v=exLine('VERSE');ssRenderSummary();var vc=document.getElementById('ssVerseCard');var vt=document.getElementById('ssVerseDisplay');if(v){vt.textContent='"'+v+'"';vc.style.display='block';}else if(ssInfo.verse){vt.textContent=ssInfo.verse;vc.style.display='block';}else vc.style.display='none';document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep3');}catch(e){document.getElementById('ssLoading').classList.remove('show');ssShow('ssstep2');if(e.message&&e.message!=='API 키를 먼저 입력해주세요.')alert('오류: '+e.message);}}
 var SS_LABELS=['핵심 메시지','인상 깊은 장면','내 삶의 적용'];
 function ssRenderSummary(){var wrap=document.getElementById('ssSummaryWrap');wrap.innerHTML='';ssLines.forEach(function(line,i){var div=document.createElement('div');div.className='ss-sl';div.innerHTML='<div class="ss-sl-hd"><span class="ss-sl-num">'+(i+1)+'</span><span class="ss-sl-lbl">'+SS_LABELS[i]+'</span><button class="ss-regen" onclick="ssRegenLine('+i+',this)">↻ 재생성</button></div><div class="ss-sl-body"><textarea class="ss-sl-txt" id="ssLine'+i+'" rows="2" oninput="ssSyncLine('+i+',this)">'+ssEscHtml(line)+'</textarea></div>';wrap.appendChild(div);});}
 function ssSyncLine(i,el){ssLines[i]=el.value;}
@@ -2155,6 +2177,13 @@ function blShowResult(){
 .ss-inp::placeholder{color:#B0A08A}
 textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
 .ss-char{font-size:.7rem;color:#B0A08A;text-align:right;margin-top:4px}
+.ss-key-modal{position:fixed;inset:0;z-index:2100;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+.ss-key-modal.open{display:flex}
+.ss-key-box{background:#fff;border-radius:14px;padding:24px;max-width:300px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.ss-key-box h3{font-size:1rem;font-weight:700;margin-bottom:6px;color:#1A1A2E}
+.ss-key-box p{font-size:.78rem;color:#888;margin-bottom:12px;line-height:1.6}
+.ss-key-inp{width:100%;padding:9px 12px;border:1.5px solid #E5E7EB;border-radius:8px;font-size:.85rem;font-family:inherit;margin-bottom:8px;box-sizing:border-box}
+.ss-key-save{width:100%;padding:11px;background:#8B5CF6;color:white;border:none;border-radius:8px;font-weight:800;font-family:inherit;cursor:pointer}
 .ss-btn-p{width:100%;padding:14px;background:#B8760A;color:white;border:none;border-radius:12px;font-size:.92rem;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .ss-btn-p:hover:not(:disabled){background:#E8950C}
 .ss-btn-p:disabled{opacity:.45;cursor:not-allowed}
@@ -2377,6 +2406,14 @@ textarea.ss-inp{resize:vertical;min-height:100px;line-height:1.75}
 
 <!-- 설교 3줄 요약 오버레이 -->
 <div class="ss-overlay" id="ssOverlay">
+<div class="ss-key-modal" id="ssKeyModal">
+  <div class="ss-key-box">
+    <h3>🔑 API 키 설정</h3>
+    <p>AI 기능을 사용하려면 Anthropic API 키가 필요해요 (sk-ant- 로 시작)</p>
+    <input class="ss-key-inp" id="ssKeyInp" type="password" placeholder="sk-ant-api03-...">
+    <button class="ss-key-save" onclick="ssSaveKey()">저장하기</button>
+  </div>
+</div>
   <div class="ss-topbar">
     <button class="ss-back" onclick="closeSermon()">←</button>
     <span class="ss-topbar-tag">중-11</span>
