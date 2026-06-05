@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>중등부 여름수련회 — 학생용 사용 설명서</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --white:#FFFFFF;--bg:#F3F1FB;
+  --text:#1A1A2E;--sub:#555566;--light:#9999AA;--border:#ECE6F5;
+  --primary:#2563EB;
+  --pink:#EC4899;--blue:#3B82F6;--purple:#8B5CF6;--orange:#F59E0B;--green:#10B981;
+  --shadow:0 4px 18px rgba(80,50,140,.10);
+  --shadow-lg:0 12px 36px rgba(80,50,140,.20);
+}
+html,body{overflow-x:hidden}
+body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;color:var(--text);
+  background:radial-gradient(1200px 600px at 80% -10%,#EEF2FF 0%,transparent 60%),
+             radial-gradient(900px 500px at -10% 20%,#FDF2F8 0%,transparent 55%),
+             var(--bg);
+  min-height:100vh}
+
+/* ── 안내 띠 ── */
+.guide-strip{background:linear-gradient(90deg,#FBBF24,#F59E0B,#FBBF24);background-size:200% 100%;animation:shine 6s linear infinite;color:#3a2a00;text-align:center;font-size:.8rem;font-weight:800;padding:9px 14px;line-height:1.4}
+@keyframes shine{to{background-position:200% 0}}
+
+/* ── 탑바 ── */
+.topbar{background:rgba(14,30,80,.95);backdrop-filter:blur(12px);padding:0 16px;position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(14,30,80,.25)}
+.site-name{font-size:.96rem;font-weight:800;color:white;display:flex;align-items:center;gap:7px}
+.site-name .cross{color:#FBBF24}
+.tb-right{display:flex;align-items:center;gap:9px}
+.tb-label{font-size:.84rem;font-weight:800;color:rgba(255,255,255,.92)}
+.hamburger{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:11px;box-shadow:0 2px 8px rgba(251,191,36,.5);transition:.25s;position:relative;z-index:320}
+.hamburger:hover{transform:scale(1.06)}
+.hamburger span{display:block;width:20px;height:2.5px;background:#1A1A2E;border-radius:2px;transition:.3s}
+.hamburger.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+.hamburger.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+/* ── 사이드 패널 ── */
+.panel-overlay{position:fixed;inset:0;top:56px;background:rgba(10,15,40,.4);backdrop-filter:blur(2px);z-index:240;display:none}
+.panel-overlay.open{display:block;animation:fade .25s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.side-panel{position:fixed;top:56px;right:0;width:280px;max-width:84vw;height:calc(100vh - 56px);background:var(--white);border-left:1px solid var(--border);overflow-y:auto;z-index:250;transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);box-shadow:-10px 0 40px rgba(40,20,80,.18)}
+.side-panel.open{transform:translateX(0)}
+.side-header{padding:15px 16px;background:linear-gradient(135deg,#0E1E50,#3730A3);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+.side-header-title{font-size:.95rem;font-weight:800;color:white}
+.side-close{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.2);border:none;cursor:pointer;font-size:.9rem;color:white}
+.side-section{padding:10px 0 0}
+.side-label{font-size:.64rem;font-weight:800;color:var(--light);letter-spacing:.1em;padding:8px 16px 5px;text-transform:uppercase}
+.side-item{display:flex;align-items:center;gap:11px;padding:11px 14px;text-decoration:none;color:var(--text);cursor:pointer;border:none;background:none;width:100%;font-family:inherit;text-align:left;transition:.15s}
+.side-item:hover{background:#F2F0FE}
+.side-item.soon{opacity:.5}
+.side-item.soon:hover{background:none;cursor:default}
+.s-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.s-text{flex:1;min-width:0}
+.s-name{font-size:.87rem;font-weight:700;line-height:1.3}
+.s-desc{font-size:.66rem;color:var(--sub);margin-top:1px}
+.s-badge{font-size:.56rem;font-weight:800;padding:2px 7px;border-radius:50px;flex-shrink:0}
+.sb-reg{background:#FCE7F3;color:#DB2777}.sb-live{background:#DCFCE7;color:#16A34A}.sb-soon{background:#F3F4F6;color:#9CA3AF}.sb-admin{background:#FEE2E2;color:#DC2626}
+.s-blue{background:#DBEAFE}.s-green{background:#D1FAE5}.s-orange{background:#FEF3C7}.s-pink{background:#FCE7F3}.s-purple{background:#EDE9FE}.s-red{background:#FEE2E2}.s-teal{background:#CCFBF1}
+.s-divider{height:1px;background:var(--border);margin:6px 14px}
+.side-follow{margin:8px 12px;border-radius:16px;background:linear-gradient(135deg,#EEF2FF,#FAE8FF);border:2px solid #C7D2FE;padding:13px!important;box-shadow:0 4px 14px rgba(99,102,241,.18);transition:.2s}
+.side-follow:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(99,102,241,.28);background:linear-gradient(135deg,#E0E7FF,#F5D0FE)}
+
+/* ── 히어로 ── */
+.hero{position:relative;min-height:calc(100vh - 56px - 38px);display:flex;align-items:center;justify-content:center;text-align:center;background:#0E1E50;overflow:hidden;padding:30px 20px}
+.hero-sky{position:absolute;inset:0;background:linear-gradient(180deg,#0B1D4F 0%,#1A3A7A 28%,#1565C0 55%,#FF8C42 82%,#FFD194 100%)}
+.stars{position:absolute;inset:0;height:60%}
+.star-dot{position:absolute;background:white;border-radius:50%;animation:tw ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:1}}
+.cloud{position:absolute;background:rgba(255,255,255,.8);border-radius:50px;animation:cf linear infinite}
+.cloud::before,.cloud::after{content:'';position:absolute;background:rgba(255,255,255,.8);border-radius:50%}
+.c1{width:74px;height:21px;top:16%;left:8%;animation-duration:24s;opacity:.55}
+.c1::before{width:32px;height:32px;top:-16px;left:9px}.c1::after{width:26px;height:26px;top:-13px;left:36px}
+.c2{width:54px;height:16px;top:30%;left:64%;animation-duration:19s;animation-direction:reverse;opacity:.4}
+.c2::before{width:24px;height:24px;top:-12px;left:7px}.c2::after{width:18px;height:18px;top:-9px;left:26px}
+@keyframes cf{0%{transform:translateX(-16px)}50%{transform:translateX(16px)}100%{transform:translateX(-16px)}}
+.mountains{position:absolute;bottom:0;left:0;right:0}
+.hero-content{position:relative;z-index:5}
+.hero-cross{font-size:2.8rem;filter:drop-shadow(0 0 16px rgba(251,191,36,.95));display:block;margin-bottom:12px;animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hero-badge{display:inline-block;padding:6px 18px;border-radius:50px;background:rgba(251,191,36,.22);border:1px solid rgba(251,191,36,.5);font-size:.76rem;font-weight:700;color:#FBBF24;margin-bottom:14px}
+.hero h1{font-size:clamp(1.5rem,5.5vw,2.3rem);font-weight:900;color:white;margin-bottom:10px;line-height:1.3;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,#FDE68A,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:rgba(255,255,255,.92);font-size:.9rem;margin-bottom:22px;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.hero-btns{display:flex;gap:11px;justify-content:center;flex-wrap:wrap}
+.hero-btn{padding:13px 24px;border-radius:50px;font-weight:800;font-size:.92rem;border:none;cursor:pointer;font-family:inherit;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.hero-btn.reg{background:linear-gradient(135deg,#EC4899,#DB2777);color:white;box-shadow:0 6px 20px rgba(236,72,153,.5)}
+.hero-btn.fol{background:linear-gradient(135deg,#6366F1,#8B5CF6);color:white;box-shadow:0 6px 20px rgba(99,102,241,.5)}
+.hero-btn:hover{transform:translateY(-3px) scale(1.03)}
+.hero-hint{margin-top:20px;display:inline-flex;align-items:center;gap:7px;font-size:.74rem;color:rgba(255,255,255,.85);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:7px 14px;border-radius:50px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* ── 첫 화면 아래 미니 가이드 ── */
+.quick{max-width:620px;margin:0 auto;padding:30px 16px 50px}
+.quick-title{text-align:center;font-size:1.05rem;font-weight:900;margin-bottom:5px}
+.quick-sub{text-align:center;font-size:.8rem;color:var(--sub);margin-bottom:20px}
+.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:480px){.steps3{grid-template-columns:1fr}}
+.step3{background:var(--white);border-radius:18px;padding:16px 13px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.step3::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:var(--ac)}
+.step3 .num{width:30px;height:30px;border-radius:50%;background:var(--ac);color:white;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin:4px auto 9px}
+.step3 .em{font-size:1.7rem;display:block;margin-bottom:6px}
+.step3 .tt{font-size:.86rem;font-weight:800;margin-bottom:3px}
+.step3 .dd{font-size:.72rem;color:var(--sub);line-height:1.5}
+.cta-row{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.cta{flex:1;min-width:200px;border:none;cursor:pointer;font-family:inherit;border-radius:16px;padding:15px;font-weight:800;font-size:.9rem;color:white;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;box-shadow:var(--shadow)}
+.cta:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.cta.menu{background:linear-gradient(135deg,#F59E0B,#D97706)}
+.cta.fol{background:linear-gradient(135deg,#6366F1,#8B5CF6)}
+
+/* ── 따라가기 오버레이 ── */
+.fa-ov{position:fixed;inset:0;background:var(--bg);z-index:400;overflow-y:auto;display:none}
+.fa-ov.open{display:block;animation:slideUp .35s cubic-bezier(.3,.9,.3,1)}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.fa-topbar{position:sticky;top:0;z-index:30;background:rgba(14,30,80,.96);backdrop-filter:blur(10px);height:54px;display:flex;align-items:center;gap:12px;padding:0 14px;box-shadow:0 2px 16px rgba(14,30,80,.3)}
+.fa-back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);border:none;color:white;font-size:1.1rem;cursor:pointer}
+.fa-toptit{font-size:.95rem;font-weight:800;color:white}
+.fa-hero{position:relative;padding:26px 20px 30px;text-align:center;background:linear-gradient(135deg,#4C1D95,#6D28D9 55%,#9333EA);overflow:hidden}
+.fa-hero-stars{position:absolute;inset:0}
+.fa-hero-cross{font-size:2rem;position:relative;z-index:2;filter:drop-shadow(0 0 12px rgba(251,191,36,.9))}
+.fa-hero-title{position:relative;z-index:2;font-size:1.15rem;font-weight:900;color:white;margin:8px 0 16px}
+.fa-phases{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:center;gap:0;margin-bottom:6px}
+.fa-phase{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;max-width:70px}
+.fa-phase-em{font-size:1.15rem}
+.fa-phase-dot{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.35);border:2px solid rgba(255,255,255,.6)}
+.fa-phase-dot.on{background:#FBBF24;border-color:#FDE68A;box-shadow:0 0 10px rgba(251,191,36,.8)}
+.fa-phase-lb{font-size:.6rem;color:rgba(255,255,255,.9);font-weight:700;line-height:1.25;text-align:center}
+.fa-phase-line{height:2px;background:rgba(255,255,255,.3);flex:1;margin-top:30px}
+.fa-stats{position:relative;z-index:2;display:flex;justify-content:center;gap:22px;margin-top:14px}
+.fa-stat-num{font-size:1.25rem;font-weight:900;background:linear-gradient(135deg,#FDE68A,#FCA5A5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.fa-stat-lb{font-size:.64rem;color:rgba(255,255,255,.8);font-weight:600}
+.fa-wrap{max-width:620px;margin:0 auto;padding:18px 16px 70px}
+
+.fa-day-header{display:flex;align-items:center;gap:10px;margin:24px 0 14px}
+.fa-day-pill{color:white;font-size:.82rem;font-weight:800;padding:8px 16px;border-radius:50px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.fa-day-line{flex:1;height:2px;background:var(--border)}
+.fa-sub{font-size:.66rem;font-weight:800;letter-spacing:.06em;padding:12px 2px 6px}
+/* 타임라인 카드 */
+.fa-track{position:relative;padding-left:26px}
+.fa-track::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2.5px;background:linear-gradient(180deg,var(--tc,#C4B5FD),transparent);border-radius:2px}
+.fa-item{position:relative;display:flex;align-items:center;gap:11px;background:var(--white);border-radius:16px;padding:12px 13px;box-shadow:var(--shadow);margin-bottom:10px;transition:.18s;cursor:pointer;border:1px solid transparent}
+.fa-item:hover{transform:translateY(-2px) translateX(2px);box-shadow:var(--shadow-lg);border-color:var(--ic,#DDD6FE)}
+.fa-item::before{content:'';position:absolute;left:-21px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:var(--ic,#8B5CF6);border:2.5px solid #fff;box-shadow:0 0 0 2px var(--ic,#8B5CF6)}
+.fa-num{font-size:.64rem;font-weight:800;padding:6px 7px;border-radius:9px;flex-shrink:0;min-width:42px;text-align:center}
+.fa-info{flex:1;min-width:0}
+.fa-name{font-size:.87rem;font-weight:800;line-height:1.3}
+.fa-time{font-size:.62rem;color:var(--light);font-weight:600;margin-left:5px;white-space:nowrap}
+.fa-desc{font-size:.7rem;color:var(--sub);margin-top:2px;line-height:1.4}
+.fa-open-btn{border:none;color:white;font-size:.76rem;font-weight:800;padding:9px 15px;border-radius:11px;cursor:pointer;font-family:inherit;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.fa-worship{position:relative;display:flex;align-items:center;gap:11px;background:linear-gradient(135deg,#FFF7ED,#FFFBEB);border:1px dashed #FCD9A8;border-radius:14px;padding:11px 13px;margin-bottom:10px}
+.fa-worship::before{content:'';position:absolute;left:-21px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:#FBBF24;border:2.5px solid #fff;box-shadow:0 0 0 2px #FBBF24}
+.fa-worship-icon{font-size:1.3rem}
+.fa-worship-txt{font-size:.84rem;font-weight:800}
+.fa-worship-sub{font-size:.67rem;color:var(--sub)}
+.fa-tip-card{background:linear-gradient(135deg,#EEF2FF,#FAE8FF);border:1px solid #DDD6FE;border-radius:16px;padding:15px 16px;margin-bottom:6px;font-size:.83rem;line-height:1.6;color:#5B21B6}
+
+/* ── 팝업 ── */
+.pop-overlay{position:fixed;inset:0;background:rgba(10,15,40,.6);backdrop-filter:blur(4px);z-index:600;display:none;align-items:flex-end;justify-content:center}
+.pop-overlay.open{display:flex}
+@media(min-width:560px){.pop-overlay{align-items:center;padding:20px}}
+.pop{background:var(--white);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;border-radius:24px 24px 0 0;animation:popup .3s cubic-bezier(.3,1,.4,1)}
+@media(min-width:560px){.pop{border-radius:24px}}
+@keyframes popup{from{transform:translateY(50px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.pop-head{padding:24px 20px 20px;color:white;position:sticky;top:0;overflow:hidden}
+.pop-head::after{content:'';position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12)}
+.pop-icon-circle{width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:1.7rem;margin-bottom:11px;position:relative;z-index:2}
+.pop-badge{display:inline-block;font-size:.64rem;font-weight:800;background:rgba(255,255,255,.25);padding:3px 10px;border-radius:50px;margin-bottom:8px;position:relative;z-index:2}
+.pop-title{font-size:1.22rem;font-weight:900;line-height:1.3;position:relative;z-index:2}
+.pop-time{font-size:.74rem;opacity:.94;margin-top:6px;font-weight:600;position:relative;z-index:2}
+.pop-close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.25);border:none;color:white;font-size:1.05rem;cursor:pointer;z-index:3}
+.pop-body{padding:20px}
+.pop-what{font-size:.92rem;line-height:1.7;color:var(--text);background:linear-gradient(135deg,#F8F6FF,#FDF2F8);border-radius:14px;padding:14px 16px;margin-bottom:20px;border:1px solid #F0EAFB}
+.pop-sec-t{font-size:.8rem;font-weight:800;color:var(--c2,#6D28D9);letter-spacing:.02em;margin:0 0 11px;display:flex;align-items:center;gap:6px}
+.pop-steps{counter-reset:s;margin-bottom:20px}
+.pop-step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.pop-step::before{counter-increment:s;content:counter(s);flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--c,#8B5CF6);color:white;font-size:.76rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.pop-step span{font-size:.88rem;line-height:1.55;color:var(--text);padding-top:3px}
+.pop-screen{list-style:none;margin-bottom:20px;background:#FAFAFE;border-radius:14px;padding:6px 14px;border:1px solid #F0F0F8}
+.pop-screen li{font-size:.84rem;line-height:1.5;color:var(--sub);padding:8px 0 8px 20px;position:relative;border-bottom:1px solid #F0F0F8}
+.pop-screen li:last-child{border-bottom:none}
+.pop-screen li::before{content:'▸';position:absolute;left:2px;color:var(--c,#8B5CF6);font-weight:900}
+.pop-tip{background:linear-gradient(135deg,#FFFBEB,#FEF9C3);border:1px solid #FDE68A;border-radius:14px;padding:14px 16px;font-size:.85rem;line-height:1.65;color:#92400E}
+.pop-tip b{color:#B45309}
+.pop-note{margin-top:18px;text-align:center;font-size:.74rem;color:var(--light);line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="guide-strip">📖 이건 <b>연습용 설명서예요!</b> 버튼을 누르면 실제로 실행되지 않고 &nbsp;✨ <b>사용법</b>이 예쁘게 나와요</div>
+
+<!-- 탑바 -->
+<div class="topbar">
+  <div class="site-name"><span class="cross">✝</span> 중등부 여름수련회</div>
+  <div class="tb-right">
+    <span class="tb-label">사용 설명서</span>
+    <button class="hamburger" id="hamBtn" onclick="togglePanel()"><span></span><span></span><span></span></button>
+  </div>
+</div>
+
+<!-- 사이드 패널 -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+<div class="side-panel" id="sidePanel">
+  <div class="side-header">
+    <span class="side-header-title">✝ 메뉴</span>
+    <button class="side-close" onclick="closePanel()">✕</button>
+  </div>
+  <div id="sideBody"></div>
+</div>
+
+<!-- 히어로 -->
+<div class="hero">
+  <div class="hero-sky"></div>
+  <div class="stars" id="stars"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="mountains">
+    <svg viewBox="0 0 400 110" preserveAspectRatio="none" style="width:100%;height:100px;display:block">
+      <polygon points="0,110 60,35 120,80 180,15 240,65 300,25 360,75 400,45 400,110" fill="#0B1D4F" opacity=".9"/>
+      <polygon points="0,110 80,55 160,90 220,40 280,78 340,50 400,65 400,110" fill="#0D2255" opacity=".7"/>
+      <rect x="193" y="12" width="4" height="20" fill="#FBBF24" opacity=".6"/>
+      <rect x="187" y="19" width="16" height="4" fill="#FBBF24" opacity=".6"/>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <span class="hero-cross">✝</span>
+    <div class="hero-badge">2026 여름수련회</div>
+    <h1>중등부 여름수련회에<br><em>오신 것을 환영해요!</em></h1>
+    <p>버튼을 눌러 사용법을 배워볼까요?</p>
+    <div class="hero-btns">
+      <button class="hero-btn reg" onclick="showManual('register')">🏕️ 참가 신청하기</button>
+      <button class="hero-btn fol" onclick="openFollow()">🗺️ 수련회 따라가기</button>
+    </div>
+    <div class="hero-hint">👆 오른쪽 위 <b>≡ 메뉴</b>를 누르면 모든 기능이 펼쳐져요</div>
+  </div>
+</div>
+
+<!-- 미니 가이드 -->
+<div class="quick">
+  <div class="quick-title">🧭 3초 만에 익히는 사용법</div>
+  <div class="quick-sub">이 순서만 기억하면 끝!</div>
+  <div class="steps3">
+    <div class="step3" style="--ac:#F59E0B"><span class="num">1</span><span class="em">≡</span><div class="tt">메뉴 열기</div><div class="dd">오른쪽 위 작대기 3개를 눌러요</div></div>
+    <div class="step3" style="--ac:#6366F1"><span class="num">2</span><span class="em">🗺️</span><div class="tt">따라가기</div><div class="dd">날짜 순서대로 프로그램이 모여 있어요</div></div>
+    <div class="step3" style="--ac:#EC4899"><span class="num">3</span><span class="em">👆</span><div class="tt">열기 누르기</div><div class="dd">「열기」를 누르면 활동이 시작돼요</div></div>
+  </div>
+  <div class="cta-row">
+    <button class="cta menu" onclick="openPanel()">≡ 메뉴 열어보기</button>
+    <button class="cta fol" onclick="openFollow()">🗺️ 수련회 따라가기 →</button>
+  </div>
+</div>
+
+<!-- 따라가기 오버레이 -->
+<div class="fa-ov" id="faOv">
+  <div class="fa-topbar">
+    <button class="fa-back" onclick="closeFollow()">←</button>
+    <span class="fa-toptit">🗺️ 수련회 따라가기</span>
+  </div>
+  <div class="fa-hero">
+    <div class="fa-hero-stars" id="faStars"></div>
+    <span class="fa-hero-cross">✝</span>
+    <div class="fa-hero-title">2026 중등부 수련회 따라가기</div>
+    <div class="fa-phases">
+      <div class="fa-phase"><span class="fa-phase-em">📋</span><span class="fa-phase-dot on"></span><span class="fa-phase-lb">수련회<br>전</span></div>
+      <div class="fa-phase-line"></div>
+      <div class="fa-phase"><span class="fa-phase-em">🌅</span><span class="fa-phase-dot on"></span><span class="fa-phase-lb">1일차<br>만남</span></div>
+      <div class="fa-phase-line"></div>
+      <div class="fa-phase"><span class="fa-phase-em">☀️</span><span class="fa-phase-dot on"></span><span class="fa-phase-lb">2일차<br>탐험</span></div>
+      <div class="fa-phase-line"></div>
+      <div class="fa-phase"><span class="fa-phase-em">🏆</span><span class="fa-phase-dot on"></span><span class="fa-phase-lb">3일차<br>창작</span></div>
+      <div class="fa-phase-line"></div>
+      <div class="fa-phase"><span class="fa-phase-em">✅</span><span class="fa-phase-dot"></span><span class="fa-phase-lb">수련회<br>후</span></div>
+    </div>
+    <div class="fa-stats">
+      <div><div class="fa-stat-num">36</div><div class="fa-stat-lb">전체 활동</div></div>
+      <div><div class="fa-stat-num">2박3일</div><div class="fa-stat-lb">수련회 기간</div></div>
+      <div><div class="fa-stat-num">7.28</div><div class="fa-stat-lb">시작일</div></div>
+    </div>
+  </div>
+  <div class="fa-wrap">
+    <div class="fa-tip-card">💡 아래 프로그램의 <b>「열기」</b>를 누르면 그 활동을 <b>어떻게 하는지</b> 설명이 나와요. 🙏 표시는 다 함께 드리는 예배 시간이에요.</div>
+    <div id="faList"></div>
+  </div>
+</div>
+
+<!-- 팝업 -->
+<div class="pop-overlay" id="popOverlay" onclick="if(event.target===this)closePop()">
+  <div class="pop" id="popBox"></div>
+</div>
+
+<script>
+/* ===== 사이드 메뉴 구성 ===== */
+var SIDE=[
+  {label:'수련회 시작 전'},
+  {key:'register',icon:'🏕️',cls:'s-pink',name:'참가 신청',desc:'수련회 전 필수',badge:'필수',bcls:'sb-reg'},
+  {divider:1},
+  {label:'수련회 프로그램',follow:1},
+  {divider:1},
+  {label:'🤖 AI 워크플로우'},
+  {key:'wfLesson',icon:'📦',cls:'s-blue',name:'수업안 패키지 생성기',desc:'수업안+교보재·찬양·영상 한 번에',badge:'운영중',bcls:'sb-live'},
+  {key:'wfMaterial',icon:'🎲',cls:'s-orange',name:'교보재 생성기',desc:'도입게임·토의·활동·워크시트',badge:'운영중',bcls:'sb-live'},
+  {key:'wfAnthem',icon:'🎵',cls:'s-purple',name:'찬양 생성기',desc:'오리지널 가사 + Suno 프롬프트',badge:'운영중',bcls:'sb-live'},
+  {key:'wfPromo',icon:'🎬',cls:'s-pink',name:'홍보영상 생성기',desc:'내레이션·스토리보드·자막',badge:'운영중',bcls:'sb-live'},
+  {divider:1},
+  {label:'수련회 정보'},
+  {key:'schedule',icon:'📅',cls:'s-orange',name:'전체 일정표',desc:'36가지 활동 타임테이블',badge:'운영중',bcls:'sb-live'},
+  {key:'scoreboard',icon:'🏆',cls:'s-purple',name:'팀별 점수판',desc:'실시간 팀 점수',badge:'운영중',bcls:'sb-live'},
+  {key:'meal',icon:'🍽️',cls:'s-green',name:'식단표',desc:'아침·점심·저녁 메뉴',badge:'운영중',bcls:'sb-live'},
+  {divider:1},
+  {label:'🔐 감독자 전용'},
+  {key:'adminOnly',icon:'👥',cls:'s-red',name:'학생 명단 · 회계',desc:'선생님(감독자)만 사용해요',badge:'감독자',bcls:'sb-admin',soon:1},
+];
+
+/* ===== 프로그램 매뉴얼 데이터 (학생용) ===== */
+var M = {
+  /* 메뉴/정보 */
+  register:{c:'#EC4899',badge:'수련회 전 · 필수',icon:'🏕️',name:'참가 신청',time:'D-14 이전까지',
+    what:'수련회에 참가하려면 가장 먼저 해야 하는 신청이에요. 내 정보를 입력하면 끝!',
+    screen:['「학생 / 감독자」 중 역할 고르는 화면','이름·학년 고르기','학부모 연락처·내 연락처 입력칸','신청 완료 메시지'],
+    steps:['처음 화면에서 <b>「학생」</b>을 골라요','<b>이름</b>을 적고 <b>학년</b>(중1·중2·중3)을 골라요','<b>학부모 연락처</b>와 <b>내 연락처</b>를 적어요 (숫자만 적으면 -가 자동으로 들어가요)','<b>「신청 완료하기」</b>를 누르면 🎉 신청 끝!','한 명 더 신청하려면 「다시 신청하기」를 누르면 돼요'],
+    tip:'감독자 화면은 선생님만 들어가요. 학생은 「학생」만 누르면 됩니다.'},
+  schedule:{c:'#D97706',badge:'정보',icon:'📅',name:'전체 일정표',time:'',
+    what:'수련회 전부터 끝난 후까지, 36가지 활동이 언제 진행되는지 한눈에 보는 시간표예요.',
+    screen:['수련회 전·1일차·2일차·3일차·수련회 후 탭','시간대(오전·오후·저녁)별 활동 목록','각 활동의 설명과 사용하는 AI 도구'],
+    steps:['위쪽 <b>탭</b>(수련회 전/1일차…)을 눌러 날짜를 골라요','그 날 어떤 활동이 있는지 시간 순서로 확인해요','궁금한 활동은 「수련회 따라가기」에서 직접 열어볼 수 있어요'],
+    tip:'일정표는 보기만 하는 화면이라 따로 입력할 건 없어요.'},
+  scoreboard:{c:'#7C3AED',badge:'정보',icon:'🏆',name:'팀별 점수판',time:'',
+    what:'베드로·바울·에스더·다윗 네 팀의 점수를 실시간으로 보여줘요. 우리 팀이 몇 등인지 확인해요!',
+    screen:['1~4위 순위 카드 (1위는 금색)','활동별 상세 점수표'],
+    steps:['점수판을 열면 현재 <b>팀 순위</b>가 바로 보여요','아래 표에서 활동별로 몇 점을 받았는지 확인해요'],
+    tip:'점수 입력·수정은 선생님(감독자)만 할 수 있어요. 학생은 구경만 하면 됩니다 😊'},
+  meal:{c:'#059669',badge:'정보',icon:'🍽️',name:'식단표',time:'',
+    what:'3일 동안 아침·점심·저녁에 무엇을 먹는지 알려주는 표예요. 알레르기 주의 표시도 있어요.',
+    screen:['1일차·2일차·3일차 탭','아침·점심·저녁 카드','메뉴·예상 칼로리·알레르기 주의'],
+    steps:['<b>날짜 탭</b>을 눌러 그 날 식단을 봐요','아침·점심·저녁 메뉴를 확인해요','⚠️ 알레르기 표시가 있으면 선생님께 꼭 말해요'],
+    tip:'음식 알레르기가 있으면 망설이지 말고 선생님께 알려주세요!'},
+  adminOnly:{c:'#DC2626',badge:'감독자 전용',icon:'🔐',name:'학생 명단 · 회계 장부',time:'',
+    what:'이건 선생님(감독자)만 사용하는 메뉴예요. 학생 명단 관리와 수련회 회계(돈 관리)를 위한 곳이라 비밀번호가 필요해요.',
+    screen:['비밀번호 입력 화면','(선생님만 볼 수 있어요)'],
+    steps:['이 메뉴는 <b>선생님 전용</b>이에요','학생은 따로 할 일이 없어요 😊','궁금한 건 선생님께 물어보세요'],
+    tip:'우리의 정보와 수련회 살림을 선생님이 잘 챙겨주시는 공간이에요.'},
+
+  /* AI 워크플로우 (학생용) */
+  wfLesson:{c:'#2563EB',badge:'AI 워크플로우',icon:'📦',name:'수업안 패키지 생성기',time:'',
+    what:'주제만 넣으면 수업안과 함께 교보재·찬양·홍보영상 아이디어까지 한 번에 만들어주는 만능 도구예요. 보통 선생님이 수업을 준비하실 때 써요.',
+    screen:['새 탭(다른 사이트)으로 이동','수업 주제·대상 입력','완성된 수업 패키지'],
+    steps:['메뉴(≡)에서 <b>「수업안 패키지 생성기」</b>를 눌러요','새 창에서 수업 <b>주제</b>를 입력해요','수업안·게임·찬양·영상 아이디어가 한 번에 나와요'],
+    tip:'주로 선생님이 쓰는 도구예요. 친구들과 발표·창작 준비할 때 함께 활용해도 좋아요!'},
+  wfMaterial:{c:'#F59E0B',badge:'AI 워크플로우',icon:'🎲',name:'교보재 생성기',time:'',
+    what:'수업이나 모임에서 바로 쓸 도입 게임·토의 질문·활동·워크시트를 만들어주는 도구예요.',
+    screen:['새 탭(다른 사이트)으로 이동','주제·활동 유형 고르기','게임·토의·워크시트 결과'],
+    steps:['메뉴에서 <b>「교보재 생성기」</b>를 눌러요','필요한 <b>주제·활동</b>을 골라요','나온 게임·질문·워크시트를 활용해요'],
+    tip:'조별 모임에서 할 게임이나 나눔 질문이 필요할 때 빠르게 뽑아 쓸 수 있어요.'},
+  wfAnthem:{c:'#8B5CF6',badge:'AI 워크플로우',icon:'🎵',name:'찬양 생성기',time:'',
+    what:'오리지널 찬양 가사와 작곡용 프롬프트(Suno)를 만들어주는 도구예요. 테마송이나 우리 조 찬양을 만들 때 좋아요.',
+    screen:['새 탭(다른 사이트)으로 이동','주제·분위기 입력','가사 + 작곡(Suno) 프롬프트'],
+    steps:['메뉴에서 <b>「찬양 생성기」</b>를 눌러요','찬양 <b>주제·분위기</b>를 입력해요','완성된 가사와 작곡 프롬프트를 받아요'],
+    tip:'「테마송 공모전」에서 만든 가사와 합치면 우리만의 찬양이 완성돼요!'},
+  wfPromo:{c:'#EC4899',badge:'AI 워크플로우',icon:'🎬',name:'홍보영상 생성기',time:'',
+    what:'홍보영상에 쓸 내레이션·장면 구성(스토리보드)·자막을 만들어주는 도구예요.',
+    screen:['새 탭(다른 사이트)으로 이동','핵심 메시지 입력','내레이션·스토리보드·자막'],
+    steps:['메뉴에서 <b>「홍보영상 생성기」</b>를 눌러요','전하고 싶은 <b>핵심 메시지</b>를 입력해요','나온 스토리보드·자막으로 영상을 만들어요'],
+    tip:'수련회 후 「영화 예고편 만들기」와 함께 쓰면 멋진 영상이 나와요!'},
+
+  /* ---- 수련회 전 (핑크) ---- */
+  themesong:{c:'#EC4899',badge:'수련회 전 · D-14~D-8',icon:'🎵',name:'우리가 만드는 테마송 공모전',time:'2주 전',
+    what:'내가 쓴 가사를 AI가 멋지게 다듬어주고, 친구들 투표로 수련회 테마송을 뽑는 공모전이에요.',
+    screen:['내 이름·우리 조 고르기','가사 쓰는 칸(500자)','「AI로 다듬기」 버튼 + 결과','제출 → 투표 → 결과 발표 화면'],
+    steps:['<b>「가사 제출하기」</b>를 눌러 시작해요','내 <b>이름</b>과 <b>우리 조</b>를 골라요','수련회에 어울리는 <b>가사</b>를 자유롭게 써요 (10자 이상)','<b>「✦ AI로 다듬기」</b>를 누르면 더 멋진 가사로 바뀌어요','마음에 들면 <b>「제출 완료」</b>를 눌러요','투표 기간이 되면 친구들 가사 중 제일 좋은 것에 ❤️ 한 표!'],
+    tip:'투표는 한 번만 할 수 있으니 신중하게 골라요. 우승 가사는 수련회 내내 부르게 돼요!'},
+  prayerwall:{c:'#EC4899',badge:'수련회 전~수련회 · 기도',icon:'🙏',name:'살아있는 공동체 기도벽',time:'D-14 ~ 수련회',
+    what:'손으로 쓴 기도를 포스트잇처럼 붙이면, AI가 우리 모두의 기도를 모아 공동체 선언문을 만들어줘요.',
+    screen:['1일차·2일차·3일차 탭','기도 입력칸 + 「추가」 버튼','붙은 포스트잇들','「공동체 기도 선언문 생성하기」 버튼'],
+    steps:['내가 쓴 <b>기도·감사·결단</b>을 입력칸에 적어요','<b>「추가」</b>를 누르면 포스트잇처럼 벽에 붙어요','기도가 모이면 선생님이 <b>「선언문 생성하기」</b>를 눌러요','AI가 우리 공동체의 마음을 분석해 <b>기도 선언문</b>을 만들어줘요','예배 때 다 함께 그 선언문을 읽어요'],
+    tip:'솔직한 기도일수록 좋아요. 누가 썼는지보다 우리의 마음이 하나 되는 게 목적이에요.'},
+  poster:{c:'#EC4899',badge:'수련회 전 · D-14~D-8',icon:'🖼️',name:'오늘의 수련회 기대 포스터',time:'2주 전',
+    what:'날짜·키워드·분위기를 고르면 AI가 수련회 홍보 포스터 문구와 그림 아이디어를 만들어줘요.',
+    screen:['날짜 칩 고르기','키워드 입력(최대 5개)','분위기 4종(뜨겁게·청량·따뜻·신비)','완성된 포스터 + 그림 만들기 안내'],
+    steps:['<b>날짜</b>를 골라요 (D-7, D-DAY 등)','어울리는 <b>키워드</b>를 적어요 (예: 은혜, 함께)','<b>분위기</b>를 1개 골라요','<b>「포스터 만들기」</b>를 누르면 포스터 문구가 완성돼요','나온 <b>그림 안내(프롬프트)</b>를 복사해 그림 만드는 곳에 붙여 사용해요'],
+    tip:'여러 날짜·키워드로 만들어 보면서 제일 멋진 포스터를 골라보세요!'},
+  invite:{c:'#EC4899',badge:'수련회 전 · D-7~D-4',icon:'🎙️',name:'이름을 불러주는 초대장',time:'1주 전',
+    what:'내 이름과 정보를 적으면, AI가 나만을 위한 따뜻한 초대장을 써주고 목소리로 읽어줘요.',
+    screen:['이름·나이·교회 입력','요즘 고민 적는 칸(선택)','완성된 초대장 글','「내 이름 들어보기」 음성 버튼'],
+    steps:['<b>이름·나이·소속 교회</b>를 적어요','요즘 마음의 고민이 있으면 적어요 (선택)','<b>「초대장 받기」</b>를 누르면 나만의 초대장이 나와요','<b>「내 이름 들어보기」</b>를 누르면 목소리로 읽어줘요','마음에 드는 부분은 직접 고쳐도 돼요 (자동 저장)'],
+    tip:'소리가 안 나오면 휴대폰 음량을 올리고, 한국어 음성이 있는 기기에서 들어보세요.'},
+  faithdna:{c:'#EC4899',badge:'수련회 전 · D-7~D-4',icon:'🧬',name:'AI 신앙 DNA 보고서',time:'1주 전',
+    what:'15개 질문에 답하면 AI가 내 신앙 유형을 분석해 강점과 성장 방향, 맞춤 말씀을 알려줘요.',
+    screen:['진행 막대','질문 1개 + 선택지 4개','분석 중 화면','신앙 DNA 보고서(유형·강점·성향 그래프·말씀)'],
+    steps:['질문을 읽고 <b>가장 나 같은 선택지</b>를 골라요','<b>「다음」</b>을 눌러 15개 질문을 끝까지 답해요','마지막 질문 후 AI가 자동으로 분석해요','내 <b>신앙 DNA 유형</b>과 강점, 성장 방향, 말씀을 확인해요','다시 해보고 싶으면 「다시 분석하기」를 눌러요'],
+    tip:'정답·오답은 없어요. 솔직하게 고를수록 더 정확한 결과가 나와요.'},
+  webtoon:{c:'#EC4899',badge:'수련회 전 · D-7~D-4',icon:'🎬',name:'수련회 미리보기 웹툰',time:'1주 전',
+    what:'내 이름·팀·궁금한 활동을 고르면 AI가 그 활동을 재미있는 4컷 만화로 미리 보여줘요.',
+    screen:['이름 입력 + 팀 4종 고르기','궁금한 활동 6개 중 1개','만화 그리는 중 화면','완성된 4컷 웹툰'],
+    steps:['내 <b>이름</b>을 적고 <b>우리 팀</b>을 골라요','제일 궁금한 <b>활동</b>을 1개 골라요','<b>「4컷 웹툰 만들기!」</b>를 눌러요 (1~2분 걸려요)','내가 주인공인 <b>4컷 만화</b>가 완성돼요','다른 활동으로 또 만들고 싶으면 「다시 만들기」!'],
+    tip:'만드는 데 시간이 조금 걸려요. 그림이 다 나올 때까지 기다려 주세요.'},
+  wishlist:{c:'#EC4899',badge:'수련회 전 · D-7~D-4',icon:'❓',name:'나만의 수련회 기대 테스트',time:'1주 전',
+    what:'수련회에 대한 궁금증이나 걱정을 한 줄씩 적으면 AI가 24시간 친절하게 답해줘요.',
+    screen:['질문 입력칸 + 「추가」','내가 적은 질문 목록','각 질문 아래 AI 답변'],
+    steps:['궁금한 점을 적어요 (예: "잠자리는 어떻게 돼요?")','<b>엔터</b>나 <b>「+ 추가」</b>를 눌러요','잠깐 기다리면 AI가 <b>답변</b>을 달아줘요','궁금한 게 더 있으면 계속 추가해요 (최대 50개)'],
+    tip:'준비물·일정·걱정 무엇이든 물어봐도 돼요. 마음 편히 적어보세요!'},
+  roleplay:{c:'#EC4899',badge:'수련회 전 · 교사용',icon:'🧑‍🏫',name:'우리 아이 마음 열기 롤플레잉',time:'D-3~D-1',
+    what:'이건 선생님(교사)이 사용하는 도구예요. 학생을 더 잘 이해하고 상담을 준비하기 위한 거예요.',
+    screen:['(교사 전용 화면)'],
+    steps:['이 활동은 <b>선생님이 사용하는 준비 도구</b>예요','학생이 직접 할 일은 없어요','선생님이 우리를 더 잘 도와주시려고 준비하시는 거랍니다 😊'],
+    tip:'학생용 활동이 아니에요. 자세한 내용은 교사용 설명서에 있어요.'},
+  icebreakDesign:{c:'#EC4899',badge:'수련회 전 · D-3~D-1',icon:'🎯',name:'우리 조 맞춤 아이스브레이킹 설계',time:'직전',
+    what:'우리 조원들의 성향(MBTI)을 모으면 AI가 우리 조에 딱 맞는 아이스브레이킹 게임을 추천해줘요.',
+    screen:['조 이름 입력','조원 MBTI 적는 칸(3명 이상)','얼음 깨기 연출','추천 게임 2개'],
+    steps:['<b>조 이름</b>을 적어요','조원들의 <b>MBTI</b>를 한 줄에 하나씩 적어요 (3명 이상)','<b>「얼음 깨고 게임 받기」</b>를 눌러요','화면의 <b>얼음을 톡톡</b> 두드려 깨면','우리 조에 맞는 <b>게임 2개</b>가 나와요!'],
+    tip:'얼음을 다 같이 두드리는 게 재미 포인트예요. 게임 설명은 복사하거나 인쇄할 수 있어요.'},
+  anthem:{c:'#EC4899',badge:'수련회 전 · D-3~D-1',icon:'🎵',name:'우리 조 입성가 만들기',time:'직전',
+    what:'우리 조 정보와 키워드를 모으면 AI가 우리 조만의 응원가(입성가) 가사와 곡조를 만들어줘요.',
+    screen:['조 정보·분위기·곡조·분량 고르기','키워드 적는 칸','완성된 가사 + 선물상자 무대','숨은 캐릭터 5마리(보너스)'],
+    steps:['<b>조 이름</b>과 분위기·곡조·분량을 골라요','우리 조를 표현하는 <b>키워드</b>를 여러 개 적어요','<b>「입성가 만들기」</b>를 눌러요','완성되면 <b>선물상자</b>를 눌러 큰 무대에서 가사를 감상해요','화면 곳곳의 <b>캐릭터 5마리</b>를 모두 찾아 누르면 깜짝 축하 보너스가 열려요!'],
+    tip:'완성된 입성가는 「복사」나 「인쇄」로 저장해서 수련회 때 다 같이 불러요.'},
+  counsel:{c:'#EC4899',badge:'수련회 전 · D-3~D-1',icon:'😟',name:'수련회 전 익명 고민 상담소',time:'직전',
+    what:'이름을 적지 않아도 되는 익명 상담소예요. 고민을 적으면 AI가 따뜻하게 공감하고 팁을 줘요.',
+    screen:['「고민 상담 시작하기」','고민 종류 고르기(9개)','세부 고민 고르기','고민 적는 칸','AI 공감 + 팁 4개'],
+    steps:['<b>「고민 상담 시작하기」</b>를 눌러요','고민 종류를 골라요 (기도·관계·믿음 등)','더 자세한 항목을 골라요','내 고민을 솔직하게 적어요 (5자 이상)','<b>「상담 받기!」</b>를 누르면 공감과 실천 팁을 받아요'],
+    tip:'완전 익명이라 이름이 저장되지 않아요. 마음속 걱정을 편하게 털어놓아도 괜찮아요.'},
+  balance:{c:'#EC4899',badge:'수련회 전 · D-3~D-1',icon:'⚡',name:'수련회 극한 밸런스 게임',time:'직전',
+    what:'재미있는 두 가지 상황 중 하나를 고르는 게임이에요. 20문제를 풀면 내 수련회 유형이 나와요!',
+    screen:['게임 방법 설명','이름 입력(선택)','A vs B 선택 문제 20개','내 유형 결과 + 팀 결과'],
+    steps:['이름을 적고 <b>「게임 시작!」</b>을 눌러요 (이름은 안 적어도 돼요)','두 상황 중 <b>A 또는 B</b>를 골라요','친구들이 어떻게 골랐는지 비율이 바로 보여요','<b>「다음 문제 →」</b>로 20문제를 풀어요','마지막에 내 <b>수련회 유형</b>이 나와요!'],
+    tip:'정답은 없어요. 친구들과 서로 어떻게 다른지 비교하며 웃는 게 목적이에요 😆'},
+
+  /* ---- 1일차 (파랑) ---- */
+  icebreaking:{c:'#3B82F6',badge:'1일차 · 오전',icon:'🎯',name:'우리 조 맞춤 아이스브레이킹',time:'10:30–11:00',
+    what:'조원 정보를 입력하면 AI가 우리 조만을 위한 아이스브레이킹 게임을 자세한 진행 방법까지 만들어줘요.',
+    screen:['조 이름·인원·목표 고르기','조원별 이름·MBTI·성향 입력','AI 분석 중','게임 결과(준비물·5단계 순서·팁)'],
+    steps:['<b>조 이름</b>과 <b>인원 수</b>를 고르고 이번 활동 <b>목표</b>를 골라요','조원들의 <b>이름·MBTI·성향</b>을 적어요 (사람 추가 가능)','<b>「AI로 맞춤 게임 만들기」</b>를 눌러요','완성된 게임의 <b>준비물·진행 순서·팁</b>을 보고 다 같이 게임해요','다른 게임이 보고 싶으면 「다른 게임 만들기」!'],
+    tip:'조원이 2명 이상 있어야 게임을 만들 수 있어요.'},
+  sermonTitle:{c:'#3B82F6',badge:'1일차 · 오전',icon:'📖',name:'내가 고르는 설교 제목 / 3줄 요약',time:'11:00–11:20',
+    what:'들은 설교를 AI가 3줄로 깔끔하게 요약해줘요. 팀별로 입력해서 발표하고 비교해요.',
+    screen:['1·2·3일차 탭','팀·설교 제목·설교자·핵심 구절 입력','메모 또는 키워드 입력','AI 3줄 요약 + 발표 모드'],
+    steps:['오늘 <b>날짜 탭</b>을 골라요','<b>우리 팀</b>과 설교 제목·설교자를 적어요','설교 내용을 <b>메모</b>하거나 <b>키워드</b>로 적어요','<b>「AI 3줄 요약 생성」</b>을 눌러요','나온 3줄을 직접 고쳐도 되고, <b>「발표 모드」</b>로 크게 띄워 발표해요'],
+    tip:'3일 내내 입력하면 마지막에 「3일 전체 발표 모드」로 한 번에 발표할 수 있어요.'},
+  prayerwall1:{c:'#3B82F6',badge:'1일차 · 저녁',icon:'🙏',name:'살아있는 공동체 기도벽',time:'21:00–21:30',
+    what:'수련회 3일 동안 기도를 모아 AI가 우리 공동체의 마음을 분석하고 예배 선언문을 만들어요.',
+    screen:['일차별 탭','기도 입력 + 포스트잇 벽','선언문 생성 버튼'],
+    steps:['오늘 하루 마음에 떠오른 <b>기도</b>를 적어요','<b>「추가」</b>로 기도벽에 붙여요','기도가 모이면 다 함께 <b>선언문</b>을 만들어 봐요','예배 때 그 선언문을 함께 읽어요'],
+    tip:'수련회 전부터 쌓인 기도들이 모여서 점점 풍성해져요.'},
+  emotionMap:{c:'#3B82F6',badge:'1일차 · 오후',icon:'🗺️',name:'실시간 공동체 감정 지도',time:'13:30–14:00',
+    what:'지금 내 감정을 입력하면, 모두의 감정이 모여 AI가 우리 공동체에 어울리는 찬양·기도 방향을 알려줘요.',
+    screen:['감정 입력 탭 / 분석 탭','감정 칩 10개 + 강도 선택','감정 구름(클라우드)','AI 분석 결과'],
+    steps:['<b>지금 내 감정</b>을 골라요 (감사·설렘·외로움 등)','감정의 <b>강도</b>를 1~5로 골라요','<b>「감정 추가하기」</b>를 눌러요','모두 입력하면 <b>「분석하기」</b> 탭에서 우리 공동체의 마음을 확인해요'],
+    tip:'솔직한 감정을 골라요. 부정적인 감정도 괜찮아요 — 함께 기도할 제목이 되니까요.'},
+  meditation:{c:'#3B82F6',badge:'1일차 · 저녁',icon:'🌙',name:'감성 음성으로 듣는 말씀',time:'20:00–20:30',
+    what:'오늘 하루를 말씀으로 마무리하는 저녁 묵상이에요. 말씀을 음성으로 들으며 호흡하고 기도해요.',
+    screen:['말씀 / 숨쉬기 / 기도 탭','말씀 선택 + 분위기 고르기','음성 재생 + 속도 조절','4-7-8 호흡 가이드','기도문 만들기'],
+    steps:['들을 <b>말씀</b>과 <b>분위기</b>를 골라요','<b>「묵상 글 & 음성 준비하기」</b>를 눌러요','<b>▶️</b>로 말씀을 들으며 눈을 감고 묵상해요','<b>「숨쉬기」</b> 탭에서 천천히 호흡을 따라 해요','<b>「기도」</b> 탭에서 감사·고백을 적으면 AI가 기도문으로 다듬어줘요'],
+    tip:'조용한 곳에서 이어폰을 끼고 하면 더 깊이 집중할 수 있어요.'},
+
+  /* ---- 2일차 (보라) ---- */
+  aidetective:{c:'#8B5CF6',badge:'2일차 · 오전',icon:'🔍',name:'AI 탐정 — 수련회 장소가 무대',time:'10:00–11:30',
+    what:'수련회 장소 곳곳에 숨은 단서를 찾아 코드를 입력하는 방탈출 게임이에요. 팀마다 다른 수수께끼가 나와요!',
+    screen:['우리 팀 고르기','진행 단계 표시','수수께끼 + 코드 입력칸','성공/다음 단서'],
+    steps:['<b>우리 팀</b>을 골라요','화면에 나온 <b>수수께끼·힌트</b>를 읽어요','수련회 장소를 돌아다니며 숨겨진 <b>단서 코드</b>를 찾아요','찾은 코드를 입력하고 <b>「확인」</b>을 눌러요','정답이면 다음 단서로! 모든 단서를 찾으면 미션 완료 🎉'],
+    tip:'선생님이 미리 장소에 코드를 숨겨두세요. 팀끼리 뛰어다니며 푸는 활동이에요!'},
+  lifemap:{c:'#8B5CF6',badge:'2일차 · 오후',icon:'🗺️',name:'나의 인생 지도 그리기',time:'13:30–14:30',
+    what:'내 감정과 신앙 상태를 기록하면 그래프로 보여주고, AI가 내 신앙 여정에 대해 피드백을 줘요.',
+    screen:['기록·그래프·목록·피드백 탭','감정/신앙 점수(1~5) 버튼','오늘 사건 적는 칸','변화 그래프'],
+    steps:['<b>「기록」</b> 탭에서 오늘 <b>감정</b>과 <b>신앙</b> 점수(1~5)를 골라요','오늘 있었던 <b>일</b>을 적고 <b>「저장하기」</b>를 눌러요','<b>「그래프」</b> 탭에서 내 마음의 변화를 봐요','<b>「피드백」</b> 탭에서 AI의 따뜻한 조언을 받아요'],
+    tip:'매일 기록하면 내 신앙이 어떻게 자라는지 그래프로 한눈에 볼 수 있어요.'},
+  biblePicture:{c:'#8B5CF6',badge:'2일차 · 오후',icon:'🖼️',name:'성경 장면 그림 맞추기',time:'13:30–14:30',
+    what:'AI가 그린 성경 장면 그림을 보고, 어떤 성경 이야기인지 팀끼리 맞히는 게임이에요.',
+    screen:['팀 고르기·타이머·라운드 설정','성경 장면 그림','힌트 버튼(최대 3개)','정답 공개 + 점수'],
+    steps:['선생님이 팀과 라운드 수를 정하고 시작해요','AI가 그린 <b>성경 그림</b>을 봐요','제한 시간 안에 <b>어떤 이야기</b>인지 맞혀요','어려우면 <b>「힌트 보기」</b>를 눌러요 (최대 3번)','정답을 맞힌 팀이 점수를 얻어요!'],
+    tip:'그림을 자세히 보면 성경 속 단서가 숨어 있어요. 팀원과 의논해서 맞혀보세요!'},
+  churchDesign:{c:'#8B5CF6',badge:'2일차 · 오후',icon:'🏗️',name:'AI 시대 교회 설계 프로젝트',time:'14:30–15:30',
+    what:'우리 팀이 2050년 미래 교회의 모습을 제안하면, AI가 반론을 주고, 모든 팀 의견을 모아 선언문을 만들어요.',
+    screen:['팀 탭 4개','비전 입력칸','AI 반론','통합 선언문'],
+    steps:['<b>우리 팀</b> 탭을 골라요','<b>2050년 교회</b>는 어떤 모습이면 좋을지 적어요','<b>「비전 제출 → AI 반론 받기」</b>를 눌러요','AI가 던지는 <b>질문·반론</b>을 보고 더 깊이 생각해요','모든 팀이 제출하면 <b>「선언문 만들기」</b>로 우리 모두의 선언문을 완성해요'],
+    tip:'AI의 반론은 우리를 골탕먹이려는 게 아니라 더 깊이 고민하게 도와주는 거예요.'},
+  aiworship:{c:'#8B5CF6',badge:'2일차 · 오후',icon:'🎵',name:'학생이 만드는 AI 예배',time:'15:30–16:30',
+    what:'오늘의 감정을 모으면 AI가 오늘 저녁 예배의 순서(기도·찬양·말씀·응답)를 직접 설계해줘요.',
+    screen:['감정 수집 / 예배 설계 탭','감정 칩 8개 + 기억 입력','예배 흐름 결과'],
+    steps:['<b>오늘의 감정</b>을 고르고 기억에 남는 순간을 적어요','<b>「+ 추가」</b>로 감정을 모아요','친구들도 함께 입력해요','<b>「오늘 예배 흐름 설계하기」</b>를 누르면 예배 순서가 완성돼요','그 순서대로 저녁 예배를 함께 드려요'],
+    tip:'우리가 직접 만든 예배라서 더 특별해요. 솔직한 감정이 좋은 예배를 만들어요.'},
+  friendMessage:{c:'#8B5CF6',badge:'2일차 · 저녁',icon:'💌',name:'오늘, 친구에게 하고 싶은 말',time:'20:00–20:30',
+    what:'평소 못 했던 말을 적으면 AI가 진심 어린 메시지로 다듬어줘요. 실명·익명으로 전할 수 있어요.',
+    screen:['받는 사람·감정 고르기','실명/익명 선택','하고 싶은 말 입력','다듬어진 편지'],
+    steps:['편지를 받을 <b>친구 이름</b>을 적어요','전하고 싶은 <b>감정</b>을 골라요 (감사·미안함·응원 등)','<b>실명/익명</b> 중 골라요','하고 싶은 말을 솔직하게 적고 <b>「AI가 다듬어주기」</b>를 눌러요','완성된 편지를 친구에게 전해요'],
+    tip:'어색해도 괜찮아요. 평소 부끄러워서 못 했던 따뜻한 말을 전할 기회예요 💛'},
+
+  /* ---- 3일차 (주황) ---- */
+  faithBattle:{c:'#F59E0B',badge:'3일차 · 오전',icon:'⚔️',name:'신앙 논증 배틀',time:'10:00–11:30',
+    what:'AI가 신앙에 대해 어려운 질문으로 공격하면, 우리 팀이 성경으로 5라운드 동안 방어하는 토론이에요.',
+    screen:['공격 주제·팀·난이도 고르기','AI 공격 카드','방어 입력칸 + 힌트','최종 판결 점수'],
+    steps:['<b>주제</b>(신의 존재, 부활 등)와 <b>우리 팀·난이도</b>를 골라요','<b>「배틀 시작!」</b>을 누르면 AI가 첫 공격을 해요','<b>💡 힌트</b>를 참고해 성경 구절·논거로 방어를 적어요','<b>「방어 제출」</b>을 누르면 AI가 더 강하게 반박해요','5라운드를 끝내면 AI 심판이 <b>점수와 평가</b>를 줘요'],
+    tip:'정답을 외우는 게 아니라, 내 믿음을 내 말로 설명해보는 연습이에요.'},
+  improvDrama:{c:'#F59E0B',badge:'3일차 · 오후',icon:'🎭',name:'AI 연출 즉흥 성경 드라마',time:'13:00–14:30',
+    what:'AI가 성경 장면을 제시하면 즉흥 연기를 하고, 관객 투표로 다음 장면이 실시간으로 만들어져요.',
+    screen:['성경 배경 고르기','장면 카드 + 등장인물','연기 타이머(2분)','다음 전개 투표 3개'],
+    steps:['<b>성경 배경</b>을 골라요 (예: 베드로의 부름)','AI가 만든 <b>장면·등장인물·연출 노트</b>를 봐요','<b>「연기 시작(2분)」</b>을 누르고 친구들과 즉흥 연기를 해요','다음 전개 <b>투표</b>에서 하나를 골라요','투표 결과대로 AI가 다음 장면을 만들어요 (5장면까지!)'],
+    tip:'잘하는 연기보다 용기 있게 참여하는 게 멋진 거예요. 무대를 함께 즐겨요!'},
+
+  /* ---- 수련회 후 (초록) ---- */
+  trailer:{c:'#10B981',badge:'수련회 후 · D+1~D+3',icon:'🎬',name:'수련회 영화 예고편 만들기',time:'수련회 직후',
+    what:'수련회 장면과 간증을 모으면 AI가 영화 예고편 대본(제목·나레이션·BGM)을 만들어줘요.',
+    screen:['장면 수집(STEP1)','간증 수집(STEP2)','예고편 생성(STEP3)','5장면 대본 + 포스터 문구'],
+    steps:['<b>STEP1</b>: 기억에 남는 수련회 <b>장면</b>들을 날짜별로 적어요','<b>STEP2</b>: 친구들의 <b>간증</b>을 모아요','<b>STEP3</b>: <b>「예고편 대본 생성하기」</b>를 눌러요','AI가 만든 <b>영화 제목·5장면·나레이션·BGM</b>을 확인해요','「복사」나 「인쇄」로 저장해 영상 만들 때 활용해요'],
+    tip:'장면이나 간증이 2개 이상 모여야 예고편을 만들 수 있어요.'},
+  roleReverse:{c:'#10B981',badge:'수련회 후 · D+3~D+7',icon:'🔄',name:'역할 반전 — 학생이 AI를 가르친다',time:'수련회 후',
+    what:'이번엔 내가 선생님! 신앙을 모르는 척하는 AI에게 복음을 설명하면, AI가 점점 더 깊은 질문을 해요.',
+    screen:['가르칠 주제·팀 고르기','AI 질문 채팅','내 설명 입력칸','AI 학습 보고서'],
+    steps:['<b>가르칠 주제</b>(예수님·기도·구원 등)와 팀을 골라요','<b>「가르치기 시작!」</b>을 눌러요','AI의 질문에 <b>성경·예시</b>로 설명을 적어요','AI가 이해한 것과 더 궁금한 걸 물어봐요 (5라운드)','마지막에 우리 팀의 <b>설명 점수와 보고서</b>를 받아요'],
+    tip:'남에게 설명하다 보면 내 믿음이 더 또렷해져요. 어려운 질문일수록 좋은 거예요!'},
+  meme:{c:'#10B981',badge:'수련회 후 · D+3~D+7',icon:'😂',name:'우리들의 신앙 밈 만들기',time:'수련회 후',
+    what:'말씀을 골라 스타일을 정하면 AI가 재미있는 신앙 밈을 만들어줘요. 투표로 최고의 밈을 뽑아요!',
+    screen:['이름·조 고르기','말씀 선택','밈 스타일 4종','완성된 밈 + 투표'],
+    steps:['<b>이름</b>과 <b>우리 조</b>를 골라요','마음에 드는 <b>말씀</b>을 골라요','밈 <b>스타일</b>(강렬·귀엽게·레트로·미니멀)을 골라요','<b>「AI로 밈 만들기」</b>를 눌러 밈을 완성해요','<b>「투표 참여」</b>로 친구들 밈 중 최고를 뽑아요!'],
+    tip:'투표는 한 번만 가능해요. 웃기면서도 은혜로운 밈을 만들어보세요 😄'},
+  narrative:{c:'#10B981',badge:'수련회 후 · D+5~D+7',icon:'📖',name:'수련회 내러티브 엔진',time:'수련회 후',
+    what:'3일간의 순간들을 모으면 AI가 소설처럼 멋진 이야기로 써주고, 마지막에 수련회 전체 이야기를 완성해요.',
+    screen:['1·2·3일차 탭','팀·순간 입력','날짜별 이야기 카드','최종 수련회 이야기'],
+    steps:['<b>날짜 탭</b>을 고르고 <b>우리 팀</b>을 골라요','그날의 <b>특별한 순간</b>을 적고 「이 순간 기록하기」를 눌러요','<b>「이야기 생성하기」</b>로 그날의 이야기를 받아요','3일 모두 채운 뒤 <b>「최종 이야기 생성하기」</b>를 눌러요','우리 수련회가 한 편의 <b>소설</b>이 돼요!'],
+    tip:'작은 순간도 좋아요 — 웃었던 일, 울었던 일 모두 멋진 이야기가 돼요.'},
+  letter:{c:'#10B981',badge:'수련회 후 · D+7',icon:'✉️',name:'1년 뒤 나에게 보내는 편지',time:'수련회 후',
+    what:'지금의 마음과 다짐을 1년 뒤의 나에게 편지로 써서 보관해요. AI가 초안도 도와줘요.',
+    screen:['내 정보 입력','지금 감정·은혜 적기','AI 초안 도움 + 편지 쓰기','편지함 보관'],
+    steps:['<b>이름·학년·조</b>를 골라요','지금 <b>감정</b>과 받은 <b>은혜</b>를 적어요','직접 편지를 쓰거나 <b>「AI가 초안 써주기」</b> 도움을 받아요','완성한 편지를 <b>「편지 보관하기」</b>로 저장해요','내년 여름에 다시 열어 읽어요!'],
+    tip:'지금의 진심을 솔직하게 담아요. 1년 뒤의 내가 큰 힘을 얻을 거예요 💛'},
+  theologyDebate:{c:'#10B981',badge:'수련회 후 · D+7~D+30',icon:'🏛️',name:'멀티 AI 신학 토론장',time:'수련회 후',
+    what:'세 명의 AI 신학자가 같은 주제로 토론하고, 내가 배심원이 되어 누가 가장 설득력 있는지 판결해요.',
+    screen:['토론 주제 고르기','세 신학자 토론(3라운드)','배심원 선택','최종 판결 + 균형 잡힌 답'],
+    steps:['<b>토론 주제</b>(자유의지·구원 등)를 골라요','<b>「토론 시작!」</b>을 누르면 세 신학자가 발언해요','가장 설득력 있는 <b>신학자</b>를 골라요 (이유도 적어요)','3라운드 후 <b>최종 판결</b>을 내려요','AI가 균형 잡힌 성경적 답과 핵심 말씀을 정리해줘요'],
+    tip:'조금 어려울 수 있어요. 정답을 맞히기보다 다양한 생각을 들어보는 게 목적이에요.'},
+  dailyMission:{c:'#10B981',badge:'수련회 후 · D+7~D+30',icon:'✅',name:'하루 한 가지 신앙 실천 미션',time:'30일 챌린지',
+    what:'수련회 후 30일 동안 AI가 매일 작은 신앙 실천 미션을 줘요. 완료하면 달력에 도장이 쌓여요!',
+    screen:['연속 일수·진행률','오늘의 미션 카드','소감 입력 + 완료 버튼','30일 달력'],
+    steps:['앱을 열면 <b>오늘의 미션</b>이 나와요 (말씀·기도·섬김·감사·찬양)','미션의 <b>추천 이유</b>와 <b>성경 구절</b>을 읽어요','하루 동안 미션을 실천해요','<b>소감</b>을 적고 <b>「오늘 미션 완료!」</b>를 눌러요','다음 날 또 새로운 미션이 와요 — 30일 동안 도전!'],
+    tip:'매일 조금씩 실천하면 수련회의 은혜가 일상으로 이어져요. 연속 기록을 채워보세요!'},
+};
+
+/* ===== 따라가기 타임라인 ===== */
+var FA = [
+  {type:'day', label:'📋 수련회 시작 전', color:'#EC4899', tc:'#F9A8D4'},
+  {type:'item', num:'참가', c:'#EC4899', name:'✝️ 참가 신청', time:'D-14 이전', desc:'수련회 전 필수 신청', key:'register'},
+  {type:'sub', label:'D-14 ~ D-8 · 2주 전', color:'#EC4899'},
+  {type:'item', num:'전-12', c:'#EC4899', name:'🎵 테마송 공모전', time:'D-14~D-8', desc:'가사 제출 → AI 작곡 → 투표', key:'themesong'},
+  {type:'item', num:'전-9', c:'#EC4899', name:'🙏 공동체 기도벽', time:'D-14~수련회', desc:'포스트잇 기도를 AI가 분석', key:'prayerwall'},
+  {type:'item', num:'전-8', c:'#EC4899', name:'🖼️ 기대 포스터', time:'D-14~D-8', desc:'AI가 홍보 포스터 생성', key:'poster'},
+  {type:'sub', label:'D-7 ~ D-4 · 1주 전', color:'#EC4899'},
+  {type:'item', num:'전-10', c:'#EC4899', name:'🎙️ 이름을 불러주는 초대장', time:'D-7~D-4', desc:'AI 음성 개인별 초대장', key:'invite'},
+  {type:'item', num:'전-11', c:'#EC4899', name:'🧬 AI 신앙 DNA 보고서', time:'D-7~D-4', desc:'15문항 → 신앙 유형 분석', key:'faithdna'},
+  {type:'item', num:'전-2', c:'#EC4899', name:'🎬 미리보기 웹툰', time:'D-7~D-4', desc:'AI 4컷 만화 생성', key:'webtoon'},
+  {type:'item', num:'전-7', c:'#EC4899', name:'❓ 나만의 기대 테스트', time:'D-7~D-4', desc:'궁금증 AI 24시간 답변', key:'wishlist'},
+  {type:'sub', label:'D-3 ~ D-1 · 직전', color:'#EC4899'},
+  {type:'item', num:'전-1', c:'#EC4899', name:'🧑‍🏫 마음 열기 롤플레잉', time:'D-3~D-1', desc:'학생 성향 파악 (교사용)', key:'roleplay'},
+  {type:'item', num:'전-4', c:'#EC4899', name:'🎯 맞춤 아이스브레이킹 설계', time:'D-3~D-1', desc:'MBTI → AI 맞춤 게임', key:'icebreakDesign'},
+  {type:'item', num:'전-3', c:'#EC4899', name:'🎵 우리 조 입성가 만들기', time:'D-3~D-1', desc:'키워드 → AI 로고송·가사', key:'anthem'},
+  {type:'item', num:'전-5', c:'#EC4899', name:'😟 익명 고민 상담소', time:'D-3~D-1', desc:'익명 고민 → AI 공감·팁', key:'counsel'},
+  {type:'item', num:'전-6', c:'#EC4899', name:'⚡ 극한 밸런스 게임', time:'D-3~D-1', desc:'극한 상황으로 서로 파악', key:'balance'},
+
+  {type:'day', label:'🌅 1일차 — 만남 & 시작', color:'#3B82F6', tc:'#93C5FD'},
+  {type:'worship', txt:'개회 예배 · 09:30', sub:'찬양 · 개회 메시지 · 합심기도'},
+  {type:'sub', label:'오전', color:'#3B82F6'},
+  {type:'item', num:'중-1', c:'#3B82F6', name:'🎯 맞춤 아이스브레이킹', time:'10:30–11:00', desc:'성향 분석 맞춤 게임', key:'icebreaking'},
+  {type:'item', num:'중-15', c:'#3B82F6', name:'📖 내가 고르는 설교 제목', time:'11:00–11:20', desc:'AI 3줄 요약 · 성찰', key:'sermonTitle'},
+  {type:'sub', label:'오후', color:'#3B82F6'},
+  {type:'item', num:'중-3', c:'#3B82F6', name:'🗺️ 실시간 감정 지도', time:'13:30–14:00', desc:'전체 감정 → 찬양·기도 방향', key:'emotionMap'},
+  {type:'sub', label:'저녁', color:'#3B82F6'},
+  {type:'item', num:'중-5', c:'#3B82F6', name:'🙏 공동체 기도벽', time:'21:00–21:30', desc:'3일 누적 기도 분석', key:'prayerwall1'},
+  {type:'item', num:'중-4', c:'#3B82F6', name:'🌙 감성 음성으로 듣는 말씀', time:'20:00–20:30', desc:'말씀 낭독·호흡·묵상', key:'meditation'},
+
+  {type:'day', label:'☀️ 2일차 — 탐험 & 경쟁', color:'#8B5CF6', tc:'#C4B5FD'},
+  {type:'worship', txt:'아침 예배 · 09:00', sub:'테마송 찬양 · 말씀 · 대표기도'},
+  {type:'sub', label:'오전', color:'#8B5CF6'},
+  {type:'item', num:'중-5', c:'#8B5CF6', name:'🔍 AI 탐정 (방탈출)', time:'10:00–11:30', desc:'단서 찾는 방탈출', key:'aidetective'},
+  {type:'sub', label:'오후', color:'#8B5CF6'},
+  {type:'item', num:'중-6', c:'#8B5CF6', name:'🗺️ 나의 인생 지도 그리기', time:'13:30–14:30', desc:'신앙 여정 AI 분석', key:'lifemap'},
+  {type:'item', num:'중-7', c:'#8B5CF6', name:'🖼️ 성경 장면 그림 맞추기', time:'13:30–14:30', desc:'AI 그림 맞히기 팀 게임', key:'biblePicture'},
+  {type:'item', num:'중-8', c:'#8B5CF6', name:'🏗️ AI 시대 교회 설계', time:'14:30–15:30', desc:'2050 교회 비전 → 선언문', key:'churchDesign'},
+  {type:'item', num:'중-9', c:'#8B5CF6', name:'🎵 학생이 만드는 AI 예배', time:'15:30–16:30', desc:'감정 수집 → 예배 설계', key:'aiworship'},
+  {type:'sub', label:'저녁', color:'#8B5CF6'},
+  {type:'item', num:'중-10', c:'#8B5CF6', name:'💌 친구에게 하고 싶은 말', time:'20:00–20:30', desc:'AI가 진심 메시지로 정리', key:'friendMessage'},
+
+  {type:'day', label:'🏆 3일차 — 창작 & 마무리', color:'#F59E0B', tc:'#FCD34D'},
+  {type:'worship', txt:'아침 예배', sub:'테마송 찬양 · 말씀 · 활동 안내'},
+  {type:'item', num:'중-11', c:'#F59E0B', name:'⚔️ 신앙 논증 배틀', time:'10:00–11:30', desc:'AI 5라운드 방어', key:'faithBattle'},
+  {type:'item', num:'중-12', c:'#F59E0B', name:'🎭 즉흥 성경 드라마', time:'13:00–14:30', desc:'즉흥 연기 + 관객 투표', key:'improvDrama'},
+  {type:'worship', txt:'🎓 수료식 & 폐회 예배', sub:'수료증 · 시상식 · 헌신카드 · 축도'},
+
+  {type:'day', label:'✅ 수련회 후', color:'#10B981', tc:'#6EE7B7'},
+  {type:'sub', label:'D+1 ~ D+7 · 1주일 내', color:'#10B981'},
+  {type:'item', num:'후-1', c:'#10B981', name:'🎬 영화 예고편 만들기', time:'D+1~D+3', desc:'장면·간증 → 예고편 대본', key:'trailer'},
+  {type:'item', num:'후-2', c:'#10B981', name:'🔄 역할 반전', time:'D+3~D+7', desc:'AI에게 복음 설명하기', key:'roleReverse'},
+  {type:'item', num:'후-3', c:'#10B981', name:'😂 신앙 밈 만들기', time:'D+3~D+7', desc:'말씀 밈 제작 후 투표', key:'meme'},
+  {type:'item', num:'후-4', c:'#10B981', name:'📖 내러티브 엔진', time:'D+5~D+7', desc:'3일 순간 → 소설 생성', key:'narrative'},
+  {type:'sub', label:'D+7 ~ D+30 · 지속', color:'#10B981'},
+  {type:'item', num:'후-5', c:'#10B981', name:'✉️ 1년 뒤 나에게 편지', time:'D+7', desc:'신앙 편지 작성·보관', key:'letter'},
+  {type:'item', num:'후-6', c:'#10B981', name:'🏛️ 멀티 AI 신학 토론장', time:'D+7~D+30', desc:'3 AI 신학자 토론 → 판결', key:'theologyDebate'},
+  {type:'item', num:'후-7', c:'#10B981', name:'✅ 하루 한 가지 실천 미션', time:'D+7~D+30', desc:'매일 작은 신앙 실천', key:'dailyMission'},
+];
+
+/* ===== 사이드 패널 렌더 ===== */
+function renderSide(){
+  var h='';
+  SIDE.forEach(function(r){
+    if(r.divider){h+='<div class="s-divider"></div>';return;}
+    if(r.follow){
+      h+='<div class="side-section"><div class="side-label">수련회 프로그램</div>'+
+         '<button class="side-item side-follow" onclick="closePanel();openFollow()">'+
+         '<div class="s-icon" style="background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff">🗺️</div>'+
+         '<div class="s-text"><div class="s-name" style="color:#4338CA">수련회 따라가기</div><div class="s-desc">일정 순서대로 프로그램 보기</div></div>'+
+         '<div style="color:#6366F1;font-weight:900">→</div></button></div>';
+      return;
+    }
+    if(r.label && !r.key){h+='<div class="side-section"><div class="side-label">'+r.label+'</div></div>';return;}
+    var badge=r.badge?'<span class="s-badge '+r.bcls+'">'+r.badge+'</span>':'';
+    h+='<button class="side-item'+(r.soon?' soon':'')+'" onclick="closePanel();showManual(\''+r.key+'\')">'+
+       '<div class="s-icon '+r.cls+'">'+r.icon+'</div>'+
+       '<div class="s-text"><div class="s-name">'+r.name+'</div><div class="s-desc">'+r.desc+'</div></div>'+badge+'</button>';
+  });
+  document.getElementById('sideBody').innerHTML=h;
+}
+
+/* ===== 따라가기 렌더 ===== */
+function renderFa(){
+  var h='', inTrack=false, curTc='#C4B5FD';
+  function closeTrack(){ if(inTrack){h+='</div>';inTrack=false;} }
+  FA.forEach(function(r){
+    if(r.type==='day'){
+      closeTrack();
+      curTc=r.tc||'#C4B5FD';
+      h+='<div class="fa-day-header"><div class="fa-day-pill" style="background:'+r.color+'">'+r.label+'</div><div class="fa-day-line"></div></div>';
+      h+='<div class="fa-track" style="--tc:'+curTc+'">';inTrack=true;
+    } else if(r.type==='sub'){
+      h+='<div class="fa-sub" style="color:'+r.color+'">'+r.label+'</div>';
+    } else if(r.type==='worship'){
+      h+='<div class="fa-worship"><span class="fa-worship-icon">🙏</span><div><div class="fa-worship-txt">'+r.txt+'</div><div class="fa-worship-sub">'+r.sub+'</div></div></div>';
+    } else if(r.type==='item'){
+      h+='<div class="fa-item" style="--ic:'+r.c+'" onclick="showManual(\''+r.key+'\')">'+
+         '<div class="fa-num" style="background:'+hexLight(r.c)+';color:'+r.c+'">'+r.num+'</div>'+
+         '<div class="fa-info"><div class="fa-name">'+r.name+'<span class="fa-time">⏱ '+r.time+'</span></div><div class="fa-desc">'+r.desc+'</div></div>'+
+         '<button class="fa-open-btn" style="background:'+r.c+'" onclick="event.stopPropagation();showManual(\''+r.key+'\')">열기</button></div>';
+    }
+  });
+  closeTrack();
+  document.getElementById('faList').innerHTML=h;
+}
+function hexLight(c){var map={'#EC4899':'#FCE7F3','#3B82F6':'#EFF6FF','#8B5CF6':'#F5F3FF','#F59E0B':'#FFFBEB','#10B981':'#ECFDF5'};return map[c]||'#F1F5F9';}
+function darken(c){var map={'#EC4899':'#BE185D','#3B82F6':'#1E40AF','#8B5CF6':'#6D28D9','#F59E0B':'#B45309','#10B981':'#047857','#D97706':'#92400E','#7C3AED':'#5B21B6','#059669':'#065F46','#2563EB':'#1E40AF','#DC2626':'#991B1B'};return map[c]||c;}
+
+/* ===== 패널 ===== */
+function togglePanel(){document.getElementById('sidePanel').classList.contains('open')?closePanel():openPanel();}
+function openPanel(){document.getElementById('sidePanel').classList.add('open');document.getElementById('panelOverlay').classList.add('open');document.getElementById('hamBtn').classList.add('open');document.body.style.overflow='hidden';}
+function closePanel(){document.getElementById('sidePanel').classList.remove('open');document.getElementById('panelOverlay').classList.remove('open');document.getElementById('hamBtn').classList.remove('open');if(!document.getElementById('faOv').classList.contains('open'))document.body.style.overflow='';}
+
+/* ===== 따라가기 오버레이 ===== */
+function openFollow(){document.getElementById('faOv').classList.add('open');document.body.style.overflow='hidden';document.getElementById('faOv').scrollTop=0;}
+function closeFollow(){document.getElementById('faOv').classList.remove('open');document.body.style.overflow='';}
+
+/* ===== 팝업 ===== */
+function showManual(key){
+  var d=M[key]; if(!d)return;
+  var steps='';d.steps.forEach(function(s){steps+='<div class="pop-step"><span>'+s+'</span></div>';});
+  var screen='';(d.screen||[]).forEach(function(s){screen+='<li>'+s+'</li>';});
+  var html=
+    '<div class="pop-head" style="background:linear-gradient(135deg,'+d.c+','+darken(d.c)+')">'+
+      '<button class="pop-close" onclick="closePop()">✕</button>'+
+      '<div class="pop-icon-circle">'+d.icon+'</div>'+
+      '<div class="pop-badge">'+d.badge+'</div>'+
+      '<div class="pop-title">'+d.name+'</div>'+
+      (d.time?'<div class="pop-time">⏱ '+d.time+'</div>':'')+
+    '</div>'+
+    '<div class="pop-body" style="--c:'+d.c+';--c2:'+darken(d.c)+'">'+
+      '<div class="pop-what">'+d.what+'</div>'+
+      (screen?'<div class="pop-sec-t">📱 화면에는 이런 게 있어요</div><ul class="pop-screen">'+screen+'</ul>':'')+
+      '<div class="pop-sec-t">👉 이렇게 진행해요</div><div class="pop-steps">'+steps+'</div>'+
+      (d.tip?'<div class="pop-tip"><b>💡 꿀팁 — </b>'+d.tip+'</div>':'')+
+      '<div class="pop-note">실제 수련회 때는 메뉴(≡) → 수련회 따라가기에서 「열기」를 누르면 시작돼요</div>'+
+    '</div>';
+  var box=document.getElementById('popBox');box.innerHTML=html;box.scrollTop=0;
+  document.getElementById('popOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePop(){document.getElementById('popOverlay').classList.remove('open');
+  if(document.getElementById('faOv').classList.contains('open')||document.getElementById('sidePanel').classList.contains('open'))document.body.style.overflow='hidden';
+  else document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){
+  if(document.getElementById('popOverlay').classList.contains('open'))closePop();
+  else if(document.getElementById('faOv').classList.contains('open'))closeFollow();
+  else if(document.getElementById('sidePanel').classList.contains('open'))closePanel();
+}});
+
+/* ===== 별 생성 ===== */
+function makeStars(el,n){
+  if(!el||el.children.length)return;
+  for(var i=0;i<n;i++){var s=document.createElement('div');s.className='star-dot';
+    var sz=(Math.random()*2+0.6);
+    s.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;animation-duration:'+(2+Math.random()*3)+'s;animation-delay:'+(Math.random()*2)+'s';
+    el.appendChild(s);}
+}
+
+renderSide();
+renderFa();
+makeStars(document.getElementById('stars'),46);
+makeStars(document.getElementById('faStars'),40);
+</script>
+</body>
+</html>
