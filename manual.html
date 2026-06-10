@@ -387,6 +387,23 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
 .gm-note b{color:#3B82F6}
 .gm-mode{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:9999;background:rgba(15,20,40,.93);color:#fff;font-size:.8rem;font-weight:700;padding:9px 16px;border-radius:999px;box-shadow:0 8px 26px rgba(0,0,0,.28);display:flex;align-items:center;gap:7px;max-width:92vw;white-space:nowrap}
 .gm-mode b{color:#FCD34D}
+.qg{max-width:980px;margin:0 auto;padding:34px 18px 6px;font-family:inherit}
+.qg-head{text-align:center;margin-bottom:22px}
+.qg-title{font-size:1.5rem;font-weight:900;color:#1f2547;letter-spacing:-.01em}
+.qg-sub{color:#6b7280;margin-top:6px;font-size:.95rem}
+.qg-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:680px){.qg-cards{grid-template-columns:1fr}}
+.qg-card{position:relative;background:#fff;border-radius:18px;padding:30px 18px 22px;text-align:center;box-shadow:0 8px 26px rgba(20,26,46,.08);overflow:hidden}
+.qg-top{position:absolute;left:0;top:0;width:100%;height:8px;background:var(--qc)}
+.qg-num{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--qc);color:#fff;font-weight:900;font-size:1.05rem;box-shadow:0 6px 14px rgba(20,26,46,.18);margin-bottom:14px}
+.qg-ic{font-size:1.9rem;margin-bottom:10px;line-height:1}
+.qg-ct{font-weight:900;font-size:1.12rem;color:#1f2547}
+.qg-cd{color:#6b7280;font-size:.9rem;margin-top:6px;line-height:1.5}
+.qg-btns{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:24px}
+.qg-btn{border:0;font-family:inherit;font-weight:900;font-size:1rem;color:#fff;padding:16px 26px;border-radius:14px;cursor:pointer;flex:1 1 270px;max-width:430px;transition:.2s}
+.qg-menu{background:linear-gradient(135deg,#F59E0B,#F97316);box-shadow:0 8px 20px rgba(245,158,11,.4)}
+.qg-follow{background:linear-gradient(135deg,#6366F1,#8B5CF6);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.qg-btn:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -549,6 +566,22 @@ body{font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;background
 
 <!-- ── 히어로 아래 콘텐츠 ── -->
 <div class="below-wrap">
+<section class="qg">
+  <div class="qg-head">
+    <div class="qg-title">🧭 3초 만에 익히는 사용법</div>
+    <div class="qg-sub">이 순서만 기억하면 끝!</div>
+  </div>
+  <div class="qg-cards">
+    <div class="qg-card" style="--qc:#F59E0B"><span class="qg-top"></span><span class="qg-num">1</span><div class="qg-ic">☰</div><div class="qg-ct">메뉴 열기</div><div class="qg-cd">오른쪽 위 작대기 3개를 눌러요</div></div>
+    <div class="qg-card" style="--qc:#6366F1"><span class="qg-top"></span><span class="qg-num">2</span><div class="qg-ic">🗺️</div><div class="qg-ct">따라가기</div><div class="qg-cd">날짜 순서대로 프로그램이 모여 있어요</div></div>
+    <div class="qg-card" style="--qc:#EC4899"><span class="qg-top"></span><span class="qg-num">3</span><div class="qg-ic">👆</div><div class="qg-ct">열기 누르기</div><div class="qg-cd">「열기」를 누르면 활동이 시작돼요</div></div>
+  </div>
+  <div class="qg-btns">
+    <button class="qg-btn qg-menu" onclick="togglePanel()">☰ 메뉴 열어보기</button>
+    <button class="qg-btn qg-follow" onclick="openFollowAlong()">🗺️ 수련회 따라가기 →</button>
+  </div>
+</section>
+
 
   <!-- 수련회 소개 -->
   <section class="intro-section">
